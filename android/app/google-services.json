@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "613930439145",
+    "project_id": "tpi-mybi",
+    "storage_bucket": "tpi-mybi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:613930439145:android:b1a9decc33e4b2a8e93b78",
+        "android_client_info": {
+          "package_name": "com.example.tpi_mybi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAX9hqJUQ0-4uzC4OGOA16hfXJioUoMxtc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
