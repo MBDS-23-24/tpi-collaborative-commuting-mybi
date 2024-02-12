@@ -1,12 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:html';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:tpi_mybi/CostumColor.dart';
+import 'package:tpi_mybi/Data/DataLoader.dart';
 import 'package:tpi_mybi/model/User.dart';
 import 'package:tpi_mybi/ui/views/Dashboard/dashboard.dart';
 import 'package:tpi_mybi/ui/views/Login/login.dart';
 import 'package:tpi_mybi/ui/widget/custom_theme.dart';
+
+import '../../../Components/Buttons/ButtonImagePicker.dart';
+import '../../../Data/DataManager.dart';
+import 'dart:io' if (dart.library.html) '';
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -16,13 +22,48 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    DataManager.instance.addListener(_onUserUpdated);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    DataManager.instance.removeListener(_onUserUpdated);
+  }
   final _formSignupKey = GlobalKey<FormState>();
-  final nameController = TextEditingController();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  late String pathImage = "";
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final storeData = FirebaseDatabase.instance.ref("users");
+
 
   bool agreePersonalData = true;
+  bool agreePassenger = false;
+  bool agreeDriver = false;
+  bool agreeBoth = false ;
+
+  void _handleCheckboxChange(String role, bool? value) {
+    setState(() {
+      // Réinitialiser toutes les valeurs à false
+      agreePassenger = false;
+      agreeDriver = false;
+      agreeBoth = false;
+
+      // Activer la case à cocher sélectionnée
+      if (role == 'Passenger') {
+        agreePassenger = value!;
+      } else if (role == 'Driver') {
+        agreeDriver = value!;
+      } else if (role == 'Both') {
+        agreeBoth = value!;
+      }
+    });
+  }
 
   Future<void> registerUser() async {
     if (!_formSignupKey.currentState!.validate() || !agreePersonalData) {
@@ -31,44 +72,82 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
       return;
     }
+    String role;
+    if (agreePassenger){
+      role = "PASSAGER";
+    }
+    else if(agreeDriver){
+      role = "CONDUCTEUR";
+    }
+    else {
+      role = "BOTH";
+    }
 
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+
+      var manager = DataManager.instance;
+
+      UserModel user = UserModel(uid : 0,email: emailController.text.trim(), firstName: firstNameController.text.trim(), lastName: lastNameController.text.trim(), pathImage: pathImage, password: passwordController.text.trim(), role: role);
+
+      manager.setUser(user);
 
 
-      await storeData.child(userCredential.user!.uid).set({
-        'name': nameController.text.trim(),
-        'email': emailController.text.trim(),
-      });
+    var loader = DataLoader.instance;
+    loader.createUser(user);
 
-    //  UserModel userModel = UserModel.fromFirebaseUser(userCredential.user!);
+
+
+
+     // UserModel userModel = UserModel.fromFirebaseUser(userCredential.user!);
       /*
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => DashboardScreen(user: userModel),
+          builder: (context) => SignInScreen(),
         ),
       );
-
-       */
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User registered successfully')),
       );
-    } catch (e) {
-      // Handle errors during sign up
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to register: ${e.toString()}')),
-      );
+       */
+
+
+  }
+
+  void _onUserUpdated(DataManagerUpdateType type) {
+    switch (type) {
+      case DataManagerUpdateType.userCreateSuccess:
+        setState(() {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SignInScreen(),
+            ),
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User registered successfully')),
+          );
+        });
+        break;
+      case DataManagerUpdateType.userCreateError:
+        setState(() {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User registered failed')),
+          );
+        });
+        break;
+    // Ajoutez d'autres cas au besoin
+      default:
+      // Gérez un cas par défaut si nécessaire
+        break;
     }
   }
 
 
 
 
+// nom / prenom / mdp / email / photo
   @override
   Widget build(BuildContext context) {
     return CustomTheme(
@@ -110,18 +189,87 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 40.0,
                       ),
-                      // full name
+
+                      Column(
+                        children: <Widget>[
+                          // Utilisez Visibility pour afficher l'image seulement si pathImage n'est pas vide
+                          if (kIsWeb && pathImage.isNotEmpty)
+                            ClipOval(
+                              child: Image.network(
+                                pathImage,
+                                width: 100, // Définissez la taille de l'image
+                                height: 100,
+                                fit: BoxFit.cover, // Assurez-vous que l'image couvre bien le cercle
+                              ),
+                            )
+                          /*else if (!kIsWeb && pathImage.isNotEmpty)
+      ClipOval(
+        child: Image(
+          image: FileImage(File(pathImage)),
+          width: 100, // Définissez la taille de l'image
+          height: 100,
+          fit: BoxFit.cover, // Assurez-vous que l'image couvre bien le cercle
+        ),
+      ),*/,
+                          // Utilisez Visibility pour cacher le bouton une fois une image sélectionnée
+                          Visibility(
+                            // visible: pathImage.isEmpty, // Le bouton est caché si une image est sélectionnée
+                            child: ButtonImagePicker(
+                              onImageSelected: (imagePath) {
+                                setState(() {
+                                  pathImage = imagePath; // Mettez à jour pathImage avec le chemin de l'image sélectionnée
+                                });
+                              },
+                            ),
+                          ),
+                          // Ajoutez d'autres widgets si nécessaire
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 25.0,
+                      ),// full name
                       TextFormField(
-                        controller: nameController,
+                        controller: firstNameController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter Full name';
+                            return 'Please enter First name';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
-                          label: const Text('Full Name'),
-                          hintText: 'Enter Full Name',
+                          label: const Text('First Name'),
+                          hintText: 'Enter First Name',
+                          hintStyle: const TextStyle(
+                            color: Colors.black26,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.black12, // Default border color
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.black12, // Default border color
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 25.0,
+                      ),
+                      TextFormField(
+                        controller: lastNameController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter Last name';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          label: const Text('Last Name'),
+                          hintText: 'Enter Last Name',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
                           ),
@@ -208,6 +356,62 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 25.0,
                       ),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Role :',
+                            style: TextStyle(
+                              color: Colors.black45,
+                            ),
+                          ),
+                          const Text(
+                            'Passenger ',
+                            style: TextStyle(
+                              color: Colors.black45,
+                            ),
+                          ),
+                          Checkbox(
+                            value: agreePassenger,
+                            onChanged: (bool? value) {
+                              _handleCheckboxChange('Passenger', value);
+                            },
+                            activeColor: myPrimaryColor,
+                          ),
+                          const Text(
+                            'Driver ',
+                            style: TextStyle(
+                              color: Colors.black45,
+                            ),
+                          ),
+                          Checkbox(
+                            value: agreeDriver,
+                            onChanged: (bool? value) {
+                              _handleCheckboxChange('Driver', value);
+                            },
+                            activeColor: myPrimaryColor,
+                          ),
+                          const Text(
+                            'Both ',
+                            style: TextStyle(
+                              color: Colors.black45,
+                            ),
+                          ),
+                          Checkbox(
+                            value: agreeBoth,
+                            onChanged: (bool? value) {
+                              _handleCheckboxChange('Both', value);
+                            },
+                            activeColor: myPrimaryColor,
+                          )
+                        ]
+
+                      ),
+
+
+
+
                       // i agree to the processing
                       Row(
                         children: [
@@ -327,6 +531,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 20.0,
                       ),
+                   
                     ],
 
                   ),
@@ -337,5 +542,4 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ],
       ),
     );
-  }
-}
+  }}

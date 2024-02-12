@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tpi_mybi/CostumColor.dart';
+import 'package:tpi_mybi/Data/DataLoader.dart';
+import 'package:tpi_mybi/Data/DataManager.dart';
 import 'package:tpi_mybi/model/User.dart';
+import 'package:tpi_mybi/model/login.dart';
 import 'package:tpi_mybi/ui/views/Registration/registration.dart';
 import 'package:tpi_mybi/ui/widget/custom_theme.dart';
 import 'package:tpi_mybi/ui/views/Dashboard/dashboard.dart';
@@ -18,12 +21,56 @@ class _SignInScreenState extends State<SignInScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool rememberPassword = true;
+  late DataLoader loader;
+  late DataManager manager;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+     loader = DataLoader.instance;
+     manager = DataManager.instance;
+      DataManager.instance.addListener(_onResponse);
+  }
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+    DataManager.instance.removeListener(_onResponse);
     super.dispose();
+  }
+
+  void _onResponse(DataManagerUpdateType type) {
+    switch (type) {
+      case DataManagerUpdateType.userLoginSuccess:
+        print("je suis dans DashboardScreen");
+
+        setState(() {
+          Navigator.
+          pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DashboardScreen(user: DataManager.instance.getUser()),
+            ),
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User registered successfully')),
+          );
+        });
+        break;
+      case DataManagerUpdateType.userLoginError:
+        setState(() {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User registered failed')),
+          );
+        });
+        break;
+      default:
+      // Gérez un cas par défaut si nécessaire
+        break;
+    }
   }
 
   Future<void> loginUser() async {
@@ -33,17 +80,25 @@ class _SignInScreenState extends State<SignInScreen> {
     }
 
     try {
+      LoginModel loginModel  = LoginModel(email : emailController.text.trim(),password :passwordController.text.trim());
+      DataLoader.instance.login(loginModel);
+      /*
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
       UserModel userModel = UserModel.fromFirebaseUser(userCredential.user!);
-
+       */
       // Navigate to DashboardScreen on successful login
+     /*
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => DashboardScreen(user: userModel)),
       );
+      */
+
+
+
     } catch (e) {
       // Handle login error
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tpi_mybi/CostumColor.dart';
-import 'package:tpi_mybi/ui/views/Login/login.dart';
-import 'package:tpi_mybi/ui/views/Registration/registration.dart';
+import 'package:tpi_mybi/ui/views/Login/login.dart'; // Assurez-vous que cette classe existe
+import 'package:tpi_mybi/ui/views/Registration/registrationNew.dart'; // Assurez-vous que cette classe existe
 import 'package:tpi_mybi/ui/widget/custom_theme.dart';
 import 'package:tpi_mybi/ui/widget/home_btn.dart';
 
@@ -10,61 +10,76 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomTheme(
-      child: Column(
-        children: [
-          Flexible(
-              flex: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 0,
-                  horizontal: 40.0,
-                ),
-                child: Center(
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: const TextSpan(
-                      children: [
-                        TextSpan(
-                            text: 'Welcome !\n',
-                            style: TextStyle(
-                              color: myPrimaryColor,
-                              fontSize: 45.0,
-                              fontWeight: FontWeight.w600,
-                            )),
+    // Utilisation de MediaQuery pour responsive design
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
 
+    return CustomTheme(
+      child: SingleChildScrollView( // Ajouté pour la gestion du défilement
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: screenHeight,
+          ),
+          child: IntrinsicHeight( // Assure que Column prend la hauteur minimale
+            child: Column(
+              children: [
+                Flexible(
+                  flex: screenWidth < 600 ? 2 : 1,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: screenWidth * 0.1, // Ajustement dynamique
+                    ),
+                    child: Center(
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Welcome !\n',
+                              style: TextStyle(
+                                color: myPrimaryColor,
+                                fontSize: screenWidth < 600 ? 24.0 : 45.0, // Ajustement dynamique
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Spacer(), // Utilisé pour pousser le contenu vers le haut/bas
+                Flexible(
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: HomeBtn(
+                            buttonText: 'Sign in',
+                            onClick: SignInScreen(), // Exemple de navigation
+                            color: Colors.transparent,
+                            textColor: myPrimaryColor,
+                          ),
+                        ),
+                        Expanded(
+                          child: HomeBtn(
+                            buttonText: 'Sign up',
+                            onClick: SignUpScreen(), // Exemple de navigation
+                            color: Colors.transparent,
+                            textColor: myPrimaryColor,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
-              )),
-          Flexible(
-            flex: 1,
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: Row(
-                children: [
-                  const Expanded(
-                    child: HomeBtn(
-                      buttonText: 'Sign in',
-                      onClick: SignInScreen(),
-                      color: Colors.transparent,
-                      textColor: myPrimaryColor,
-                    ),
-                  ),
-                  Expanded(
-                    child: HomeBtn(
-                      buttonText: 'Sign up',
-                      onClick: const SignUpScreen(),
-                      color: Colors.transparent,
-                      textColor: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
+                Spacer(), // Ajouté pour l'équilibre visuel
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
