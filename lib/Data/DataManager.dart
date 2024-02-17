@@ -1,6 +1,3 @@
-
-
-
 import 'package:tpi_mybi/model/User.dart';
 
 enum DataManagerUpdateType {
@@ -10,6 +7,7 @@ enum DataManagerUpdateType {
   userLoginError
   // Ajoutez d'autres types de mises à jour ici
 }
+
 
 class DataManager {
   static DataManager? _instance;
@@ -29,7 +27,7 @@ class DataManager {
     this.userModel = userModel;
   }
 
-  UserModel getUser(){
+  UserModel getUser() {
     return userModel;
   }
 

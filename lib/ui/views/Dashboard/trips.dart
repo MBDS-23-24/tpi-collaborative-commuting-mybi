@@ -4,10 +4,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:tpi_mybi/CostumColor.dart';
 import 'package:flutter_location_search/flutter_location_search.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
+import 'package:tpi_mybi/Data/DataManager.dart';
+import 'package:tpi_mybi/model/User.dart';
 
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import '../Profil/profil.dart';
 
 
 class TripsScreen extends StatefulWidget {
@@ -28,6 +32,8 @@ class _TripsScreenState extends State<TripsScreen> {
   String _pickupLocationText = 'Depart  location';
   String _destinationLocationText = 'Destination location';
   Set<gmaps.Polyline> _polylines = {};
+  
+  get userModel => null;
   Future<void> _getDirections(gmaps.LatLng start, gmaps.LatLng end) async {
     final apiUrl = Uri.parse("https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&key=$apiKey");
     final response = await http.get(apiUrl);
@@ -124,43 +130,57 @@ class _TripsScreenState extends State<TripsScreen> {
   */
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Trips'),
-        backgroundColor: myPrimaryColor,
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: gmaps.GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: gmaps.CameraPosition(
-                target: _center,
-                zoom: 14.0,
-              ),
-              markers: _markers,
-              polylines: _polylines, // Add the polylines to the map
-
-            ),
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Row(
+        children: [
+          Text('Trips'),
+          SizedBox(width: 16.0),  // Ajoutez un espacement entre le titre et le bouton Profil
+          ElevatedButton(
+            onPressed: () {
+              // Naviguer vers la page du profil lors du clic sur le bouton Profil
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilPage(user: DataManager.instance.getUser())),
+              );
+            },
+            child: Text('Profil'),
           ),
-          Card(
-            elevation: 4.0,
-            margin: EdgeInsets.all(20.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
+        ],
+      ),
+      backgroundColor: myPrimaryColor,
+    ),
+    body: Column(
+      children: <Widget>[
+        Expanded(
+          child: gmaps.GoogleMap(
+            onMapCreated: _onMapCreated,
+            initialCameraPosition: gmaps.CameraPosition(
+              target: _center,
+              zoom: 14.0,
             ),
-            child: Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildRideButtons(),
-                  Divider(),
-                  _buildLocationTile(Icons.location_on, _pickupLocationText, () {
-                    _showLocationSearch(context, isPickupLocation: true);
-                  }),
-                  Divider(),
+            markers: _markers,
+            polylines: _polylines, // Ajouter les polylignes à la carte
+          ),
+        ),
+        Card(
+          elevation: 4.0,
+          margin: EdgeInsets.all(20.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildRideButtons(),
+                Divider(),
+                _buildLocationTile(Icons.location_on, _pickupLocationText, () {
+                  _showLocationSearch(context, isPickupLocation: true);
+                }),
+                Divider(),
                   _buildLocationTile(Icons.flag, _destinationLocationText, () {
                     if (_pickupLocationText != _destinationLocationText) {
                       _showLocationSearch(context, isPickupLocation: false);

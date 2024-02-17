@@ -5,6 +5,7 @@ import 'package:tpi_mybi/Data/DataLoader.dart';
 import 'package:tpi_mybi/Data/DataManager.dart';
 import 'package:tpi_mybi/model/User.dart';
 import 'package:tpi_mybi/model/login.dart';
+import 'package:tpi_mybi/ui/views/Profil/profil.dart';
 import 'package:tpi_mybi/ui/views/Registration/registration.dart';
 import 'package:tpi_mybi/ui/widget/custom_theme.dart';
 import 'package:tpi_mybi/ui/views/Dashboard/dashboard.dart';
@@ -42,36 +43,32 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _onResponse(DataManagerUpdateType type) {
-    switch (type) {
-      case DataManagerUpdateType.userLoginSuccess:
-        print("je suis dans DashboardScreen");
-
-        setState(() {
-          Navigator.
-          pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DashboardScreen(user: DataManager.instance.getUser()),
-            ),
-          );
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('User registered successfully')),
-          );
-        });
-        break;
-      case DataManagerUpdateType.userLoginError:
-        setState(() {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('User registered failed')),
-          );
-        });
-        break;
-      default:
+  switch (type) {
+    case DataManagerUpdateType.userLoginSuccess:
+      setState(() {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashboardScreen(user: DataManager.instance.getUser()),
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User logged in successfully')),
+        );
+      });
+      break;
+    case DataManagerUpdateType.userLoginError:
+      setState(() {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User login failed')),
+        );
+      });
+      break;
+    default:
       // Gérez un cas par défaut si nécessaire
-        break;
-    }
+      break;
   }
+}
 
   Future<void> loginUser() async {
     if (!_formSignInKey.currentState!.validate()) {
