@@ -43,7 +43,7 @@ class DataManager {
   }
 
   String getToken(){
-    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJpYXQiOjE3MDgyNjk0OTIsImV4cCI6MTcwODI3MTI5Mn0.q-j93YSDy31rNLcxQUk5iF6A9N5cQB1yhk2r0eg0qg8";
+    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJpYXQiOjE3MDgyNzI3NjMsImV4cCI6MTcwODI3NDU2M30.2edEdLxqDuucK6mZMTpdr1bCB_qhEYResIfec12WRuE";
     return token;
   }
 

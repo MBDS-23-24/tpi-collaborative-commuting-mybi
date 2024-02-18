@@ -97,7 +97,8 @@ class _IndividualPageState extends State<IndividualPage> {
          widget.chatModel.uid,
          widget.sourchat.uid,
          message,
-        DateTime.now());
+        DateTime.now(),
+        type);
     _controller.clear();
 
     setState(() {
@@ -235,15 +236,15 @@ class _IndividualPageState extends State<IndividualPage> {
                             height: 70,
                           );
                         }
-                        if (messages[index].time == "source") {
+                        if (messages[index].type == "source") {
                           return OwnMessageCard(
                             message: messages[index].message,
-                            time: messages[index].time.toString().substring(0, 6), key: "",
+                            time: messages[index].time.toString().substring(0, 12), key: "",
                           );
                         } else {
                           return ReplyCard(
                             message: messages[index].message,
-                            time: messages[index].time.toString().substring(0, 6),
+                            time: messages[index].time.toString().substring(0, 12),
                           );
                         }
                       },
