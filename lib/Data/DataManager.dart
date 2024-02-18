@@ -7,7 +7,9 @@ enum DataManagerUpdateType {
   userCreateSuccess,
   userCreateError,
   userLoginSuccess,
-  userLoginError
+  userLoginError,
+  getUsersSuccess,
+  getUsersError,
   // Ajoutez d'autres types de mises à jour ici
 }
 
@@ -23,13 +25,16 @@ class DataManager {
 
   late UserModel userModel;
   late String token;
+   List<UserModel> users = [];
 
   // Méthodes pour manipuler les données
   void setUser(UserModel userModel) {
+    this.userModel = UserModel(uid: 0, email: "test@gmail.com", firstName: "test", lastName: "test", password: "test");
     this.userModel = userModel;
   }
 
   UserModel getUser(){
+    this.userModel = UserModel(uid: 0, email: "test@gmail.com", firstName: "test", lastName: "test", password: "test");
     return userModel;
   }
 
@@ -38,7 +43,20 @@ class DataManager {
   }
 
   String getToken(){
+    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJpYXQiOjE3MDgyNTkyNzksImV4cCI6MTcwODI2MTA3OX0.alNc3TBrHg0ofLp__iV19FHvciqFrqw9KJdNytqPBqw";
     return token;
+  }
+
+  void setUsers(List<UserModel> users) {
+    this.users = users;
+  }
+
+  void addUser(UserModel user) {
+    users.add(user);
+  }
+
+  List<UserModel> getUsers() {
+    return users;
   }
 
   final List<void Function(DataManagerUpdateType)> _listeners = [];
@@ -72,6 +90,17 @@ class DataManager {
       }
       else {
         listener(DataManagerUpdateType.userLoginError);
+      }
+    }
+  }
+
+  responseGetUsers(bool hasError){
+    for (var listener in _listeners) {
+      if (!hasError){
+        listener(DataManagerUpdateType.getUsersSuccess);
+      }
+      else {
+        listener(DataManagerUpdateType.getUsersError);
       }
     }
   }

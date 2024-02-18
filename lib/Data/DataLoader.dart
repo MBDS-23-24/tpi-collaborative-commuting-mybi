@@ -24,22 +24,33 @@ class DataLoader {
   String urlPathHosted = "https://integrationlalabi.azurewebsites.net/";
   String urlPathLocal = "http://localhost:3000/";
 
-  Future<void> getUsers() async {
+  Future<void> getUsers(String token) async {
     var manager = DataManager.instance;
-    var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users');
+    //var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users');
+    var url = Uri.parse('http://localhost:3000/api/users');
     try {
-      var response = await http.get(url);
+      var headers = {
+        'Authorization': 'Bearer $token' // Remplacez VOTRE_TOKEN_ICI par votre token réel
+        //'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTcwNzgyOTExMCwiZXhwIjoxNzA3ODMwOTEwfQ.rb0dYGfC4YJfqueWcO7ADW7woGkbTINxTOOm9xKJ3CA'
+      };
+      var response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
         // Si la requête a réussi (statut 200), vous pouvez traiter les données de réponse ici
-
+       //var jsonResponse = json.decode(response.body);
+        List<dynamic> userJson = json.decode(response.body);
+        List<UserModel> users = userJson.map((json) => UserModel.fromJson(json)).toList();
+        manager.setUsers(users);
+        manager.responseGetUsers(false);
         print('Réponse de l\'API: ${response.body}');
       } else {
         // En cas d'échec de la requête, vous pouvez afficher un message d'erreur ou effectuer d'autres actions
         print('Échec de la requête: ${response.statusCode}');
+        manager.responseGetUsers(false);
       }
     } catch (e) {
       // En cas d'erreur lors de la connexion à l'API, vous pouvez afficher un message d'erreur
       print('Erreur de connexion: $e');
+      manager.responseGetUsers(false);
     }
   }
 
@@ -47,8 +58,9 @@ class DataLoader {
 
   Future<void> createUser(UserModel user) async {
     var manager = DataManager.instance;
-    var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users');
+   // var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users');
 
+    var url = Uri.parse('http://localhost:3000/api/users');
     // Convertir l'objet UserModel en JSON
     var userJson = user.toJson(); // Assurez-vous que vous avez une méthode toJson dans votre classe UserModel
 
@@ -80,8 +92,8 @@ class DataLoader {
 
   Future<void> login(LoginModel login) async {
     var manager = DataManager.instance;
-    var url = Uri.parse('https://integrationlalabi.azurewebsites.net/login');
-
+    //var url = Uri.parse('https://integrationlalabi.azurewebsites.net/login');
+    var url = Uri.parse('http://localhost:3000/login');
     // Convertir l'objet UserModel en JSON
     var userJson = login.toJson(); // Assurez-vous que vous avez une méthode toJson dans votre classe UserModel
 

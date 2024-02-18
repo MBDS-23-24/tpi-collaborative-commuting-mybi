@@ -15,6 +15,8 @@ class UserModel {
   final String? password;
   final String? role;
   final String? biograthy;
+  String currentMessage = "Hello";
+  String time = "4:00";
 
   UserModel({required this.uid, /*required this.uid,*/ this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biograthy});
 

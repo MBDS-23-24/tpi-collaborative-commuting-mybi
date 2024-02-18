@@ -3,6 +3,7 @@ import 'package:tpi_mybi/model/User.dart' as model;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:tpi_mybi/model/User.dart';
+import 'package:tpi_mybi/ui/views/Chat/chat.dart';
 import 'package:tpi_mybi/ui/views/home.dart';
 import 'firebase_options.dart';
 import 'ui/views/Dashboard/dashboard.dart';
@@ -58,11 +59,11 @@ class MyApp extends StatelessWidget {
               // var userModel = UserModel(uid: '1', email: "yassine@gmail.com", name: "yassine");
               //fetchData();
               //return DashboardScreen(user: userModel);
-              return HomeView();
+              return ChatScreen();
             }
             // User is logged in, convert User to UserModel and show DashboardScreen
          //  UserModel userModel = UserModel.fromFirebaseUser(user);
-            return HomeView();
+            return ChatScreen();
           }
           // Waiting for authentication state to be available
           return Scaffold(
