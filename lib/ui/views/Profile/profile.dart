@@ -1,16 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:tpi_mybi/Data/DataLoader.dart';
 import 'package:tpi_mybi/model/User.dart';
+import 'package:tpi_mybi/ui/views/Profile/editProfile.dart';
 
-class ProfilPage extends StatelessWidget {
+class ProfilePage extends StatelessWidget {
   final UserModel user;
 
-  ProfilPage({required this.user});
+  ProfilePage({required this.user});
+
+  Future<void> _deleteAccount(BuildContext context) async {
+    try {
+      await DataLoader.instance.deleteUser(user.uid);
+      // Ajouter des actions après la suppression réussie (par exemple, déconnexion, navigation, etc.)
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Compte supprimé avec succès')),
+      );
+    } catch (e) {
+      print('Erreur lors de la suppression du compte : $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur lors de la suppression du compte')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profil'),
+        title: Text('Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -43,15 +61,16 @@ class ProfilPage extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              // Ajoutez ici la biographie de l'utilisateur
               'Je vais récuperer la Bio ici ...',
               style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Naviguer vers la page de modification des informations
-                // Ajoutez votre logique de navigation ici
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EditProfilePage(user: user)),
+                );
               },
               style: ElevatedButton.styleFrom(
                 primary: Theme.of(context).primaryColor,
@@ -63,10 +82,10 @@ class ProfilPage extends StatelessWidget {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                // Ajoutez votre logique pour supprimer le compte
+                _deleteAccount(context);
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.red, // Utilisez une couleur différente pour le bouton de suppression
+                primary: Colors.red,
               ),
               child: Text('Supprimer le compte',
               style: TextStyle(color: Colors.white),),

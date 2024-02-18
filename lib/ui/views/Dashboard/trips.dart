@@ -11,7 +11,7 @@ import 'package:tpi_mybi/model/User.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../Profil/profil.dart';
+import '../Profile/profile.dart';
 
 
 class TripsScreen extends StatefulWidget {
@@ -142,10 +142,10 @@ Widget build(BuildContext context) {
               // Naviguer vers la page du profil lors du clic sur le bouton Profil
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProfilPage(user: DataManager.instance.getUser())),
+                MaterialPageRoute(builder: (context) => ProfilePage(user: DataManager.instance.getUser())),
               );
             },
-            child: Text('Profil'),
+            child: Text('Profile'),
           ),
         ],
       ),

@@ -14,9 +14,10 @@ class UserModel {
   final String? pathImage;
   final String? password;
   final String? role;
-  final String? biograthy;
+  final String? biography;
 
-  UserModel({required this.uid, /*required this.uid,*/ this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biograthy});
+  UserModel({required this.uid, /*required this.uid,*/ this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
+
 
   /*
   factory UserModel.fromFirebaseUser(User user) {
@@ -46,7 +47,7 @@ class UserModel {
         email: json['email'],
         password: json['password'],
         pathImage: json['photoURL'],
-       biograthy: json['biograthy'],
+        biography: json['biography'],
         role: json['role']
     );
   }
