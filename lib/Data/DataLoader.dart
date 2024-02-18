@@ -26,8 +26,8 @@ class DataLoader {
 
   Future<void> getUsers(String token) async {
     var manager = DataManager.instance;
-    //var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users');
-    var url = Uri.parse('http://localhost:3000/api/users');
+    var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users');
+   // var url = Uri.parse('http://localhost:3000/api/users');
     try {
       var headers = {
         'Authorization': 'Bearer $token' // Remplacez VOTRE_TOKEN_ICI par votre token réel

@@ -37,7 +37,7 @@ class _IndividualPageState extends State<IndividualPage> {
   @override
   void initState() {
     super.initState();
-     connect();
+     // connect();
 
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
@@ -46,13 +46,13 @@ class _IndividualPageState extends State<IndividualPage> {
         });
       }
     });
-    // connect();
+     connect();
   }
 
   void connect() {
    // MessageModel messageModel = MessageModel(0, widget.chatModel.uid, widget.sourchat.uid,  );
 
-    socket = IO.io("http://172.30.80.1:3000", <String, dynamic>{
+    socket = IO.io("wss://integrationlalabi.azurewebsites.net:443", <String, dynamic>{
       "transports": ["websocket"],
       "autoConnect": false,
       "upgrade": false
@@ -63,9 +63,10 @@ class _IndividualPageState extends State<IndividualPage> {
      // onSocketConnected(socketIO);
     });
     socket.emit("/test","hello world");
-    socket.onConnect((data) => print("connected"));
 
-    /*socket.emit("/signin",/* widget.sourchat.uid*/ 1);
+    socket.emit("signin", /*widget.sourchat.uid*/1);
+    //socket.onConnect((data) => print("connected"));
+    //socket.emit("/signin",/* widget.sourchat.uid*/ 1);
     socket.onConnect((data) {
       print("Connected");
       socket.on("message", (msg) {
@@ -76,13 +77,18 @@ class _IndividualPageState extends State<IndividualPage> {
       });
     });
     print(socket.connected);
-     */
+
   }
 
   void sendMessage(String message, int sourceId, int targetId) {
     setMessage("source", message);
-    socket.emit("message",
+    /*socket.emit("message",
         {"messageId": 0, "senderId": sourceId, "receiverId": targetId, "content": message, "timestamp": DateTime.now()});
+
+     */
+    socket.emit("message",
+        {"message": message, "sourceId": sourceId, "targetId": targetId});
+   // socket.emit("/test",message);
   }
 
   void setMessage(String type, String message) {
@@ -353,8 +359,10 @@ class _IndividualPageState extends State<IndividualPage> {
                                             curve: Curves.easeOut);
                                         sendMessage(
                                             _controller.text,
-                                            widget.sourchat.uid,
-                                            widget.chatModel.uid);
+                                            1,
+                                            2);
+                                            //widget.sourchat.uid,
+                                            //widget.chatModel.uid);
 
                                         setState(() {
                                           sendButton = false;
