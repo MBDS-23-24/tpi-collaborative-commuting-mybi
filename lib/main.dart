@@ -22,6 +22,7 @@ void main() async {
   runApp(MyApp());
 }
 
+/*
 Future<void> fetchData() async {
   var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users');
   try {
@@ -38,6 +39,8 @@ Future<void> fetchData() async {
     print('Erreur de connexion: $e');
   }
 }
+
+ */
 
 
 class MyApp extends StatelessWidget {
@@ -59,11 +62,12 @@ class MyApp extends StatelessWidget {
               // var userModel = UserModel(uid: '1', email: "yassine@gmail.com", name: "yassine");
               //fetchData();
               //return DashboardScreen(user: userModel);
-              return ChatScreen();
+              // return ChatScreen();
+              return SignInScreen();
             }
             // User is logged in, convert User to UserModel and show DashboardScreen
          //  UserModel userModel = UserModel.fromFirebaseUser(user);
-            return ChatScreen();
+           // return DashboardScreen(user: user);
           }
           // Waiting for authentication state to be available
           return Scaffold(

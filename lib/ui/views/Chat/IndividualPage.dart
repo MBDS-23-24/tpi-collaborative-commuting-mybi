@@ -62,9 +62,9 @@ class _IndividualPageState extends State<IndividualPage> {
       print("Connection Successfully Established...");
      // onSocketConnected(socketIO);
     });
-    socket.emit("/test","hello world");
+   // socket.emit("/test","hello world");
 
-    socket.emit("signin", /*widget.sourchat.uid*/1);
+    socket.emit("signin", widget.sourchat.uid);
     //socket.onConnect((data) => print("connected"));
     //socket.emit("/signin",/* widget.sourchat.uid*/ 1);
     socket.onConnect((data) {
@@ -86,6 +86,7 @@ class _IndividualPageState extends State<IndividualPage> {
         {"messageId": 0, "senderId": sourceId, "receiverId": targetId, "content": message, "timestamp": DateTime.now()});
 
      */
+   print("message sourceId ="+sourceId.toString() + " targetId ="+targetId.toString());
     socket.emit("message",
         {"message": message, "sourceId": sourceId, "targetId": targetId});
    // socket.emit("/test",message);
@@ -113,7 +114,7 @@ class _IndividualPageState extends State<IndividualPage> {
     return Stack(
       children: [
         Image.asset(
-          "assets/whatsapp_Back.png",
+          "assets/backgroundChat.png",
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           fit: BoxFit.cover,
@@ -168,19 +169,28 @@ class _IndividualPageState extends State<IndividualPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
+                      /*Text(
+                        "last seen today at 12:05",
+                        style: TextStyle(
+                          fontSize: 13,
+                        ),
+                      )*/
+
+                      /*Text(
                         "last seen today at 12:05",
                         style: TextStyle(
                           fontSize: 13,
                         ),
                       )
+
+                       */
                     ],
                   ),
                 ),
               ),
               actions: [
-                IconButton(icon: Icon(Icons.videocam), onPressed: () {}),
-                IconButton(icon: Icon(Icons.call), onPressed: () {}),
+              //  IconButton(icon: Icon(Icons.videocam), onPressed: () {}),
+              //  IconButton(icon: Icon(Icons.call), onPressed: () {}),
                 PopupMenuButton<String>(
                   padding: EdgeInsets.all(0),
                   onSelected: (value) {
@@ -358,13 +368,10 @@ class _IndividualPageState extends State<IndividualPage> {
                                             duration:
                                             Duration(milliseconds: 300),
                                             curve: Curves.easeOut);
-                                        sendMessage(
+                                            sendMessage(
                                             _controller.text,
-                                            1,
-                                            2);
-                                            //widget.sourchat.uid,
-                                            //widget.chatModel.uid);
-
+                                            widget.sourchat.uid,
+                                            widget.chatModel.uid);
                                         setState(() {
                                           sendButton = false;
                                         });

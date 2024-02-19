@@ -58,9 +58,9 @@ class DataLoader {
 
   Future<void> createUser(UserModel user) async {
     var manager = DataManager.instance;
-   // var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users');
+    var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users');
 
-    var url = Uri.parse('http://localhost:3000/api/users');
+   // var url = Uri.parse('http://localhost:3000/api/users');
     // Convertir l'objet UserModel en JSON
     var userJson = user.toJson(); // Assurez-vous que vous avez une méthode toJson dans votre classe UserModel
 
@@ -92,8 +92,8 @@ class DataLoader {
 
   Future<void> login(LoginModel login) async {
     var manager = DataManager.instance;
-    //var url = Uri.parse('https://integrationlalabi.azurewebsites.net/login');
-    var url = Uri.parse('http://localhost:3000/login');
+    var url = Uri.parse('https://integrationlalabi.azurewebsites.net/login');
+   // var url = Uri.parse('http://localhost:3000/login');
     // Convertir l'objet UserModel en JSON
     var userJson = login.toJson(); // Assurez-vous que vous avez une méthode toJson dans votre classe UserModel
 

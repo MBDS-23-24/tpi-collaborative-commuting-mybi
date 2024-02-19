@@ -29,12 +29,12 @@ class DataManager {
 
   // Méthodes pour manipuler les données
   void setUser(UserModel userModel) {
-    this.userModel = UserModel(uid: 0, email: "test@gmail.com", firstName: "test", lastName: "test", password: "test");
+  //  this.userModel = UserModel(uid: 0, email: "test@gmail.com", firstName: "test", lastName: "test", password: "test");
     this.userModel = userModel;
   }
 
   UserModel getUser(){
-    this.userModel = UserModel(uid: 0, email: "test@gmail.com", firstName: "test", lastName: "test", password: "test");
+   // this.userModel = UserModel(uid: 0, email: "test@gmail.com", firstName: "test", lastName: "test", password: "test");
     return userModel;
   }
 
@@ -43,7 +43,7 @@ class DataManager {
   }
 
   String getToken(){
-    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJpYXQiOjE3MDgyNzI3NjMsImV4cCI6MTcwODI3NDU2M30.2edEdLxqDuucK6mZMTpdr1bCB_qhEYResIfec12WRuE";
+   // token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJpYXQiOjE3MDgyNzI3NjMsImV4cCI6MTcwODI3NDU2M30.2edEdLxqDuucK6mZMTpdr1bCB_qhEYResIfec12WRuE";
     return token;
   }
 
