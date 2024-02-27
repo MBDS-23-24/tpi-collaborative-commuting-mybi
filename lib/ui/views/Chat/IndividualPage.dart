@@ -4,6 +4,8 @@
 
 
 //import 'package:emoji_picker/emoji_picker.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -34,6 +36,17 @@ class _IndividualPageState extends State<IndividualPage> {
   TextEditingController _controller = TextEditingController();
   ScrollController _scrollController = ScrollController();
   late IO.Socket socket;
+
+  String getRandomImagePath() {
+    List<String> images = [
+      "assets/covoiturage.png",
+      "assets/covoiturage2.png",
+      "assets/covoiturage3.jpg"
+    ];
+    int randomIndex = Random().nextInt(images.length);
+    return images[randomIndex];
+  }
+
   @override
   void initState() {
     super.initState();
@@ -114,10 +127,10 @@ class _IndividualPageState extends State<IndividualPage> {
     return Stack(
       children: [
         Image.asset(
-          "assets/backgroundChat.png",
+          "assets/messagewal.jpg",
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          fit: BoxFit.cover,
+          fit: BoxFit.contain, // Modifiez ceci pour voir les différentes options
         ),
         Scaffold(
           backgroundColor: Colors.transparent,
@@ -136,19 +149,25 @@ class _IndividualPageState extends State<IndividualPage> {
                     Icon(
                       Icons.arrow_back,
                       size: 24,
-                    ),
+                    ), CircleAvatar(
+                      backgroundImage: AssetImage(getRandomImagePath()),
+                      radius: 20,
+                      backgroundColor: Colors.blueGrey,
+                    ),/*
                     CircleAvatar(
                       child: Image.network(
+
                         widget.chatModel.pathImage != null
                             ? "assets/facebook.png"
                             : "assets/facebook.png",
-                        color: Colors.white,
+                        color: Color(0xFF3FCC69),
                         height: 36,
                         width: 36,
                       ),
                       radius: 20,
                       backgroundColor: Colors.blueGrey,
                     ),
+                    */
                   ],
                 ),
               ),
@@ -188,7 +207,7 @@ class _IndividualPageState extends State<IndividualPage> {
                   ),
                 ),
               ),
-              actions: [
+            /*  actions: [
               //  IconButton(icon: Icon(Icons.videocam), onPressed: () {}),
               //  IconButton(icon: Icon(Icons.call), onPressed: () {}),
                 PopupMenuButton<String>(
@@ -226,6 +245,8 @@ class _IndividualPageState extends State<IndividualPage> {
                   },
                 ),
               ],
+
+             */
             ),
           ),
           body: Container(
@@ -303,7 +324,7 @@ class _IndividualPageState extends State<IndividualPage> {
                                         icon: Icon(
                                           show
                                               ? Icons.keyboard
-                                              : Icons.emoji_emotions_outlined,
+                                              : Icons.keyboard,
                                         ),
                                         onPressed: () {
                                           if (!show) {
@@ -318,7 +339,7 @@ class _IndividualPageState extends State<IndividualPage> {
                                       suffixIcon: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          IconButton(
+                                          /*    IconButton(
                                             icon: Icon(Icons.attach_file),
                                             onPressed: () {
                                               showModalBottomSheet(
@@ -338,7 +359,7 @@ class _IndividualPageState extends State<IndividualPage> {
                                               //         builder: (builder) =>
                                               //             CameraApp()));
                                             },
-                                          ),
+                                          ),*/
                                         ],
                                       ),
                                       contentPadding: EdgeInsets.all(5),
@@ -357,7 +378,7 @@ class _IndividualPageState extends State<IndividualPage> {
                                   backgroundColor: Color(0xFF128C7E),
                                   child: IconButton(
                                     icon: Icon(
-                                      sendButton ? Icons.send : Icons.mic,
+                                      sendButton ? Icons.send : Icons.cancel_schedule_send,
                                       color: Colors.white,
                                     ),
                                     onPressed: () {
@@ -382,7 +403,7 @@ class _IndividualPageState extends State<IndividualPage> {
                               ),
                             ],
                           ),
-                          show ? emojiSelect() : Container(),
+                         /* show ? emojiSelect() : Container(),*/
                         ],
                       ),
                     ),

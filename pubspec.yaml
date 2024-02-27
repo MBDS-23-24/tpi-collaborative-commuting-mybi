@@ -91,6 +91,10 @@ flutter:
   assets:
   - assets/
   - assets/map_style.json
+  - assets/covoiturage.png
+  - assets/covoiturage2.png
+  - assets/covoiturage3.jpg
+  - assets/messagewal.jpg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

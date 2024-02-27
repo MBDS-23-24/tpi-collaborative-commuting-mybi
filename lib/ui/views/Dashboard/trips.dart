@@ -127,8 +127,12 @@ class _TripsScreenState extends State<TripsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Trips'),
+        title: Text(
+          'Trips',
+          style: TextStyle(color: Colors.white), // Ajoutez cette ligne pour changer la couleur en blanc
+        ),
         backgroundColor: myPrimaryColor,
+
       ),
       body: Column(
         children: <Widget>[

@@ -48,6 +48,14 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Mes messages',
+          style: TextStyle(color: Color(0xFF3FCC69)),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           /*Navigator.push(

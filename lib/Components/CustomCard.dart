@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tpi_mybi/model/User.dart';
@@ -8,6 +10,17 @@ class CustomCard extends StatelessWidget {
   const CustomCard({  key,  required this.chatModel,  required this.sourchat}) : super(key: key);
   final UserModel chatModel;
   final UserModel sourchat;
+  // Fonction pour obtenir un chemin d'image aléatoire
+  String getRandomImagePath() {
+    List<String> images = [
+      "assets/covoiturage.png",
+      "assets/covoiturage2.png",
+      "assets/covoiturage3.jpg"
+    ];
+    int randomIndex = Random().nextInt(images.length);
+    return images[randomIndex];
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +37,7 @@ class CustomCard extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
-            leading: CircleAvatar(
+           /* leading: CircleAvatar(
               radius: 30,
               child: Image.asset(
                 chatModel.pathImage != null ? "assets/logo.jpg" : "assets/bg1.png",
@@ -33,6 +46,14 @@ class CustomCard extends StatelessWidget {
                 width: 36,
               ),
               backgroundColor: Colors.blueGrey,
+            )
+            ,
+
+            */
+
+            leading: CircleAvatar(
+            radius: 30,
+              backgroundImage:  AssetImage(getRandomImagePath()),
             ),
             title: Text(
               chatModel.firstName.toString(),
@@ -41,7 +62,8 @@ class CustomCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            subtitle: Row(
+
+          /*  subtitle: Row(
               children: [
                 Icon(Icons.done_all),
                 SizedBox(
@@ -53,8 +75,10 @@ class CustomCard extends StatelessWidget {
                     fontSize: 13,
                   ),
                 ),
+
+
               ],
-            ),
+            ),*/
             trailing: Text(chatModel.time),
           ),
           Padding(
