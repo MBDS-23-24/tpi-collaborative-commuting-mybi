@@ -15,6 +15,7 @@ import 'package:tpi_mybi/model/User.dart';
 
 import '../../../Components/OwnMessageCard.dart';
 import '../../../Components/ReplyCard.dart';
+import '../../../Components/Tools/Utils.dart';
 import '../../../Data/DataLoader.dart';
 import 'Meesage.dart';
 
@@ -297,12 +298,12 @@ class _IndividualPageState extends State<IndividualPage> {
                         if (messages[index].sender == widget.sourchat.userID){
                           return OwnMessageCard(
                             message: messages[index].message,
-                            time: messages[index].time.toString().substring(0, 12), key: "",
+                            time: Utils.convertirFormatDate(messages[index].time.toString()), key: "",
                           );
                         } else {
                           return ReplyCard(
                             message: messages[index].message,
-                            time: messages[index].time.toString().substring(0, 12),
+                            time: Utils.convertirFormatDate(messages[index].time.toString()),
                           );
                         }
                       },

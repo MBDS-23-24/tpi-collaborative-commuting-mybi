@@ -101,7 +101,7 @@ class _ChatScreenState extends State<ChatScreen> {
               sourchat: currentUser,
               key: UniqueKey(),
               content: _chatModels[index].content,
-              timestamp: _chatModels[index].timestamp,
+              timestamp: _chatModels[index].timestamp.substring(0, 16),
             );
           } else {
             return SizedBox.shrink(); // Retourne un widget vide si l'utilisateur n'existe pas

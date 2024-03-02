@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'Tools/Utils.dart';
+
 class OwnMessageCard extends StatelessWidget {
   const OwnMessageCard({required String key, required this.message, required this.time}) ;
   final String message;
@@ -35,24 +37,19 @@ class OwnMessageCard extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: 4,
+                bottom: 2,
                 right: 10,
                 child: Row(
                   children: [
                     Text(
                       time,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 9,
                         color: Colors.grey[600],
                       ),
                     ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Icon(
-                      Icons.done_all,
-                      size: 20,
-                    ),
+
+
                   ],
                 ),
               ),
