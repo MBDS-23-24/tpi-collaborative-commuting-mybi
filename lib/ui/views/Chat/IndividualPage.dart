@@ -9,11 +9,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:tpi_mybi/Data/DataManager.dart';
 
 import 'package:tpi_mybi/model/User.dart';
 
 import '../../../Components/OwnMessageCard.dart';
 import '../../../Components/ReplyCard.dart';
+import '../../../Data/DataLoader.dart';
 import 'Meesage.dart';
 
 class IndividualPage extends StatefulWidget {
@@ -50,7 +52,15 @@ class _IndividualPageState extends State<IndividualPage> {
   @override
   void initState() {
     super.initState();
+
+    DataManager.instance.addListener(_onResponse);
      // connect();
+    DataLoader.instance.getMessages(widget.sourchat.userID, widget.chatModel.userID);
+    /*
+    setState(() {
+      messages.add(messageModel);
+    });
+     */
 
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
@@ -60,6 +70,22 @@ class _IndividualPageState extends State<IndividualPage> {
       }
     });
      connect();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    DataManager.instance.removeListener(_onResponse);
+  }
+
+  void _onResponse(DataManagerUpdateType type) {
+    if (type == DataManagerUpdateType.getMessagesSuccess) {
+      // chatmodels = DataManager.instance.getUsers();
+      setState(() {
+        messages = DataManager.instance.getMessages();
+      });
+
+    }
   }
 
   void connect() {
@@ -77,14 +103,14 @@ class _IndividualPageState extends State<IndividualPage> {
     });
    // socket.emit("/test","hello world");
 
-    socket.emit("signin", widget.sourchat.uid);
+    socket.emit("signin", widget.sourchat.userID);
     //socket.onConnect((data) => print("connected"));
     //socket.emit("/signin",/* widget.sourchat.uid*/ 1);
     socket.onConnect((data) {
       print("Connected");
       socket.on("message", (msg) {
         print(msg);
-        setMessage("destination", msg["message"]);
+        setMessage("destination", msg["message"], widget.chatModel.userID, widget.sourchat.userID);
         _scrollController.animateTo(_scrollController.position.maxScrollExtent,
             duration: Duration(milliseconds: 300), curve: Curves.easeOut);
       });
@@ -93,8 +119,8 @@ class _IndividualPageState extends State<IndividualPage> {
 
   }
 
-  void sendMessage(String message, int sourceId, int targetId) {
-    setMessage("source", message);
+  void sendMessage(String message, int? sourceId, int? targetId) {
+    setMessage("source", message,  sourceId, targetId);
     /*socket.emit("message",
         {"messageId": 0, "senderId": sourceId, "receiverId": targetId, "content": message, "timestamp": DateTime.now()});
 
@@ -102,17 +128,18 @@ class _IndividualPageState extends State<IndividualPage> {
    print("message sourceId ="+sourceId.toString() + " targetId ="+targetId.toString());
     socket.emit("message",
         {"message": message, "sourceId": sourceId, "targetId": targetId});
+    DataLoader.instance.postMessage(message, sourceId, targetId);
    // socket.emit("/test",message);
   }
 
-  void setMessage(String type, String message) {
+  void setMessage(String type, String message, int? sourceId, int? targetId) {
     MessageModel messageModel = MessageModel(
           0,
-         widget.chatModel.uid,
-         widget.sourchat.uid,
+        sourceId,
+        targetId,
          message,
         DateTime.now(),
-        type);
+        );
     _controller.clear();
 
     setState(() {
@@ -267,7 +294,7 @@ class _IndividualPageState extends State<IndividualPage> {
                             height: 70,
                           );
                         }
-                        if (messages[index].type == "source") {
+                        if (messages[index].sender == widget.sourchat.userID){
                           return OwnMessageCard(
                             message: messages[index].message,
                             time: messages[index].time.toString().substring(0, 12), key: "",
@@ -391,8 +418,8 @@ class _IndividualPageState extends State<IndividualPage> {
                                             curve: Curves.easeOut);
                                             sendMessage(
                                             _controller.text,
-                                            widget.sourchat.uid,
-                                            widget.chatModel.uid);
+                                            widget.sourchat.userID,
+                                            widget.chatModel.userID);
                                         setState(() {
                                           sendButton = false;
                                         });

@@ -7,7 +7,9 @@ import 'package:tpi_mybi/navigation/CustomAppBar.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:tpi_mybi/ui/views/home.dart';
 
+import '../../../Data/SaveDataManager.dart';
 import '../Chat/chat.dart';
+import '../Login/login.dart';
 import 'trips.dart'; // Import your TripsScreen
 
 class DashboardScreen extends StatefulWidget {
@@ -34,15 +36,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   initState() {
     super.initState();
+    SaveDataManager().getToken();
     DataLoader dataLoader = DataLoader.instance;
     DataManager dataManager = DataManager.instance;
-    dataLoader.getUsers(dataManager.getToken());
+    dataLoader.getUsers(DataManager.instance.getToken());
+    dataLoader.getLatestMessages(DataManager.instance.getUser().userID);
     dataManager.addListener(_onResponse);
   }
 
   void _onResponse(DataManagerUpdateType type) {
     if (type == DataManagerUpdateType.getUsersSuccess) {
      // chatmodels = DataManager.instance.getUsers();
+    }
+    else {
+      MaterialPageRoute(
+        builder: (context) => SignInScreen(),
+      );
     }
   }
 

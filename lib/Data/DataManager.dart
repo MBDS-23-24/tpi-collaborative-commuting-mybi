@@ -1,7 +1,11 @@
 
 
 
+import 'package:tpi_mybi/Data/SaveDataManager.dart';
 import 'package:tpi_mybi/model/User.dart';
+import 'package:tpi_mybi/ui/views/Chat/Meesage.dart';
+
+import '../ui/views/Chat/LatestMessageModel.dart';
 
 enum DataManagerUpdateType {
   userCreateSuccess,
@@ -10,6 +14,10 @@ enum DataManagerUpdateType {
   userLoginError,
   getUsersSuccess,
   getUsersError,
+  getMessagesSuccess,
+  getLatestMessagesSuccess,
+  getLatestMessagesError
+
   // Ajoutez d'autres types de mises à jour ici
 }
 
@@ -24,8 +32,10 @@ class DataManager {
   }
 
   late UserModel userModel;
-  late String token;
+   String token = "";
    List<UserModel> users = [];
+   List<MessageModel> messages = [];
+   List<LatestMessageModel> latestMessages = [];
 
   // Méthodes pour manipuler les données
   void setUser(UserModel userModel) {
@@ -40,6 +50,9 @@ class DataManager {
 
   void setToken(String token) {
     this.token = token;
+    this.userModel.setToken(token);
+    SaveDataManager().saveToken(token);
+    SaveDataManager().saveUser(userModel);
   }
 
   String getToken(){
@@ -101,6 +114,36 @@ class DataManager {
       }
       else {
         listener(DataManagerUpdateType.getUsersError);
+      }
+    }
+  }
+
+  setMessages(List<MessageModel> messages) {
+    this.messages = messages;
+    for (var listener in _listeners) {
+      listener(DataManagerUpdateType.getMessagesSuccess);
+    }
+  }
+
+  List<MessageModel> getMessages() {
+    return messages;
+  }
+
+  List<LatestMessageModel> getLatestMessages() {
+    return latestMessages;
+  }
+
+  setLatestMessages(List<LatestMessageModel> latestMessages) {
+    this.latestMessages = latestMessages;
+  }
+
+  responseGetLatestMessages(bool hasError){
+    for (var listener in _listeners) {
+      if (!hasError){
+        listener(DataManagerUpdateType.getLatestMessagesSuccess);
+      }
+      else {
+        listener(DataManagerUpdateType.getLatestMessagesError);
       }
     }
   }

@@ -7,9 +7,11 @@ import 'package:tpi_mybi/model/User.dart';
 import '../ui/views/Chat/IndividualPage.dart';
 
 class CustomCard extends StatelessWidget {
-  const CustomCard({  key,  required this.chatModel,  required this.sourchat}) : super(key: key);
+  const CustomCard({  key,  required this.chatModel,  required this.sourchat, required this.content, required this.timestamp}) : super(key: key);
   final UserModel chatModel;
   final UserModel sourchat;
+  final String content;
+  final String timestamp;
   // Fonction pour obtenir un chemin d'image aléatoire
   String getRandomImagePath() {
     List<String> images = [
@@ -63,23 +65,21 @@ class CustomCard extends StatelessWidget {
               ),
             ),
 
-          /*  subtitle: Row(
+           subtitle: Row(
               children: [
                 Icon(Icons.done_all),
                 SizedBox(
                   width: 3,
                 ),
                 Text(
-                  chatModel.currentMessage,
+                  content,
                   style: TextStyle(
                     fontSize: 13,
                   ),
                 ),
-
-
               ],
-            ),*/
-            trailing: Text(chatModel.time),
+            ),
+            trailing: Text(timestamp),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 20, left: 80),
