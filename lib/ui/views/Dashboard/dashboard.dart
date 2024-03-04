@@ -39,7 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     SaveDataManager().getToken();
     DataLoader dataLoader = DataLoader.instance;
     DataManager dataManager = DataManager.instance;
-    dataLoader.getUsers(DataManager.instance.getToken());
+  //  dataLoader.getUsers(DataManager.instance.getToken());
     dataLoader.getLatestMessages(DataManager.instance.getUser().userID);
     dataManager.addListener(_onResponse);
   }
@@ -48,9 +48,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (type == DataManagerUpdateType.getUsersSuccess) {
      // chatmodels = DataManager.instance.getUsers();
     }
-    else {
+    else if (type == DataManagerUpdateType.getLatestMessagesError || type == DataManagerUpdateType.getUsersError) {
       MaterialPageRoute(
-        builder: (context) => SignInScreen(),
+        builder: (context) => const SignInScreen(),
       );
     }
   }
