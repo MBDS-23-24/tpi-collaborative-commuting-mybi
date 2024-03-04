@@ -129,7 +129,7 @@ class _IndividualPageState extends State<IndividualPage> {
    print("message sourceId ="+sourceId.toString() + " targetId ="+targetId.toString());
     socket.emit("message",
         {"message": message, "sourceId": sourceId, "targetId": targetId});
-    DataLoader.instance.postMessage(message, sourceId, targetId);
+    DataLoader.instance.postMessage(message,targetId,sourceId);
    // socket.emit("/test",message);
   }
 
@@ -154,12 +154,12 @@ class _IndividualPageState extends State<IndividualPage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Image.asset(
+      /*  Image.asset(
           "assets/messagewal.jpg",
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           fit: BoxFit.contain, // Modifiez ceci pour voir les différentes options
-        ),
+        ),*/
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: PreferredSize(

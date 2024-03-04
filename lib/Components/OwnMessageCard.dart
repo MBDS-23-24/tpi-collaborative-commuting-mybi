@@ -18,7 +18,7 @@ class OwnMessageCard extends StatelessWidget {
         child: Card(
           elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          color: Color(0xffdcf8c6),
+          color: Color(0xFF004D40), // Bleu foncé (Teal foncé)
           margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           child: Stack(
             children: [
@@ -27,12 +27,13 @@ class OwnMessageCard extends StatelessWidget {
                   left: 10,
                   right: 30,
                   top: 5,
-                  bottom: 20,
+                  bottom: 30,
                 ),
                 child: Text(
                   message,
                   style: TextStyle(
                     fontSize: 16,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -44,13 +45,20 @@ class OwnMessageCard extends StatelessWidget {
                     Text(
                       time,
                       style: TextStyle(
-                        fontSize: 9,
-                        color: Colors.grey[600],
+
+                        fontSize: 13,
+                        color: Colors.white,
                       ),
                     ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                   /* Icon(
+                      Icons.done_all,
+                      size: 20,
+                    ),
 
-
-                  ],
+                    */                 ],
                 ),
               ),
             ],

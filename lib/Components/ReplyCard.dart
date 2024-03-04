@@ -16,7 +16,7 @@ class ReplyCard extends StatelessWidget {
         child: Card(
           elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          // color: Color(0xffdcf8c6),
+          color: Color(0xFFB2DFDB), // Vert clair (Teal clair)
           margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           child: Stack(
             children: [
@@ -25,7 +25,7 @@ class ReplyCard extends StatelessWidget {
                   left: 8,
                   right: 50,
                   top: 5,
-                  bottom: 10,
+                  bottom: 40,
                 ),
                 child: Text(
                   message,
