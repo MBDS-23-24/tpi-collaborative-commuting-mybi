@@ -14,7 +14,7 @@ class UserModel {
   final String? pathImage;
   final String? password;
   final String? role;
-  final String? biography;
+  late final String? biography;
 
   UserModel({required this.uid, /*required this.uid,*/ this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
 
@@ -35,7 +35,8 @@ class UserModel {
     'lastName' : lastName,
     'photoURL' : pathImage,
     'password' : password,
-    'role' : role
+    'role' : role,
+    'biography' : biography
     // Ajoutez d'autres champs ici
   };
 
