@@ -3,16 +3,20 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tpi_mybi/Data/DataLoader.dart';
 import 'package:tpi_mybi/model/User.dart';
 
 import '../ui/views/Chat/IndividualPage.dart';
 
 class CustomCard extends StatelessWidget {
-  const CustomCard({  key,  required this.chatModel,  required this.sourchat, required this.content, required this.timestamp}) : super(key: key);
+   CustomCard({  key,  required this.chatModel,  required this.sourchat, required this.content, required this.timestamp}) : super(key: key);
   final UserModel chatModel;
   final UserModel sourchat;
   final String content;
   final String timestamp;
+  late double rating;
+
+
   // Fonction pour obtenir un chemin d'image aléatoire
   String getRandomImagePath() {
     List<String> images = [
@@ -32,14 +36,19 @@ class CustomCard extends StatelessWidget {
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            // Retourne un AlertDialog contenant le widget de notation
+            // Variable pour stocker le commentaire saisi par l'utilisateur
+            String userComment = '';
+
+            // Variable pour stocker la note
+            double rating = 3.0;
+
             return AlertDialog(
               title: const Text('Noter l\'utilisateur'),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
-                    Text('Donnez une note à cet utilisateur.'),
-                    // Ici, vous intégrez votre widget de notation
+                    Text('Donnez une note et un commentaire à cet utilisateur.'),
+                    // Widget de notation
                     RatingBar.builder(
                       initialRating: 3,
                       minRating: 1,
@@ -51,9 +60,21 @@ class CustomCard extends StatelessWidget {
                         Icons.star,
                         color: Colors.amber,
                       ),
-                      onRatingUpdate: (rating) {
-                        print(rating);
+                      onRatingUpdate: (newRating) {
+                        print(newRating);
+                        rating = newRating; // Met à jour la note
                       },
+                    ),
+                    SizedBox(height: 20), // Ajoute un espace entre les éléments
+                    // Champ de saisie pour le commentaire
+                    TextField(
+                      onChanged: (value) {
+                        userComment = value; // Met à jour le commentaire à chaque saisie
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Entrez votre commentaire ici",
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ],
                 ),
@@ -68,14 +89,17 @@ class CustomCard extends StatelessWidget {
                 TextButton(
                   child: const Text('Soumettre'),
                   onPressed: () {
-                    // Ici, vous pouvez gérer la soumission de la note, par exemple, l'enregistrer pour l'utilisateur
+                    // Ici, vous pouvez gérer la soumission de la note et du commentaire
+                    // Par exemple, en les envoyant à un serveur ou en les stockant localement
+                    DataLoader.instance.rateUser(chatModel.userID, rating, userComment);
                     Navigator.of(context).pop(); // Ferme la popup après la soumission
                   },
                 ),
               ],
             );
           },
-        );
+
+                );
 
 
 

@@ -10,6 +10,7 @@ import 'package:tpi_mybi/model/login.dart';
 import 'package:tpi_mybi/ui/views/Chat/LatestMessageModel.dart';
 
 import '../model/AccessToken.dart';
+import '../model/Rating.dart';
 import '../ui/views/Chat/Meesage.dart'; // Pour utiliser json.encode
 
 class DataLoader {
@@ -223,6 +224,35 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
       // En cas d'erreur lors de la connexion à l'API, vous pouvez afficher un message d'erreur
       print('Erreur de connexion: $e');
       manager.responseGetLatestMessages(true);
+    }
+  }
+
+  Future<void> rateUser(int? idUser, double rating, String? content) async {
+    var manager = DataManager.instance;
+   // var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/avis/');
+    var url = Uri.parse('http://localhost:3000/api/avis/');
+
+    var rateSended = RatingModel(0,DataManager.instance.getUser().userID, idUser, content , rating.toInt());
+    var rateJson = rateSended.toJson();
+    
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${DataManager.instance.token}' // Remplacez VOTRE_TOKEN_ICI par votre token réel
+      };
+    
+      var response = await http.post(url, headers: headers, body: jsonEncode(rateJson));
+      if (response.statusCode == 201) {
+        // Si la requête a réussi (statut 200), vous pouvez traiter les données de réponse ici
+
+        print('Réponse de l\'API: ${response.body}');
+      } else {
+        // En cas d'échec de la requête, vous pouvez afficher un message d'erreur ou effectuer d'autres actions
+        print('Échec de la requête: ${response.statusCode}');
+      }
+    } catch (e) {
+      // En cas d'erreur lors de la connexion à l'API, vous pouvez afficher un message d'erreur
+      print('Erreur de connexion: $e');
     }
   }
 
