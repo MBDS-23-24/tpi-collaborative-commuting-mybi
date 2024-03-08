@@ -80,7 +80,6 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body:
      // Text("Chat"),
-
       ListView.builder(
         itemCount: _chatModels.length,
         itemBuilder: (context, index) {
