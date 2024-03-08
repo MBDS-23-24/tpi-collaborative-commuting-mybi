@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tpi_mybi/model/User.dart';
 
@@ -28,13 +29,67 @@ class CustomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // Retourne un AlertDialog contenant le widget de notation
+            return AlertDialog(
+              title: const Text('Noter l\'utilisateur'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Text('Donnez une note à cet utilisateur.'),
+                    // Ici, vous intégrez votre widget de notation
+                    RatingBar.builder(
+                      initialRating: 3,
+                      minRating: 1,
+                      direction: Axis.horizontal,
+                      allowHalfRating: true,
+                      itemCount: 5,
+                      itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                      itemBuilder: (context, _) => Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
+                      onRatingUpdate: (rating) {
+                        print(rating);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Annuler'),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Ferme la popup
+                  },
+                ),
+                TextButton(
+                  child: const Text('Soumettre'),
+                  onPressed: () {
+                    // Ici, vous pouvez gérer la soumission de la note, par exemple, l'enregistrer pour l'utilisateur
+                    Navigator.of(context).pop(); // Ferme la popup après la soumission
+                  },
+                ),
+              ],
+            );
+          },
+        );
+
+
+
+        /*
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (contex) => IndividualPage(
                   chatModel: chatModel,
                   sourchat: sourchat,
+
                 )));
+
+         */
       },
       child: Column(
         children: [
