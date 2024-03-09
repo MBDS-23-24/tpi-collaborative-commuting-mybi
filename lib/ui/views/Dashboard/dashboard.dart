@@ -3,8 +3,13 @@ import 'package:tpi_mybi/CostumColor.dart';
 import 'package:tpi_mybi/model/User.dart';
 import 'package:tpi_mybi/navigation/CustomAppBar.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:tpi_mybi/ui/views/Dashboard/full_map.dart';
+
 import 'package:tpi_mybi/ui/views/home.dart';
 
+import 'DriverRequestsPage.dart';
+import 'driver_map_screen.dart';
+import 'mapbox.dart';
 import 'trips.dart'; // Import your TripsScreen
 
 class DashboardScreen extends StatefulWidget {
@@ -21,10 +26,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // Create a list of pages to make it easier to manage
   final List<Widget> _pages = [
-    TripsScreen(), // Replace with your actual home screen
-    TripsScreen(), // Your trips screen
-    TripsScreen(), // Replace with your messages screen
-    TripsScreen(), // Replace with your more options screen
+    TripsScreen(),
+    DriverRequestsPage(),
+    // Replace with your actual home screen
+    FullMapPage(), // Your trips screen
+  //  FakeDataSender(), // Replace with your messages screen
+  //  FakeDataReceiver(), // Replace with your more options screen
   ];
 
   @override
