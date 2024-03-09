@@ -5,6 +5,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import '../../../Data/DataManager.dart';
 import '../../../model/User.dart';
+import 'dart:math';
 
 class ListPassengersTrips extends StatefulWidget {
   final double departLat;
@@ -37,7 +38,7 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
 
   // Initialize socket and fetch passengers
   void initializeSocketAndFetchPassengers() {
-    socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
+    socket = IO.io('http://localhost:3001', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
     });
@@ -104,13 +105,33 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
     );
   }
 
-  // Function to calculate the distance between two points
+
+
+
   double calculateDistance(double originLat, double originLong, double destinationLat, double destinationLong) {
-    // Use your distance calculation method here
-    // For example, you can use the Haversine formula
-    // Replace the return value with your actual distance calculation
-    return 0.0;
+    const double earthRadius = 6371.0; // Radius of the Earth in kilometers
+
+    // Convert latitude and longitude from degrees to radians
+    double lat1 = originLat * pi / 180;
+    double lon1 = originLong * pi / 180;
+    double lat2 = destinationLat * pi / 180;
+    double lon2 = destinationLong * pi / 180;
+
+    // Calculate the differences between coordinates
+    double dLat = lat2 - lat1;
+    double dLon = lon2 - lon1;
+
+    // Haversine formula
+    double a = pow(sin(dLat / 2), 2) +
+        cos(lat1) * cos(lat2) *
+            pow(sin(dLon / 2), 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    double distance = earthRadius * c;
+
+    return distance; // Distance in kilometers
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +142,8 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
         print('user.role.toString(): ${user.role.toString()} ');
         print('deleteDriver ');
         socket.emit('deleteDriver', user.uid);
+        socket.emit('deleteAllrequested', user.uid);
+
         // Disconnect from the socket when the user presses the back button
         socket.disconnect();
         resetPassengersList();
@@ -142,24 +165,18 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
                   itemCount: passengers.length,
                   itemBuilder: (context, index) {
                     final passenger = passengers[index];
-                    final userId = passenger['userId'] ?? 'Unknown';
-                    final originLat = passenger['originLat'] ?? 0.0;
-                    final originLong = passenger['originLong'] ?? 0.0;
-                    final destinationLat = passenger['destinationLat'] ?? 0.0;
-                    final destinationLong = passenger['destinationLong'] ?? 0.0;
+                    final userId = passenger['passengerId'] ?? 'Unknown';
                     final timeString = passenger['time'] as String;
                     final requestTime = DateTime.parse(timeString);
                     final currentTime = DateTime.now();
                     final timeDifference = currentTime.difference(requestTime);
-                    final status = passenger['status'] ?? '';
-                    final type = passenger['type'] ?? '';
 
                     // Calculate the distance between passenger and driver's origin
                     final distance = calculateDistance(
                       widget.departLat,
                       widget.departLong,
-                      originLat,
-                      originLong,
+                      passenger['originLat'] ?? 0.0,
+                      passenger['originLong'] ?? 0.0,
                     );
 
                     return ListTile(
@@ -167,21 +184,51 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Origin: ($originLat, $originLong)'),
-                          Text('Destination: ($destinationLat, $destinationLong)'),
                           Text('Time: $timeDifference'),
-                          Text('Status: $status'),
-                          Text('Type: $type'),
                           Text('Distance to Driver: $distance'), // Display distance here
                         ],
                       ),
-                      trailing: Icon(Icons.directions_car),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.check),
+                            onPressed: () {
+                              UserModel user = DataManager.instance.getUser();
+                              final passengerId = passengers[index]['passengerId'];
+                              final driverId = user.uid;
+
+                              // Emit event to update the ride request status as Rejected
+                              socket.emit('acceptRequest', {
+                                'passengerId': passengerId,
+                                'driverId': driverId,
+                              });
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.close),
+                            onPressed: () {
+                              UserModel user = DataManager.instance.getUser();
+                              final passengerId = passengers[index]['passengerId'];
+                              final driverId = user.uid;
+
+                              // Emit event to update the ride request status as Rejected
+                              socket.emit('rejectRequest', {
+                                'passengerId': passengerId,
+                                'driverId': driverId,
+                              });
+
+                            },
+                          ),
+                        ],
+                      ),
                       onTap: () {
                         // Handle onTap if needed
                       },
                     );
                   },
                 ),
+
               ),
             ],
           ),
