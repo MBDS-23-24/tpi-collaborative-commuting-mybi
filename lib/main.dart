@@ -1,63 +1,49 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:lalabi_project/Components/Buttons/CustomButton.dart';
-import 'package:lalabi_project/Components/TextFields/AddressSearch.dart';
 
-import 'Components/Buttons/ButtonImagePicker.dart';
-import 'Components/TextFields/CustomTextField.dart';
-import 'Views/AuthGate.dart';
-import 'firebase_options.dart';
+
+import 'package:tpi_mybi/ui/views/home.dart';
+
+import 'package:http/http.dart' as http;
+
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  WidgetsFlutterBinding.ensureInitialized(); // Add this line
 
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  void signUserIn() {
-    print("Test Button");
+Future<void> fetchData() async {
+  var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users');
+  try {
+    var response = await http.get(url);
+    if (response.statusCode == 200) {
+      // Si la requête a réussi (statut 200), vous pouvez traiter les données de réponse ici
+      print('Réponse de l\'API: ${response.body}');
+    } else {
+      // En cas d'échec de la requête, vous pouvez afficher un message d'erreur ou effectuer d'autres actions
+      print('Échec de la requête: ${response.statusCode}');
+    }
+  } catch (e) {
+    // En cas d'erreur lors de la connexion à l'API, vous pouvez afficher un message d'erreur
+    print('Erreur de connexion: $e');
   }
+}
 
+
+class MyApp extends StatelessWidget {
+  static const String ACCESS_TOKEN = String.fromEnvironment("ACCESS_TOKEN");
+
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Polyline example',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+
+        primarySwatch: Colors.orange,
       ),
-      home: const AuthGate(),
+      home: HomeView(),
     );
-    /*
-    return MaterialApp(
-      title: "Lalabi",
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Lalabi'),
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ButtonImagePicker(
-                onImageSelected: (imagePath) {
-                  // Utilisez imagePath ici pour traiter ou afficher l'image sélectionnée.
-                  print(imagePath);
-                },)
-          ),
-        ),
-      ),
-    );
-
-
-
-    throw UnimplementedError();
-
-     */
   }
-
-
 }
+

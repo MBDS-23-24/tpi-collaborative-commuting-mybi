@@ -3,8 +3,13 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+<<<<<<< HEAD
   desktop_webview_auth
   file_selector_linux
+=======
+  file_selector_linux
+  flutter_webrtc
+>>>>>>> 86b60db5531ec4cae59d83222f3dc7f580cdb1d1
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

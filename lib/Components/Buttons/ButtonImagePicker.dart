@@ -16,7 +16,7 @@ class ButtonImagePicker extends StatelessWidget {
 
   Future<void> _getImageFromGallery(BuildContext context) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       String imagePath = pickedFile.path;
