@@ -3,17 +3,18 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyAY0j2-rguGn1c8qV8Uu42XsqLG6KbopcE</string>
+
+	<string>AIzaSyD7FLcp2gx6U1NIq2fd5W-MxUeYIwvVqsk</string>
 	<key>GCM_SENDER_ID</key>
-	<string>43223098487</string>
+	<string>613930439145</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.lalabiProject</string>
+	<string>com.example.tpiMybi</string>
 	<key>PROJECT_ID</key>
-	<string>flutterfire-ui-codelab-f8b88</string>
+	<string>tpi-mybi</string>
 	<key>STORAGE_BUCKET</key>
-	<string>flutterfire-ui-codelab-f8b88.appspot.com</string>
+	<string>tpi-mybi.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +26,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:43223098487:ios:e24e43910699d44e38d272</string>
+	<string>1:613930439145:ios:38c88f41f3685c28e93b78</string>
 </dict>
 </plist>
