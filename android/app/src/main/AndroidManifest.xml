@@ -12,7 +12,6 @@
             android:value="AIzaSyDrHIjcZdx-LaIWtyzKn3pq29ELcMuU7yk"/>
 
         <activity
-
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
@@ -45,6 +44,4 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
-
-
 </manifest>
