@@ -3,9 +3,10 @@ import 'package:tpi_mybi/CostumColor.dart';
 import 'package:tpi_mybi/main.dart';
 import 'package:tpi_mybi/model/User.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'DriverRequestsPage.dart';
+import 'package:tpi_mybi/ui/views/Dashboard/DriverAccepted.dart';
+import 'PassangerAccepted.dart';
+import 'driver_map_screen.dart';
 import 'trips.dart';
-import 'web_rtc.dart';
 
 class DashboardScreen extends StatefulWidget {
   final UserModel user;
@@ -23,7 +24,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Create a list of pages to make it easier to manage
   final List<Widget> _pages = [
     TripsScreen(),
-    DriverRequestsPage(),
+   // testing(),
+  //  PassangerAccepted(DriverID:20),
+   // DriverAccepted(),
     // Replace with your actual home screen
    // Your trips screen
     //webrtc(), // Replace with your messages screen

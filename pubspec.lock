@@ -161,6 +161,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.5"
+  eventify:
+    dependency: transitive
+    description:
+      name: eventify
+      sha256: b829429f08586cc2001c628e7499e3e3c2493a1d895fd73b00ecb23351aa5a66
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -289,14 +297,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.3+23"
-  fixnum:
-    dependency: transitive
-    description:
-      name: fixnum
-      sha256: "25517a4deb0c03aa0f32fd12db525856438902d9c16536311e76cdc57b31d7d1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -440,6 +440,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.48+hotfix.1"
+  flutter_webrtc_wrapper:
+    dependency: "direct main"
+    description:
+      name: flutter_webrtc_wrapper
+      sha256: "00e5f71bf8bf901af664e66a691d7c9ac996bd20d3be6b3dff01ecc2bba75444"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   geolocator:
     dependency: "direct dev"
     description:
@@ -452,10 +460,10 @@ packages:
     dependency: transitive
     description:
       name: geolocator_android
-      sha256: "136f1c97e1903366393bda514c5d9e98843418baea52899aa45edae9af8a5cd6"
+      sha256: "93906636752ea4d4e778afa981fdfe7409f545b3147046300df194330044d349"
       url: "https://pub.dev"
     source: hosted
-    version: "4.5.2"
+    version: "4.3.1"
   geolocator_apple:
     dependency: transitive
     description:
@@ -592,6 +600,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.20-nullsafety.5"
+  google_maps_widget:
+    dependency: "direct main"
+    description:
+      name: google_maps_widget
+      sha256: "20c62ddfcaced246eb6895c7261f21b0ce47e32f5e3c48ff67df946c56b86f14"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.5+1"
   html:
     dependency: transitive
     description:
@@ -944,6 +960,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
+  peerdart:
+    dependency: "direct main"
+    description:
+      name: peerdart
+      sha256: e1bc2125aca9728371ba2952186f209d56c2ace41b751c256fee79a66d240f1a
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   permission_handler:
     dependency: "direct dev"
     description:
@@ -1168,6 +1192,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  simple_peer:
+    dependency: "direct main"
+    description:
+      name: simple_peer
+      sha256: "8ab61c9657bb8e3e1704f765dfdde6737d1cd6ca04af102286b206def6a47725"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.14"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -1197,14 +1229,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.0"
-  sprintf:
-    dependency: transitive
+  sphere_maps_flutter:
+    dependency: "direct main"
     description:
-      name: sprintf
-      sha256: "1fc9ffe69d4df602376b52949af107d8f5703b77cda567c4d7d86a0693120f23"
+      name: sphere_maps_flutter
+      sha256: d1e41630f661339050692577bce502ac1d6e16dac2b55d047f3cec52f16ba400
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.0"
+    version: "1.2.0"
   stack_trace:
     dependency: transitive
     description:
@@ -1321,10 +1353,10 @@ packages:
     dependency: transitive
     description:
       name: uuid
-      sha256: cd210a09f7c18cbe5a02511718e0334de6559871052c90a90c0cca46a4aa81c8
+      sha256: "648e103079f7c64a36dc7d39369cabb358d377078a051d6ae2ad3aa539519313"
       url: "https://pub.dev"
     source: hosted
-    version: "4.3.3"
+    version: "3.0.7"
   vector_graphics:
     dependency: transitive
     description:
@@ -1381,6 +1413,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.2"
+  webrtc_mesh:
+    dependency: "direct main"
+    description:
+      name: webrtc_mesh
+      sha256: b7cd15c16c8386599597c2988949474881c3f1c4e3d9bbab1c970c2092fcc841
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
+  webview_flutter:
+    dependency: transitive
+    description:
+      name: webview_flutter
+      sha256: "392c1d83b70fe2495de3ea2c84531268d5b8de2de3f01086a53334d8b6030a88"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.4"
+  webview_flutter_android:
+    dependency: transitive
+    description:
+      name: webview_flutter_android
+      sha256: "8b3b2450e98876c70bfcead876d9390573b34b9418c19e28168b74f6cb252dbd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.10.4"
+  webview_flutter_platform_interface:
+    dependency: transitive
+    description:
+      name: webview_flutter_platform_interface
+      sha256: "812165e4e34ca677bdfbfa58c01e33b27fd03ab5fa75b70832d4b7d4ca1fa8cf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.5"
+  webview_flutter_wkwebview:
+    dependency: transitive
+    description:
+      name: webview_flutter_wkwebview
+      sha256: a5364369c758892aa487cbf59ea41d9edd10f9d9baf06a94e80f1bd1b4c7bbc0
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.9.5"
   win32:
     dependency: transitive
     description:

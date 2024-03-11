@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:tpi_mybi/ui/views/Dashboard/PassangerAccepted.dart';
 
 import '../../../Data/DataManager.dart';
 import '../../../model/User.dart';
@@ -39,13 +40,16 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
 
   // Initialize socket and fetch drivers
   void initializeSocketAndFetchDrivers() {
-    socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
-      'transports': ['websocket'],
+ // socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
+    //
+    socket = IO.io('http://localhost:3001', <String, dynamic>{
+
+    'transports': ['websocket'],
       'autoConnect': false,
     });
     socket.on('rideAccepted', (data) {
       final status = data['status'];
-
+      final driverId = data['driverId'];
       // Show modal or any other UI response based on the status
       showDialog(
         context: context,
@@ -64,9 +68,15 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
               Container(
                 width: double.infinity, // Take the full width
                 child: TextButton(
-                  onPressed: () {
-                    // Close the dialog
-                    Navigator.pop(context);
+                  onPressed: () async {
+                    socket.disconnect();
+                    socket.dispose();
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PassangerAccepted(DriverID: driverId,
+                       
+                      )),
+                    );
                   },
                   child: Text('Track Trips', style: TextStyle(color: Colors.blue)), // Button text
                 ),
