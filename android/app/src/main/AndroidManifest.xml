@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
 
         android:label="tpi_mybi"
@@ -22,10 +24,16 @@
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
+            <meta-data android:name="com.mapbox.token" android:value="pk.eyJ1IjoibWFyd2FuZWR6MiIsImEiOiJja3dueDR5eDUycGk2Mm9tamhnbWljbm03In0.85muaclO5OEucLQ3DF2s2g" />
+
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
+            <meta-data
+                android:name="com.mapbox.token"
+                android:value="pk.eyJ1IjoibWFyd2FuZWR6MiIsImEiOiJja3dueDR5eDUycGk2Mm9tamhnbWljbm03In0.85muaclO5OEucLQ3DF2s2g" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:tpi_mybi/CostumColor.dart';
+import 'package:tpi_mybi/main.dart';
 import 'package:tpi_mybi/model/User.dart';
-import 'package:tpi_mybi/navigation/CustomAppBar.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:tpi_mybi/ui/views/home.dart';
-
-import 'trips.dart'; // Import your TripsScreen
+import 'DriverRequestsPage.dart';
+import 'trips.dart';
+import 'web_rtc.dart';
 
 class DashboardScreen extends StatefulWidget {
   final UserModel user;
+
 
   const DashboardScreen({Key? key, required this.user}) : super(key: key);
 
@@ -21,10 +22,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // Create a list of pages to make it easier to manage
   final List<Widget> _pages = [
-    TripsScreen(), // Replace with your actual home screen
-    TripsScreen(), // Your trips screen
-    TripsScreen(), // Replace with your messages screen
-    TripsScreen(), // Replace with your more options screen
+    TripsScreen(),
+    DriverRequestsPage(),
+    // Replace with your actual home screen
+   // Your trips screen
+    //webrtc(), // Replace with your messages screen
+  //  FakeDataReceiver(), // Replace with your more options screen
   ];
 
   @override

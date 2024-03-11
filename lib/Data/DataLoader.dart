@@ -139,6 +139,7 @@ class DataLoader {
   }
 }
 
+
 Future<void> updateUser(UserModel user) async {
   var manager = DataManager.instance;
   var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users/${user.uid}');
