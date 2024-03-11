@@ -8,28 +8,13 @@ class ProfilePage extends StatelessWidget {
 
   ProfilePage({required this.user});
 
-  Future<void> _deleteAccount(BuildContext context) async {
-    try {
-      await DataLoader.instance.deleteUser(user.uid);
-      // Ajouter des actions après la suppression réussie (par exemple, déconnexion, navigation, etc.)
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Compte supprimé avec succès')),
-      );
-    } catch (e) {
-      print('Erreur lors de la suppression du compte : $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors de la suppression du compte')),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text('Profil'),
       ),
+<<<<<<< HEAD
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -91,8 +76,114 @@ class ProfilePage extends StatelessWidget {
               style: TextStyle(color: Colors.white),),
             ),
           ],
+=======
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.height * 0.8,
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.lime[50],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Photo du profil
+                    Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(user.pathImage ?? ''),
+                          radius: 60,
+                        ),
+                        // Bouton vers la page edit
+                        CircleAvatar(
+                          backgroundColor: Colors.green,
+                          child: IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        EditProfilePage(user: user)),
+                              );
+                            },
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 30),
+                    // Informations du profil
+                    _ProfileInfo(user: user),
+                  ],
+                ),
+              ),
+            ],
+          ),
+>>>>>>> 3d30ea0cdc22de937b984b5890707b318155ef6d
         ),
       ),
+    );
+  }
+}
+
+class _ProfileInfo extends StatelessWidget {
+  final UserModel user;
+
+  _ProfileInfo({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Nom et prénom
+        Text(
+          "${user.firstName} ${user.lastName}",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          ),
+        ),
+        const SizedBox(height: 15),
+        // Rôle
+        Text(
+          'Rôle: ${user.role ?? "N/A"}',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 50),
+        // Biographie
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            "${user.biography}",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
