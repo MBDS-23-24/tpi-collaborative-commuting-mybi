@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import '../../../Data/DataManager.dart';
@@ -29,6 +30,12 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
   List<dynamic> passengers = [];
 
   late Timer timer;
+
+  late gmaps.GoogleMapController mapController;
+  Set<gmaps.Marker> passengerMarkers = {};
+
+  late double originLat;
+  late double originLong;
 
   @override
   void initState() {
@@ -158,8 +165,29 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Expanded(
+                child: gmaps.GoogleMap(
+                  onMapCreated: (controller) {
+                    mapController = controller;
+                  },
+                  markers: passengerMarkers,
+                  initialCameraPosition: gmaps.CameraPosition(
+                    target: gmaps.LatLng(widget.departLat, widget.departLong),
+                    zoom: 14.0,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Liste des passagers',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
               SizedBox(height: 20),
-              Text('Passengers:'),
               Expanded(
                 child: ListView.builder(
                   itemCount: passengers.length,
@@ -178,6 +206,20 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
                       passenger['originLat'] ?? 0.0,
                       passenger['originLong'] ?? 0.0,
                     );
+
+                    /*
+                    final passengerMarker = gmaps.Marker(
+                      markerId: gmaps.MarkerId(userId),
+                      position: gmaps.LatLng(originLat, originLong),
+                      infoWindow: gmaps.InfoWindow(
+                        title: 'Passenger ID: $userId',
+                        //snippet: 'Distance to Driver: $distance',
+                      ),
+                      icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(gmaps.BitmapDescriptor.hueAzure),
+                    );
+                    
+                    passengerMarkers.add(passengerMarker);
+                    */
 
                     return ListTile(
                       title: Text('Passenger ID: $userId'),
