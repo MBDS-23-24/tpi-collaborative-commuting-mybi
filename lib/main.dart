@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:tpi_mybi/Data/DataManager.dart';
 import 'package:tpi_mybi/Data/SaveDataManager.dart';
 import 'package:tpi_mybi/model/User.dart';
@@ -6,10 +7,24 @@ import 'package:tpi_mybi/ui/views/Dashboard/dashboard.dart';
 import 'package:tpi_mybi/ui/views/Login/login.dart';
 
 void main() {
+
+
+
+import 'package:tpi_mybi/ui/views/home.dart';
+
+import 'package:http/http.dart' as http;
+
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Add this line
+
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  static const String ACCESS_TOKEN = String.fromEnvironment("ACCESS_TOKEN");
+
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<UserModel?>(
@@ -67,6 +82,14 @@ class MyApp extends StatelessWidget {
           }
         }
       },
+
+    return MaterialApp(
+      title: 'Polyline example',
+      theme: ThemeData(
+
+        primarySwatch: Colors.orange,
+      ),
+      home: HomeView(),
     );
   }
 }

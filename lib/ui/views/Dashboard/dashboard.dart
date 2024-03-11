@@ -2,18 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:tpi_mybi/CostumColor.dart';
 import 'package:tpi_mybi/Data/DataLoader.dart';
 import 'package:tpi_mybi/Data/DataManager.dart';
+import 'package:tpi_mybi/main.dart';
 import 'package:tpi_mybi/model/User.dart';
-import 'package:tpi_mybi/navigation/CustomAppBar.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:tpi_mybi/ui/views/home.dart';
-
 import '../../../Data/SaveDataManager.dart';
 import '../Chat/chat.dart';
 import '../Login/login.dart';
 import 'trips.dart'; // Import your TripsScreen
+import 'package:tpi_mybi/ui/views/Dashboard/DriverAccepted.dart';
+import 'PassangerAccepted.dart';
+import 'driver_map_screen.dart';
+import 'trips.dart';
 
 class DashboardScreen extends StatefulWidget {
   final UserModel user;
+
 
   const DashboardScreen({Key? key, required this.user}) : super(key: key);
 
@@ -32,6 +36,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ChatScreen(/*chatmodels: DataManager.instance.getUsers(), sourchat: DataManager.instance.userModel*/), // Replace with your messages screen
    // TripsScreen(), // Replace with your messages screen
     TripsScreen(), // Replace with your more options screen
+    //TripsScreen(),
+   // testing(),
+  //  PassangerAccepted(DriverID:20),
+   // DriverAccepted(),
+    // Replace with your actual home screen
+   // Your trips screen
+    //webrtc(), // Replace with your messages screen
+  //  FakeDataReceiver(), // Replace with your more options screen
   ];
 
   initState() {

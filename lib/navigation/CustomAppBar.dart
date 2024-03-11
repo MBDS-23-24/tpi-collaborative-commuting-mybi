@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tpi_mybi/ui/views/Login/login.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -20,12 +19,3 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 
-void handleMenuSelection(String value, BuildContext context) {
-  switch (value) {
-    case 'logout':
-      FirebaseAuth.instance.signOut().then((_) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SignInScreen()));
-      });
-      break;
-  }
-}

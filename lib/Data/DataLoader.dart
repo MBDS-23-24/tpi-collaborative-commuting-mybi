@@ -1,6 +1,3 @@
-
-
-
 import 'package:http/http.dart' as http;
 import 'package:tpi_mybi/Data/DataManager.dart';
 import 'package:tpi_mybi/model/User.dart';
@@ -255,5 +252,31 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
       print('Erreur de connexion: $e');
     }
   }
+=======
+  Future<void> deleteUser(int userID) async {
+  var manager = DataManager.instance;
+  var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users/$userID');
+
+  try {
+    var response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${manager.getToken()}',
+      },
+    );
+
+    if (response.statusCode == 204) {
+      // Suppression réussie
+      // Vous pouvez également effectuer d'autres actions ici
+    } else {
+      // La suppression a échoué, affichez un message d'erreur ou effectuez d'autres actions nécessaires
+      print('Échec de la suppression: ${response.statusCode}');
+    }
+  } catch (e) {
+    // En cas d'erreur lors de la connexion à l'API, vous pouvez afficher un message d'erreur
+    print('Erreur de connexion lors de la suppression du compte: $e');
+  }
+}
 
 }

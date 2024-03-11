@@ -1,6 +1,3 @@
-
-
-
 import 'package:tpi_mybi/Data/SaveDataManager.dart';
 import 'package:tpi_mybi/model/User.dart';
 import 'package:tpi_mybi/ui/views/Chat/Meesage.dart';
@@ -20,6 +17,7 @@ enum DataManagerUpdateType {
 
   // Ajoutez d'autres types de mises à jour ici
 }
+
 
 class DataManager {
   static DataManager? _instance;
@@ -42,6 +40,7 @@ class DataManager {
   //  this.userModel = UserModel(uid: 0, email: "test@gmail.com", firstName: "test", lastName: "test", password: "test");
     this.userModel = userModel;
   }
+
 
   UserModel getUser(){
    // this.userModel = UserModel(uid: 0, email: "test@gmail.com", firstName: "test", lastName: "test", password: "test");

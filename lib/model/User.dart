@@ -1,3 +1,9 @@
+enum RoleType {
+  passenger,
+  driver,
+  both,
+}
+
 class UserModel {
   final int? userID;
   final String? email;
@@ -12,6 +18,19 @@ class UserModel {
   String time = "4:00";
 
   UserModel({this.userID, this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biograthy});
+
+ // UserModel({required this.uid, /*required this.uid,*/ this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
+
+
+  /*
+  factory UserModel.fromFirebaseUser(User user) {
+    return UserModel(
+     // uid: user.uid,
+      email: user.email,
+      firstName: user.displayName,
+    );
+  }
+   */
 
   // Méthode toJson pour la sérialisation JSON
   Map<String, dynamic> toJson() => {
@@ -36,7 +55,7 @@ class UserModel {
       password: json['password'],
       pathImage: json['photoURL'],
       biograthy: json['biograthy'],
-      role: json['role'],
+      role: json['role']
     );
   }
 

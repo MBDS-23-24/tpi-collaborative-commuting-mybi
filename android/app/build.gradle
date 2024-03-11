@@ -68,8 +68,11 @@ flutter {
 }
 android {
 
+    compileSdkVersion 34
     defaultConfig {
-        minSdkVersion 20
+        minSdkVersion 21
+        targetSdkVersion 34
+
     }
     splits {
         abi {
