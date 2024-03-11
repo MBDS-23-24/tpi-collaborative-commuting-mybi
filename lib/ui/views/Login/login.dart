@@ -4,8 +4,12 @@ import 'package:tpi_mybi/Data/DataLoader.dart';
 import 'package:tpi_mybi/Data/DataManager.dart';
 import 'package:tpi_mybi/model/User.dart';
 import 'package:tpi_mybi/model/login.dart';
+
+import 'package:tpi_mybi/ui/views/Registration/registrationNew.dart';
+
 import 'package:tpi_mybi/ui/views/Profile/profile.dart';
 import 'package:tpi_mybi/ui/views/Registration/registration.dart';
+
 import 'package:tpi_mybi/ui/widget/custom_theme.dart';
 import 'package:tpi_mybi/ui/views/Dashboard/dashboard.dart';
 

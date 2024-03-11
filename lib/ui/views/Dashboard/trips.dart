@@ -217,6 +217,7 @@ class _TripsScreenState extends State<TripsScreen> {
           ],
         ),
         backgroundColor: myPrimaryColor,
+
       ),
       body: Column(
         children: <Widget>[
