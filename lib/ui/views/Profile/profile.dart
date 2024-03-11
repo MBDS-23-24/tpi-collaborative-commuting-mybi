@@ -14,69 +14,6 @@ class ProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Profil'),
       ),
-<<<<<<< HEAD
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            CircleAvatar(
-              backgroundImage: NetworkImage(user.pathImage ?? ''),
-              radius: 60,
-            ),
-            SizedBox(height: 20),
-            Text(
-              '${user.firstName} ${user.lastName}',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              '${user.email}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Rôle: ${user.role}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Biographie:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Je vais récuperer la Bio ici ...',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => EditProfilePage(user: user)),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-              ),
-              child: Text('Modifier les informations',
-              style: TextStyle(color: Colors.white),),
-              
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                _deleteAccount(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
-              child: Text('Supprimer le compte',
-              style: TextStyle(color: Colors.white),),
-            ),
-          ],
-=======
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -136,7 +73,6 @@ class ProfilePage extends StatelessWidget {
               ),
             ],
           ),
->>>>>>> 3d30ea0cdc22de937b984b5890707b318155ef6d
         ),
       ),
     );
