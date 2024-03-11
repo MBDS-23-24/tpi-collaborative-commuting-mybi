@@ -40,9 +40,8 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
 
   // Initialize socket and fetch drivers
   void initializeSocketAndFetchDrivers() {
- // socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
-    //
-    socket = IO.io('http://localhost:3001', <String, dynamic>{
+ socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
+
 
     'transports': ['websocket'],
       'autoConnect': false,

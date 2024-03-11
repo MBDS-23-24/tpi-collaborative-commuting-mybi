@@ -41,8 +41,8 @@ class _TripsScreenState extends State<TripsScreen> {
   bool _isDestinationLocationSelected = false;
   _TripsScreenState() {
     // Initialize the socket in the constructor
-   // socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
-    socket = IO.io('http://localhost:3001', <String, dynamic>{
+  socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
+
 
     'transports': ['websocket'],
       'autoConnect': false,
@@ -55,8 +55,8 @@ class _TripsScreenState extends State<TripsScreen> {
   void initState() {
     super.initState();
     // Replace 'http://localhost:3001' with your server address
-  //  socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
-    socket = IO.io('http://localhost:3001', <String, dynamic>{
+    socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
+
 
     'transports': ['websocket'],
       'autoConnect': false,
