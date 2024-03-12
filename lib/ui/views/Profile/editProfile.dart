@@ -12,7 +12,6 @@ class EditProfilePage extends StatefulWidget {
   final UserModel user;
 
   EditProfilePage({required this.user});
-  
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
@@ -21,10 +20,11 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lasteNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
   final TextEditingController roleController = TextEditingController();
   final TextEditingController biographyController = TextEditingController();
 
@@ -37,7 +37,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void initState() {
     super.initState();
     firstNameController.text = widget.user.firstName ?? '';
-    lasteNameController.text = widget.user.lastName ?? '';
+    lastNameController.text = widget.user.lastName ?? '';
     emailController.text = widget.user.email ?? '';
     passwordController.text = widget.user.password ?? '';
     roleController.text = widget.user.role ?? '';
@@ -49,15 +49,41 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Modifier le profil'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: () {
+                _deleteAccount(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child: Text(
+                'Supprimer le compte',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(25.0),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Text(
+                      'Informations ${widget.user.firstName} ${widget.user.lastName}',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal,
+                      ),
+                    ),
+                SizedBox(height: 10),
                 TextFormField(
                   controller: firstNameController,
                   validator: (value) {
@@ -67,21 +93,41 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     return null;
                   },
                   decoration: InputDecoration(
-                    labelText: 'First Name ',
+                    labelText: 'Prénom',
+                    hintText: 'Entrez votre prénom',
+                    border: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.teal),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.teal),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                   ),
                 ),
+                SizedBox(height: 10),
                 TextFormField(
-                  controller: lasteNameController,
+                  controller: lastNameController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Veuillez saisir votre Prénom';
+                      return 'Veuillez saisir votre Nom';
                     }
                     return null;
                   },
                   decoration: InputDecoration(
-                    labelText: 'Last Name ',
+                    labelText: 'Nom',
+                    hintText: 'Entrez votre nom',
+                    border: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.teal),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.teal),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                   ),
                 ),
+                SizedBox(height: 10),
                 TextFormField(
                   controller: emailController,
                   validator: (value) {
@@ -92,13 +138,32 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Adresse e-mail',
+                    hintText: 'Entrez votre adresse e-mail',
+                    border: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.teal),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.teal),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                   ),
                 ),
+                SizedBox(height: 10),
                 TextFormField(
                   controller: passwordController,
                   obscureText: !_isPasswordVisible,
                   decoration: InputDecoration(
                     labelText: 'Mot de passe',
+                    hintText: 'Entrez votre mot de passe',
+                    border: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.teal),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.teal),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isPasswordVisible
@@ -113,6 +178,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ),
                 ),
+                SizedBox(height: 10),
                 TextFormField(
                   controller: confirmPasswordController,
                   obscureText: !_isConfirmationPasswordVisible,
@@ -126,6 +192,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Confirmer le mot de passe',
+                    hintText: 'Confirmez votre mot de passe',
+                    border: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.teal),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.teal),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isConfirmationPasswordVisible
@@ -141,48 +216,66 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ),
                 ),
-                TextFormField(
-                  controller: roleController,
+                SizedBox(height: 10),
+                
+                DropdownButtonFormField<String>(
+                  value: roleController.text,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      roleController.text = newValue!;
+                    });
+                  },
+                  items: ['CONDUCTEUR', 'PASSAGER', 'BOTH']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                   decoration: InputDecoration(
                     labelText: 'Rôle',
+                    hintText: 'Sélectionnez votre rôle',
+                    border: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.teal),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.teal),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
+                SizedBox(height: 10),
                 TextFormField(
                   controller: biographyController,
                   decoration: InputDecoration(
                     labelText: 'Biographie',
+                    hintText: 'Entrez votre biographie',
+                    border: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.teal),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.teal),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                   ),
                 ),
-                Visibility(
-                  child: ButtonImagePicker(
-                    onImageSelected: (imagePath) {
-                      setState(() {
-                        _newImagePath = imagePath;
-                      });
-                    },
-                  ),
+                SizedBox(height: 10),
+                ButtonImagePicker(
+                  onImageSelected: (imagePath) {
+                    setState(() {
+                      _newImagePath = imagePath;
+                    });
+                  },
                 ),
-                SizedBox(height: 20.0),
+                SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
                     await _updateUser();
                   },
                   child: Text('Enregistrer les modifications'),
                 ),
-                SizedBox(height: 20.0),
-                // Bouton pour supprimer le compte
-                        ElevatedButton(
-                          onPressed: () {
-                            _deleteAccount(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                          ),
-                          child: Text(
-                            'Supprimer',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
               ],
             ),
           ),
@@ -191,8 +284,33 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-
   Future<void> _deleteAccount(BuildContext context) async {
+    bool confirmDelete = await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Confirmation'),
+        content: Text('Êtes-vous sûr de vouloir supprimer votre compte ?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false); // Annuler la suppression
+            },
+            child: Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true); // Confirmer la suppression
+            },
+            child: Text('Supprimer'),
+          ),
+        ],
+      );
+    },
+  );
+
+  // On verifie si la suppression a été confirmée
+  if (confirmDelete == true) {
     try {
       await DataLoader.instance.deleteUser(widget.user.uid);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -200,10 +318,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
       );
 
       Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => SignInScreen()), 
-      (route) => false,
-    );
+        context,
+        MaterialPageRoute(builder: (context) => SignInScreen()),
+        (route) => false,
+      );
     } catch (e) {
       print('Erreur lors de la suppression du compte : $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -211,15 +329,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
       );
     }
   }
-
+  }
 
   Future<void> _updateUser() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // c"ation d un nouvel objet UserModel avec les données mises à jour
       UserModel updatedUser = UserModel(
         uid: widget.user.uid,
         firstName: firstNameController.text,
-        lastName: lasteNameController.text,
+        lastName: lastNameController.text,
         email: emailController.text,
         password: passwordController.text,
         role: roleController.text,
@@ -227,14 +344,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         pathImage: _newImagePath ?? widget.user.pathImage,
       );
 
-      print('Avant la mise à jour : $widget.user');
-
-      // méthode pour mettre à jour l'utilisateur
       await DataLoader.instance.updateUser(updatedUser);
 
       DataManager.instance.setUser(updatedUser);
 
-      // Retourner à la page de profil après la mise à jour
       Navigator.pop(context);
       Navigator.pushReplacement(
         context,
@@ -243,3 +356,4 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 }
+

@@ -13,65 +13,61 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profil'),
+        backgroundColor: Colors.teal, // Choisissez une couleur de votre choix
       ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                width: MediaQuery.of(context).size.width * 0.5,
-                height: MediaQuery.of(context).size.height * 0.8,
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.lime[50],
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 5,
-                      blurRadius: 7,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(20),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.6,
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              ],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                // Photo du profil
+                Stack(
+                  alignment: Alignment.bottomRight,
                   children: [
-                    // Photo du profil
-                    Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        CircleAvatar(
-                          backgroundImage: NetworkImage(user.pathImage ?? ''),
-                          radius: 60,
-                        ),
-                        // Bouton vers la page edit
-                        CircleAvatar(
-                          backgroundColor: Colors.green,
-                          child: IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        EditProfilePage(user: user)),
-                              );
-                            },
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(user.pathImage ?? ''),
+                      radius: 60,
                     ),
-                    SizedBox(height: 30),
-                    // Informations du profil
-                    _ProfileInfo(user: user),
+                    // Bouton vers la page edit
+                    CircleAvatar(
+                      backgroundColor: Colors.teal,
+                      child: IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    EditProfilePage(user: user)),
+                          );
+                        },
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
+                SizedBox(height: 20),
+                // Informations du profil
+                _ProfileInfo(user: user),
+              ],
+            ),
           ),
         ),
       ),
@@ -94,19 +90,28 @@ class _ProfileInfo extends StatelessWidget {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24,
+            color: Colors.black, 
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          "Email : ${user.email}",
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.black, 
           ),
         ),
         const SizedBox(height: 15),
         // Rôle
         Text(
-          'Rôle: ${user.role ?? "N/A"}',
+          '${user.role ?? "N/A"}',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
             color: Colors.grey,
           ),
         ),
-        const SizedBox(height: 50),
+        const SizedBox(height: 30),
         // Biographie
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
