@@ -116,7 +116,7 @@ class _ProfileInfo extends StatelessWidget {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            "${user.biograthy}",
+            "${user.biography}",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
