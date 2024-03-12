@@ -73,7 +73,7 @@ class ProfilePage extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).primaryColor,
               ),
               child: Text('Modifier les informations',
               style: TextStyle(color: Colors.white),),
@@ -85,7 +85,7 @@ class ProfilePage extends StatelessWidget {
                 _deleteAccount(context);
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.red,
+                backgroundColor: Colors.red,
               ),
               child: Text('Supprimer le compte',
               style: TextStyle(color: Colors.white),),
