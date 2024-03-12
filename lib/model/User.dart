@@ -18,6 +18,8 @@ class UserModel {
   String time = "4:00";
 
   UserModel({this.userID, this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biograthy});
+  
+  // late final String? biography;
 
  // UserModel({required this.uid, /*required this.uid,*/ this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
 
@@ -42,6 +44,8 @@ class UserModel {
     'password': password,
     'role': role,
     'biograthy': biograthy,
+
+   // 'biography' : biography
     // Ajoutez d'autres champs ici
   };
 

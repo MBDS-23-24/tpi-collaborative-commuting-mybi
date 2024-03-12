@@ -32,7 +32,6 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
      loader = DataLoader.instance;
      manager = DataManager.instance;
@@ -70,14 +69,12 @@ class _SignInScreenState extends State<SignInScreen> {
       });
       break;
     default:
-      // Gérez un cas par défaut si nécessaire
       break;
   }
 }
 
   Future<void> loginUser() async {
     if (!_formSignInKey.currentState!.validate()) {
-      // Validation failed
       return;
     }
 
