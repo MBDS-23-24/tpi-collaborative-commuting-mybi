@@ -1,8 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+// webRTC_Implementation
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
+// TripsImplementation
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:tpi_mybi/ui/views/Dashboard/DriverAccepted.dart';
 
 import '../../../Data/DataManager.dart';
 import '../../../model/User.dart';
@@ -45,8 +49,10 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
 
   // Initialize socket and fetch passengers
   void initializeSocketAndFetchPassengers() {
-    socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
-      'transports': ['websocket'],
+   socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
+
+
+    'transports': ['websocket'],
       'autoConnect': false,
     });
 
@@ -62,6 +68,7 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
 
       updatePassengersList(data);
     });
+
   }
 
   void updatePassengersList(List<dynamic> requests) {
@@ -150,6 +157,7 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
         print('deleteDriver ');
         socket.emit('deleteDriver', user.uid);
         socket.emit('deleteAllrequested', user.uid);
+        socket.emit('deleteDriverRequested',  user.uid );
 
         // Disconnect from the socket when the user presses the back button
         socket.disconnect();
@@ -235,7 +243,7 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
                         children: [
                           IconButton(
                             icon: Icon(Icons.check),
-                            onPressed: () {
+                            onPressed: () async {
                               UserModel user = DataManager.instance.getUser();
                               final passengerId = passengers[index]['passengerId'];
                               final driverId = user.uid;
@@ -245,6 +253,17 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
                                 'passengerId': passengerId,
                                 'driverId': driverId,
                               });
+                              socket.disconnect();
+                              resetPassengersList();
+                              socket.dispose();
+
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DriverAccepted(),
+                                ),
+                              );
+
                             },
                           ),
                           IconButton(
