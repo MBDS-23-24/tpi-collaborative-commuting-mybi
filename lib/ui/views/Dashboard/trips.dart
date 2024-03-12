@@ -102,7 +102,7 @@ class _TripsScreenState extends State<TripsScreen> {
 
     // Create Request object
     Request userRequest = Request(
-      userId: user.uid,
+      userId: user.userID,
       type: user.role.toString(),
       originLat: departLocation.latitude,
       originLong: departLocation.longitude,

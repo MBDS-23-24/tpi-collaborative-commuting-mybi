@@ -5,14 +5,10 @@ import 'package:tpi_mybi/Data/SaveDataManager.dart';
 import 'package:tpi_mybi/model/User.dart';
 import 'package:tpi_mybi/ui/views/Dashboard/dashboard.dart';
 import 'package:tpi_mybi/ui/views/Login/login.dart';
-
-void main() {
-
-
-
 import 'package:tpi_mybi/ui/views/home.dart';
 
 import 'package:http/http.dart' as http;
+
 
 
 void main() async {
@@ -81,8 +77,8 @@ class MyApp extends StatelessWidget {
             );
           }
         }
-      },
-
+      });
+    /*
     return MaterialApp(
       title: 'Polyline example',
       theme: ThemeData(
@@ -90,6 +86,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.orange,
       ),
       home: HomeView(),
-    );
-  }
-}
+    );*/
+
+}}

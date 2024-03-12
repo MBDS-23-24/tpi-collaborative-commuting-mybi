@@ -1,72 +1,50 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:google_maps_widget/google_maps_widget.dart' as gmaps;
 import 'package:google_maps_widget/google_maps_widget.dart';
 import 'package:location/location.dart';
 import 'package:peerdart/peerdart.dart';
+import 'package:tpi_mybi/ui/views/Dashboard/webRTC/webRtcManager.dart';
 
-import '../../../Data/DataManager.dart';
-import '../../../model/User.dart';
 
-class DriverAccepted extends StatefulWidget {
-  const DriverAccepted({Key? key}) : super(key: key);
+
+class PassangerAcceptedWebRtc extends StatefulWidget {
+  PassangerAcceptedWebRtc({Key? key}) : super(key: key);
 
   @override
-  State<DriverAccepted> createState() => _DriverAcceptedState();
+  State<PassangerAcceptedWebRtc> createState() => _PassangerAcceptedState();
 }
 
-class _DriverAcceptedState extends State<DriverAccepted> {
+class _PassangerAcceptedState extends State<PassangerAcceptedWebRtc> {
 
-  late Peer peer; // Declare peer variable here
-  final TextEditingController _controller = TextEditingController();
-  String? peerId;
-  PeerConnectOption peerop =PeerConnectOption();
-  late DataConnection? conn = new DataConnection('false',null,peerop) ;
-  bool connected = false;
-  gmaps.GoogleMapController? mapController;
-  Set<gmaps.Marker> _markers = {};
+  late webRtcManager manager;
   Location location = Location();
   bool _serviceEnabled = false;
   PermissionStatus _permissionGranted = PermissionStatus.denied;
   LocationData? _currentLocation;
+  late RTCDataChannel locationChannel;
+
   @override
   void dispose() {
-    peer.dispose();
-    _controller.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
+    manager = webRtcManager();
+    manager.initWebRTC();
+    locationChannel = createDataChannel() as RTCDataChannel;
     _initLocationService();
-    final UserModel user = DataManager.instance.getUser();
-    peer = Peer(id: user.userID.toString()); // Initialize peer here
 
-    peer.on("open", null, (ev, context) {
-      setState(() {
-        print("jes suis dans DriverAccepted open =  ${peer.id}");
-        peerId = peer.id;
-      });
-    });
 
-    peer.on("connection", null, (ev, context) {
-
-      print("je suis dans DriverAccepted connection  ev.eventData =  ${ev.eventData}");
-      conn = ev.eventData as DataConnection;
-
-      setState(() {
-        connected = true;
-      });
-    });
-
-    peer.on("data", null, (ev, _) {
-      final data = ev.eventData as String;
-      print("je suis dans DriverAccepted data  data=  $data");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
-    });
   }
+
+
+
   void _initLocationService() async {
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -87,6 +65,7 @@ class _DriverAcceptedState extends State<DriverAccepted> {
     _currentLocation = await location.getLocation();
     location.onLocationChanged.listen((LocationData currentLocation) {
       _currentLocation = currentLocation;
+      /*
       if (mapController != null) {
         mapController!.animateCamera(
           CameraUpdate.newCameraPosition(
@@ -105,48 +84,31 @@ class _DriverAcceptedState extends State<DriverAccepted> {
           );
         });
       }
-    });
-  }
-  void connect() {
-    final connection = peer.connect(_controller.text);
-    conn = connection;
 
-    conn?.on("open", null, (ev, _) {
-      print("je suis dans DriverAccepted open  ev.eventData=  ${ev.eventData}");
-      setState(() {
-        connected = true;
-      });
-
-      conn?.on("data", null, (ev, _) {
-        final data = ev.eventData as String;
-        print("je suis dans DriverAccepted data  data=  ${ev.eventData}");
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(data)));
-      });
+       */
     });
   }
 
-  void sendHelloWorld() {
-    // Assurez-vous que cette fonction est appelée après l'établissement de la connexion
-    if (connected) {
-      conn?.send("Hello worldworld!");
-    } else {
-      print("Connection not established.");
-    }
+
+  Future<RTCDataChannel> createDataChannel() async {
+
+    return await manager.createDataChannel();
   }
 
-  void sendLocationUpdates() {
-    // Function to send location updates to peer every 1 second
-    Timer.periodic(Duration(seconds: 1), (Timer t) {
-      if (_currentLocation != null) {
-        final Map<String, dynamic> locationData = {
-          "latitude": _currentLocation!.latitude,
-          "longitude": _currentLocation!.longitude,
-        };
-        conn?.send(locationData.toString());
-      }
+  void shareLocation() {
+    var currentLocation = _currentLocation; // Implémentez cette fonction selon votre logique d'application
+    var locationData = jsonEncode({
+      'latitude': _currentLocation?.latitude,
+      'longitude': _currentLocation?.longitude,
     });
+
+    locationChannel.send(RTCDataChannelMessage(locationData));
   }
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,9 +124,9 @@ class _DriverAcceptedState extends State<DriverAccepted> {
                 zoom: 14,
               ),
               onMapCreated: (gmaps.GoogleMapController controller) {
-                mapController = controller;
+
               },
-              markers: _markers,
+
             ),
           ),
           Expanded(
@@ -182,7 +144,7 @@ class _DriverAcceptedState extends State<DriverAccepted> {
                     SelectableText("Peer ID"),
                     ElevatedButton(
                       onPressed: () {
-                        sendHelloWorld();
+
                       },
                       child: const Text("Send Hello World to peer"),
                     ),
@@ -197,15 +159,13 @@ class _DriverAcceptedState extends State<DriverAccepted> {
   }
 
   Widget _renderState() {
-    Color bgColor = connected ? Colors.green : Colors.grey;
+    //Color bgColor = connected ? Colors.green : Colors.grey;
     Color txtColor = Colors.white;
-    String txt = connected ? "Connected" : "Standby";
+    //String txt = connected ? "Connected" : "Standby";
     return Container(
-      decoration: BoxDecoration(color: bgColor),
+      //decoration: BoxDecoration(color: bgColor),
       child: Text(
-        txt,
-        style:
-        Theme.of(context).textTheme.titleLarge?.copyWith(color: txtColor),
+        "Connected",
       ),
     );
   }

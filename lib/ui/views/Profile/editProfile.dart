@@ -31,7 +31,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     emailController.text = widget.user.email ?? '';
     passwordController.text = widget.user.password ?? '';
     roleController.text = widget.user.role ?? '';
-    biographyController.text = widget.user.biography ?? '';
+    biographyController.text = widget.user.biograthy ?? '';
   }
 
   @override

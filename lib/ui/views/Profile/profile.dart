@@ -10,7 +10,7 @@ class ProfilePage extends StatelessWidget {
 
   Future<void> _deleteAccount(BuildContext context) async {
     try {
-      await DataLoader.instance.deleteUser(user.uid);
+      await DataLoader.instance.deleteUser(user.userID!);
       // Ajouter des actions après la suppression réussie (par exemple, déconnexion, navigation, etc.)
 
       ScaffoldMessenger.of(context).showSnackBar(

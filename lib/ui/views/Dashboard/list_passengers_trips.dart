@@ -72,7 +72,7 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
   void fetchPassengers() {
     UserModel user = DataManager.instance.getUser();
     socket.emit('getDriverRequests', {
-      'driverId': user.uid,
+      'driverId': user.userID,
     });
   }
 
@@ -146,9 +146,9 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
         UserModel user = DataManager.instance.getUser();
         print('user.role.toString(): ${user.role.toString()} ');
         print('deleteDriver ');
-        socket.emit('deleteDriver', user.uid);
-        socket.emit('deleteAllrequested', user.uid);
-        socket.emit('deleteDriverRequested',  user.uid );
+        socket.emit('deleteDriver', user.userID);
+        socket.emit('deleteAllrequested', user.userID);
+        socket.emit('deleteDriverRequested',  user.userID );
 
         // Disconnect from the socket when the user presses the back button
         socket.disconnect();
@@ -202,7 +202,7 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
                             onPressed: () async {
                               UserModel user = DataManager.instance.getUser();
                               final passengerId = passengers[index]['passengerId'];
-                              final driverId = user.uid;
+                              final driverId = user.userID;
 
                               // Emit event to update the ride request status as Rejected
                               socket.emit('acceptRequest', {
@@ -227,7 +227,7 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
                             onPressed: () {
                               UserModel user = DataManager.instance.getUser();
                               final passengerId = passengers[index]['passengerId'];
-                              final driverId = user.uid;
+                              final driverId = user.userID;
 
                               // Emit event to update the ride request status as Rejected
                               socket.emit('rejectRequest', {

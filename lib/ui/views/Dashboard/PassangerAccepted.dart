@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_widget/google_maps_widget.dart' as gmaps;
 import 'package:google_maps_widget/google_maps_widget.dart';
 import 'package:location/location.dart';
+
 class PassangerAccepted extends StatefulWidget {
 
-  final int  DriverID;
+  final int?  DriverID;
   PassangerAccepted({
     required this.DriverID,
 
@@ -16,14 +17,14 @@ class PassangerAccepted extends StatefulWidget {
 }
 
 class _PassangerAcceptedState extends State<PassangerAccepted> {
-  PeerOptions options =PeerOptions();
+  PeerOptions options = PeerOptions();
   final Peer peer = Peer( id:"myid" );
   final TextEditingController _controller = TextEditingController();
   String? peerId;
   bool me = false;
 
   PeerConnectOption peerop =PeerConnectOption();
-  late DataConnection? conn = new DataConnection('false',null,peerop) ;
+  late DataConnection? conn = DataConnection(peer.id.toString(),null,peerop) ;
   bool connected = false;
   gmaps.GoogleMapController? mapController;
   Set<gmaps.Marker> _markers = {};
@@ -41,16 +42,19 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
   @override
   void initState() {
     _initLocationService();
-
+    print("jes suis dans passangerAccepted peerop =  ${peer.id.toString()}");
     super.initState();
     connect();
+    print("jes suis dans passangerAccepted ");
     peer.on("open", null, (ev, context) {
       setState(() {
+        print("jes suis dans passangerAccepted open peer.id =  ${peer.id}");
         peerId = peer.id;
       });
     });
 
     peer.on("connection", null, (ev, context) {
+      print("jes suis dans passangerAccepted connection  ev.eventData=  ${ev.eventData}");
       conn = ev.eventData as DataConnection;
 
       setState(() {
@@ -59,6 +63,7 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
     });
 
     peer.on("data", null, (ev, _) {
+      print("jes suis dans passangerAccepted data  data=  ${ev.eventData}");
       final data = ev.eventData as String;
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
@@ -104,11 +109,12 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
       }
     });
   }
-
+  late String meTest;
   void connect() {
-
+    meTest= widget.DriverID.toString();
     String me= widget.DriverID.toString();
     final connection = peer.connect(widget.DriverID.toString());
+    print ("jes suis dans passangerAccepted connect()  connection=  $connection with id = ${peerId}");
     conn = connection;
 
     conn?.on("open", null, (ev, _) {
@@ -117,6 +123,7 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
       });
 
       conn?.on("data", null, (ev, _) {
+        print("jes suis dans passangerAccepted data  data=  ${ev.eventData}");
         final dynamic data = ev.eventData;
 
         if (data is String) {
@@ -144,7 +151,12 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
   }
 
   void sendHelloWorld() {
-    conn?.send("Hello world!");
+    // Assurez-vous que cette fonction est appelée après l'établissement de la connexion
+    if (connected) {
+      conn?.send("Hello worldworld!");
+    } else {
+      print("Connection not established.");
+    }
   }
 
   @override
@@ -176,10 +188,10 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _renderState(),
-                    const Text(
-                      'Connection ID:',
+                     Text(
+                      'Connection ID: {$meTest}  ',
                     ),
-                    SelectableText("Peer ID"),
+                    SelectableText("Peer ID = ${peerId}"),
                     ElevatedButton(
                       onPressed: () {
                         sendHelloWorld();

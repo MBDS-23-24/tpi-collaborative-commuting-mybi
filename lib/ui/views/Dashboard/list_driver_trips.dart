@@ -72,9 +72,7 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
                     socket.dispose();
                     await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => PassangerAccepted(DriverID: driverId,
-                       
-                      )),
+                      MaterialPageRoute(builder: (context) => PassangerAccepted(DriverID: driverId /*DataManager.instance.getUser().userID*/,)),
                     );
                   },
                   child: Text('Track Trips', style: TextStyle(color: Colors.blue)), // Button text
@@ -171,8 +169,8 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
         UserModel user = DataManager.instance.getUser();
 
         print('deletePassenger ');
-        socket.emit('deletePassenger', user.uid);
-        socket.emit('deleteMyrequest', user.uid);
+        socket.emit('deletePassenger', user.userID);
+        socket.emit('deleteMyrequest', user.userID);
         // Disconnect from the socket when the user presses the back button
         socket.disconnect();
         resetDriversList();
@@ -278,7 +276,7 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
     print('Requesting ride from driver ID: $userId');
     socket.emit('requestRide', {
       'driverId': userId,
-      'passengerId': user.uid, // Assuming you have access to the passenger's ID
+      'passengerId': user.userID, // Assuming you have access to the passenger's ID
       'originLat': widget.departLat,
       'originLong': widget.departLong,
       'destinationLat': widget.destLat,

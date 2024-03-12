@@ -252,7 +252,7 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
       print('Erreur de connexion: $e');
     }
   }
-=======
+
   Future<void> deleteUser(int userID) async {
   var manager = DataManager.instance;
   var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users/$userID');

@@ -1,6 +1,6 @@
 // Update the model class to include the 'type' property
 class Request {
-  final int userId;
+  final int? userId;
   final double originLat;
   final double originLong;
   final double destinationLat;
