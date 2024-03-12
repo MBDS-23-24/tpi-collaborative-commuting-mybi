@@ -1,9 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:peerdart/peerdart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_widget/google_maps_widget.dart' as gmaps;
 import 'package:google_maps_widget/google_maps_widget.dart';
 import 'package:location/location.dart';
+
+import '../../../Data/DataManager.dart';
+import '../Chat/IndividualPage.dart';
 
 class PassangerAccepted extends StatefulWidget {
 
@@ -63,12 +69,45 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
     });
 
     peer.on("data", null, (ev, _) {
-      print("jes suis dans passangerAccepted data  data=  ${ev.eventData}");
+      print("je suis dans passangerAccepted data dans initState data=  ${ev.eventData}");
       final data = ev.eventData as String;
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
+      Map<String, double> latLng = parseLatLng(data);
+      setState(() {
+        print("je suis dans passangerAccepted data dans initState data=  ${latLng['latitude']}");
+        _markers.add(
+          Marker(
+            markerId: MarkerId("peerLocation"),
+            position: LatLng(latLng['latitude']!, latLng['longitude']!),
+              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet)
+          ),
+        );
+      });
+
     });
   }
+
+
+
+
+// Fonction pour parser la chaîne de caractères et retourner un Map avec latitude et longitude en double
+  Map<String, double> parseLatLng(String latLngString) {
+    // Assurez-vous que la chaîne d'entrée est formatée correctement comme du JSON
+    String correctedString = latLngString.replaceAllMapped(
+        RegExp(r'([a-zA-Z]+):'), (Match match) => '"${match[1]}":');
+
+    // Décodage de la chaîne JSON
+    Map<String, dynamic> json = jsonDecode(correctedString);
+
+    // Extraction et conversion des valeurs en double
+    double latitude = double.parse(json['latitude'].toString());
+    double longitude = double.parse(json['longitude'].toString());
+
+    return {'latitude': latitude, 'longitude': longitude};
+  }
+
+
   void _initLocationService() async {
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -121,31 +160,24 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
       setState(() {
         connected = true;
       });
+    });
 
       conn?.on("data", null, (ev, _) {
-        print("jes suis dans passangerAccepted data  data=  ${ev.eventData}");
+        print("jes suis dans passangerAccepted conn  data=  ${ev.eventData}");
         final dynamic data = ev.eventData;
 
-        if (data is String) {
-          // Handle "Hello world!" message
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
-        } else if (data is Map<String, dynamic>) {
-          // Handle location updates
-          final double latitude = data["latitude"];
-          final double longitude = data["longitude"];
-
-          // Process latitude and longitude received from the peer
-          // Example: Update markers on the map
-          setState(() {
-            _markers.add(
-              Marker(
+        Map<String, double> latLng = parseLatLng(data);
+        setState(() {
+          print("je suis dans passangerAccepted data  data=  ${latLng['latitude']}");
+          _markers.add(
+            Marker(
                 markerId: MarkerId("peerLocation"),
-                position: LatLng(latitude, longitude),
-              ),
-            );
-          });
-        }
-      });
+                position: LatLng(latLng['latitude']!, latLng['longitude']!),
+                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet)
+            ),
+          );
+        });
+
 
     });
   }
@@ -157,6 +189,19 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
     } else {
       print("Connection not established.");
     }
+  }
+
+  void sendLocationUpdates() {
+    // Function to send location updates to peer every 1 second
+    Timer.periodic(const Duration(seconds: 30), (Timer t) {
+      if (_currentLocation != null) {
+        final Map<String, dynamic> locationData = {
+          "latitude": _currentLocation!.latitude,
+          "longitude": _currentLocation!.longitude,
+        };
+        conn?.send(locationData.toString());
+      }
+    });
   }
 
   @override
@@ -194,7 +239,8 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
                     SelectableText("Peer ID = ${peerId}"),
                     ElevatedButton(
                       onPressed: () {
-                        sendHelloWorld();
+                        //sendHelloWorld();
+                        sendLocationUpdates();
                       },
                       child: const Text("Send Hello World to peer"),
                     ),
@@ -203,6 +249,31 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
               ),
             ),
           ),
+          Expanded(
+              flex: 1,
+              child: Expanded(
+                child: FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (contex) => IndividualPage(
+                                chatModel: DataManager.instance.getUserById(widget.DriverID!),
+                                sourchat: DataManager.instance.getUser()
+                            )));
+                    /*Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (builder) => SelectContact(
+                        sourchat: widget.sourchat,
+                      )));*/
+                  },
+                  child: Icon(
+                    Icons.chat,
+                    color: Colors.black,
+                  ),
+                ),
+              ),)
         ],
       ),
     );

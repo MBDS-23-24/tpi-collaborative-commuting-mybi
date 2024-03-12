@@ -216,7 +216,7 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
                               await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DriverAccepted(),
+                                  builder: (context) => DriverAccepted(passengerId: passengerId),
                                 ),
                               );
 

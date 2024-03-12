@@ -47,6 +47,10 @@ class DataManager {
     return userModel;
   }
 
+  UserModel getUserById(int? id){
+    return users.firstWhere((element) => element.userID == id);
+  }
+
   void setToken(String token) {
     this.token = token;
     this.userModel.setToken(token);
@@ -70,6 +74,8 @@ class DataManager {
   List<UserModel> getUsers() {
     return users;
   }
+
+
 
   final List<void Function(DataManagerUpdateType)> _listeners = [];
 

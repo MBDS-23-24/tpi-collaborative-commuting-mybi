@@ -33,6 +33,7 @@ class CustomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+        /*
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -42,7 +43,8 @@ class CustomCard extends StatelessWidget {
             // Variable pour stocker la note
             double rating = 3.0;
 
-            return AlertDialog(
+
+              AlertDialog(
               title: const Text('Noter l\'utilisateur'),
               content: SingleChildScrollView(
                 child: ListBody(
@@ -101,10 +103,12 @@ class CustomCard extends StatelessWidget {
 
                 );
 
+               */
 
 
-        /*
-        Navigator.push(
+
+
+         child: Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (contex) => IndividualPage(
@@ -112,9 +116,10 @@ class CustomCard extends StatelessWidget {
                   sourchat: sourchat,
 
                 )));
-
-         */
       },
+
+
+
       child: Column(
         children: [
           ListTile(

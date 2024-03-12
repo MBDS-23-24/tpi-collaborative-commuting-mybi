@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_widget/google_maps_widget.dart' as gmaps;
@@ -8,16 +9,18 @@ import 'package:peerdart/peerdart.dart';
 
 import '../../../Data/DataManager.dart';
 import '../../../model/User.dart';
+import '../Chat/IndividualPage.dart';
 
 class DriverAccepted extends StatefulWidget {
-  const DriverAccepted({Key? key}) : super(key: key);
+    DriverAccepted({  required this.passengerId});
 
+    final int?  passengerId;
   @override
   State<DriverAccepted> createState() => _DriverAcceptedState();
 }
 
 class _DriverAcceptedState extends State<DriverAccepted> {
-
+  late int? passengerId = widget.passengerId;
   late Peer peer; // Declare peer variable here
   final TextEditingController _controller = TextEditingController();
   String? peerId;
@@ -65,8 +68,37 @@ class _DriverAcceptedState extends State<DriverAccepted> {
       final data = ev.eventData as String;
       print("je suis dans DriverAccepted data  data=  $data");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
+
+
+      Map<String, double> latLng = parseLatLng(data);
+      setState(() {
+        _markers.add(
+          Marker(
+            markerId: MarkerId("peerLocation"),
+            position: LatLng(latLng['latitude']!, latLng['longitude']!),
+              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
+          ),
+        );
+      });
+
     });
   }
+
+  Map<String, double> parseLatLng(String latLngString) {
+    // Assurez-vous que la chaîne d'entrée est formatée correctement comme du JSON
+    String correctedString = latLngString.replaceAllMapped(
+        RegExp(r'([a-zA-Z]+):'), (Match match) => '"${match[1]}":');
+
+    // Décodage de la chaîne JSON
+    Map<String, dynamic> json = jsonDecode(correctedString);
+
+    // Extraction et conversion des valeurs en double
+    double latitude = double.parse(json['latitude'].toString());
+    double longitude = double.parse(json['longitude'].toString());
+
+    return {'latitude': latitude, 'longitude': longitude};
+  }
+
   void _initLocationService() async {
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -137,7 +169,8 @@ class _DriverAcceptedState extends State<DriverAccepted> {
 
   void sendLocationUpdates() {
     // Function to send location updates to peer every 1 second
-    Timer.periodic(Duration(seconds: 1), (Timer t) {
+    Timer.periodic(const Duration(seconds: 3), (Timer t) {
+      print("je suis dans DriverAccepted sendLocationUpdates  _currentLocation=  ${_currentLocation?.latitude}  ${_currentLocation?.longitude}");
       if (_currentLocation != null) {
         final Map<String, dynamic> locationData = {
           "latitude": _currentLocation!.latitude,
@@ -182,7 +215,8 @@ class _DriverAcceptedState extends State<DriverAccepted> {
                     SelectableText("Peer ID"),
                     ElevatedButton(
                       onPressed: () {
-                        sendHelloWorld();
+                        //sendHelloWorld();
+                        sendLocationUpdates();
                       },
                       child: const Text("Send Hello World to peer"),
                     ),
@@ -191,6 +225,25 @@ class _DriverAcceptedState extends State<DriverAccepted> {
               ),
             ),
           ),
+
+        Expanded(
+          flex: 1,
+        child: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (contex) => IndividualPage(
+                        chatModel: DataManager.instance.getUserById(passengerId),
+                        sourchat: DataManager.instance.getUser()
+                      )));
+            },
+            child: Icon(
+              Icons.chat,
+              color: Colors.black,
+            ),
+          ),
+        ),
         ],
       ),
     );
