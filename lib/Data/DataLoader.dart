@@ -253,7 +253,7 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
     }
   }
 
-  Future<void> deleteUser(int? userID) async {
+  Future<void> deleteUser(int userID) async {
   var manager = DataManager.instance;
   var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users/$userID');
 

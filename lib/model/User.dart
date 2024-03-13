@@ -5,7 +5,7 @@ enum RoleType {
 }
 
 class UserModel {
-  final int? userID;
+  final int userID;
   final String? email;
   final String? firstName;
   final String? lastName;
@@ -17,7 +17,7 @@ class UserModel {
   String currentMessage = "Hello";
   String time = "4:00";
 
-  UserModel({this.userID, this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
+  UserModel({required this.userID, this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
 
  // UserModel({required this.uid, /*required this.uid,*/ this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
 

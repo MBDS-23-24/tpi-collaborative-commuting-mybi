@@ -203,17 +203,8 @@ class _TripsScreenState extends State<TripsScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Text('Trips'),
+            Text('Home'),
             SizedBox(width: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage(user: DataManager.instance.getUser())),
-                );
-              },
-              child: Text('Profile'),
-            ),
           ],
         ),
         backgroundColor: myPrimaryColor,

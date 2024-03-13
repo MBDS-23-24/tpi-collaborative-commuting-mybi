@@ -49,6 +49,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Modifier le profil'),
+        backgroundColor: Colors.teal,
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -312,7 +313,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // On verifie si la suppression a été confirmée
   if (confirmDelete == true) {
     try {
-      await DataLoader.instance.deleteUser(widget.user.userID!);
+      await DataLoader.instance.deleteUser(widget.user.userID);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Compte supprimé avec succès')),
       );
