@@ -13,7 +13,7 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profil'),
-        backgroundColor: Colors.teal, // Choisissez une couleur de votre choix
+        backgroundColor: Colors.indigo, // Choisissez une couleur de votre choix
       ),
       body: Center(
         child: Padding(
@@ -47,7 +47,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                     // Bouton vers la page edit
                     CircleAvatar(
-                      backgroundColor: Colors.teal,
+                      backgroundColor: Colors.indigo,
                       child: IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () {

@@ -49,7 +49,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Modifier le profil'),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.indigo,
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -81,7 +81,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.teal,
+                        color: Colors.indigo,
                       ),
                     ),
                 SizedBox(height: 10),
@@ -97,11 +97,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     labelText: 'Prénom',
                     hintText: 'Entrez votre prénom',
                     border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.teal),
+                            borderSide: const BorderSide(color: Colors.indigo),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.teal),
+                            borderSide: const BorderSide(color: Colors.indigo),
                             borderRadius: BorderRadius.circular(10),
                           ),
                   ),
@@ -119,11 +119,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     labelText: 'Nom',
                     hintText: 'Entrez votre nom',
                     border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.teal),
+                            borderSide: const BorderSide(color: Colors.indigo),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.teal),
+                            borderSide: const BorderSide(color: Colors.indigo),
                             borderRadius: BorderRadius.circular(10),
                           ),
                   ),
@@ -141,11 +141,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     labelText: 'Adresse e-mail',
                     hintText: 'Entrez votre adresse e-mail',
                     border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.teal),
+                            borderSide: const BorderSide(color: Colors.indigo),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.teal),
+                            borderSide: const BorderSide(color: Colors.indigo),
                             borderRadius: BorderRadius.circular(10),
                           ),
                   ),
@@ -158,11 +158,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     labelText: 'Mot de passe',
                     hintText: 'Entrez votre mot de passe',
                     border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.teal),
+                            borderSide: const BorderSide(color: Colors.indigo),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.teal),
+                            borderSide: const BorderSide(color: Colors.indigo),
                             borderRadius: BorderRadius.circular(10),
                           ),
                     suffixIcon: IconButton(
@@ -195,11 +195,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     labelText: 'Confirmer le mot de passe',
                     hintText: 'Confirmez votre mot de passe',
                     border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.teal),
+                            borderSide: const BorderSide(color: Colors.indigo),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.teal),
+                            borderSide: const BorderSide(color: Colors.indigo),
                             borderRadius: BorderRadius.circular(10),
                           ),
                     suffixIcon: IconButton(
@@ -237,11 +237,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     labelText: 'Rôle',
                     hintText: 'Sélectionnez votre rôle',
                     border: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.teal),
+                      borderSide: const BorderSide(color: Colors.indigo),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.teal),
+                      borderSide: const BorderSide(color: Colors.indigo),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -253,11 +253,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     labelText: 'Biographie',
                     hintText: 'Entrez votre biographie',
                     border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.teal),
+                            borderSide: const BorderSide(color: Colors.indigo),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.teal),
+                            borderSide: const BorderSide(color: Colors.indigo),
                             borderRadius: BorderRadius.circular(10),
                           ),
                   ),
