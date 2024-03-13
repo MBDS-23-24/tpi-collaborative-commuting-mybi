@@ -8,91 +8,123 @@ class ProfilePage extends StatelessWidget {
 
   ProfilePage({required this.user});
 
-  Future<void> _deleteAccount(BuildContext context) async {
-    try {
-      await DataLoader.instance.deleteUser(user.userID!);
-      // Ajouter des actions après la suppression réussie (par exemple, déconnexion, navigation, etc.)
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Compte supprimé avec succès')),
-      );
-    } catch (e) {
-      print('Erreur lors de la suppression du compte : $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors de la suppression du compte')),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text('Profil'),
+        backgroundColor: Colors.indigo, // Choisissez une couleur de votre choix
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            CircleAvatar(
-              backgroundImage: NetworkImage(user.pathImage ?? ''),
-              radius: 60,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.6,
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(20),
             ),
-            SizedBox(height: 20),
-            Text(
-              '${user.firstName} ${user.lastName}',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                // Photo du profil
+                Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(user.pathImage ?? ''),
+                      radius: 60,
+                    ),
+                    // Bouton vers la page edit
+                    CircleAvatar(
+                      backgroundColor: Colors.indigo,
+                      child: IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    EditProfilePage(user: user)),
+                          );
+                        },
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                // Informations du profil
+                _ProfileInfo(user: user),
+              ],
             ),
-            SizedBox(height: 10),
-            Text(
-              '${user.email}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Rôle: ${user.role}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Biographie:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Je vais récuperer la Bio ici ...',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => EditProfilePage(user: user)),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).primaryColor,
-              ),
-              child: Text('Modifier les informations',
-              style: TextStyle(color: Colors.white),),
-              
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                _deleteAccount(context);
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Colors.red,
-              ),
-              child: Text('Supprimer le compte',
-              style: TextStyle(color: Colors.white),),
-            ),
-          ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _ProfileInfo extends StatelessWidget {
+  final UserModel user;
+
+  _ProfileInfo({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Nom et prénom
+        Text(
+          "${user.firstName} ${user.lastName}",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            color: Colors.black, 
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          "Email : ${user.email}",
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.black, 
+          ),
+        ),
+        const SizedBox(height: 15),
+        // Rôle
+        Text(
+          '${user.role ?? "N/A"}',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 30),
+        // Biographie
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            "${user.biography}",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

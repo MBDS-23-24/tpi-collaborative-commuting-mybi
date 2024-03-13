@@ -5,19 +5,19 @@ enum RoleType {
 }
 
 class UserModel {
-  final int? userID;
+  final int userID;
   final String? email;
   final String? firstName;
   final String? lastName;
   final String? pathImage;
   final String? password;
   final String? role;
-  final String? biograthy;
+  final String? biography;
   String? token;
   String currentMessage = "Hello";
   String time = "4:00";
 
-  UserModel({this.userID, this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biograthy});
+  UserModel({required this.userID, this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
 
  // UserModel({required this.uid, /*required this.uid,*/ this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
 
@@ -41,7 +41,7 @@ class UserModel {
     'photoURL': pathImage,
     'password': password,
     'role': role,
-    'biograthy': biograthy,
+    'biograthy': biography,
     // Ajoutez d'autres champs ici
   };
 
@@ -54,7 +54,7 @@ class UserModel {
       email: json['email'],
       password: json['password'],
       pathImage: json['photoURL'],
-      biograthy: json['biograthy'],
+      biography: json['biograthy'],
       role: json['role']
     );
   }

@@ -5,6 +5,7 @@ import 'package:tpi_mybi/Data/DataManager.dart';
 import 'package:tpi_mybi/main.dart';
 import 'package:tpi_mybi/model/User.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:tpi_mybi/ui/views/Profile/profile.dart';
 import 'package:tpi_mybi/ui/views/home.dart';
 import '../../../Data/SaveDataManager.dart';
 import '../Chat/chat.dart';
@@ -35,7 +36,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     TripsScreen(), // Your trips screen
     ChatScreen(/*chatmodels: DataManager.instance.getUsers(), sourchat: DataManager.instance.userModel*/), // Replace with your messages screen
    // TripsScreen(), // Replace with your messages screen
-    TripsScreen(), // Replace with your more options screen
+    ProfilePage(user: DataManager.instance.getUser()), // Replace with your more options screen
     //TripsScreen(),
    // testing(),
   //  PassangerAccepted(DriverID:20),
@@ -84,7 +85,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Icon(Icons.home, size: 30),
           Icon(Icons.location_pin, size: 30),
           Icon(Icons.message, size: 30),
-          Icon(Icons.more_vert, size: 30),
+          Icon(Icons.account_circle, size: 30),
         ],
         color: myPrimaryColor,
         buttonBackgroundColor: myPrimaryColor,

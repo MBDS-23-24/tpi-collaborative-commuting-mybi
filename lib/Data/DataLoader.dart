@@ -279,4 +279,35 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
   }
 }
 
+Future<void> updateUser(UserModel user) async {
+  var manager = DataManager.instance;
+  var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users/${user.userID}');
+
+  // Convertir l'objet UserModel en JSON
+  var userJson = user.toJson();
+
+  try {
+    var response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${manager.getToken()}',
+      },
+      body: json.encode(userJson),
+    );
+
+    if (response.statusCode == 200) {
+      // Mise à jour réussie
+      // Vous pouvez également effectuer d'autres actions ici
+      print('Réponse de l\'API lors de la mise à jour: ${response.body}');
+    } else {
+      // La mise à jour a échoué, affichez un message d'erreur ou effectuez d'autres actions nécessaires
+      print('Échec de la mise à jour: ${response.statusCode}');
+    }
+  } catch (e) {
+    // En cas d'erreur lors de la connexion à l'API, vous pouvez afficher un message d'erreur
+    print('Erreur de connexion lors de la mise à jour du profil: $e');
+  }
+}
+
 }
