@@ -100,6 +100,7 @@ class _TripsScreenState extends State<TripsScreen> {
     gmaps.LatLng departLocation = _markers.firstWhere((marker) => marker.markerId.value == 'departLocation').position;
     gmaps.LatLng destinationLocation = _markers.firstWhere((marker) => marker.markerId.value == 'destinationLocation').position;
 
+
     // Create Request object
     Request userRequest = Request(
       userId: user.userID,
@@ -108,6 +109,7 @@ class _TripsScreenState extends State<TripsScreen> {
       originLong: departLocation.longitude,
       destinationLat: destinationLocation.latitude,
       destinationLong: destinationLocation.longitude,
+
 
       time: DateTime.now(),
       status: 'pending',
@@ -146,7 +148,7 @@ class _TripsScreenState extends State<TripsScreen> {
           departLat: departLocation.latitude,
           departLong: departLocation.longitude,
           destLat: destinationLocation.latitude,
-          destLong: destinationLocation.longitude,
+          destLong: destinationLocation.longitude, 
         )),
       );
     } else if (user.role.toString() == 'CONDUCTEUR') {
