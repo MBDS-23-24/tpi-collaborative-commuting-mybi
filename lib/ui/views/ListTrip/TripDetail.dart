@@ -6,6 +6,7 @@ import '../../../Data/DataLoader.dart';
 import '../../../Data/DataManager.dart';
 import '../../../model/Trip.dart';
 import '../../../model/User.dart';
+import '../Dashboard/dashboard.dart';
 
 class TripDetailScreen extends StatefulWidget {
   final VoyageModel trip;
@@ -166,8 +167,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                     )
                         : ElevatedButton(
                       onPressed: () {
-                        // Logique pour faire une demande de participation au voyage
-                      },
+                        requestTrip(widget.trip.voyageId,currentUser?.userID);
+                        },
                       style: ElevatedButton.styleFrom(primary: Theme.of(context).canvasColor),
                       child: Text("Request to Join Trip"),
                     ),
@@ -179,6 +180,28 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> requestTrip(int? voyageId, int? userID) async {
+    String status = await DataLoader.instance.requestTrips(voyageId,userID);
+
+      if(status == "Your Request created successfully" ){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(status)),
+        );
+        // Add a slight delay to allow the user to see the SnackBar message
+        await Future.delayed(Duration(seconds: 1));
+        // Navigate to the ListTripScreenListTripScreen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) =>  DashboardScreen(user: DataManager.instance.getUser())),
+        );
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(status)),
+        );
+      }
+
   }
 }
 

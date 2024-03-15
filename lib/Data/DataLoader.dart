@@ -480,5 +480,34 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
       }
   }
 
+ Future<String> requestTrips(int? voyageId, int? userID) async {
+   var baseUrl = 'http://localhost:3000/api/trip';
+   var path = Uri.parse('$baseUrl/requestpassenger/$voyageId/$userID');
+
+   try {
+     var response = await http.post(
+         path,
+         headers: {
+           'Content-Type': 'application/json',
+           'Authorization': 'Bearer ${DataManager.instance.token}'
+           // Remplacez VOTRE_TOKEN_ICI par votre token réel
+         }
+     );
+     if (response.statusCode == 201) {
+       print('Request created successfully');
+       return "Your Request created successfully"; // Return true on success
+     }else if (response.statusCode == 409){
+       return "User already registered as passenger for this trip."; // Return true on success
+     }
+     else {
+       print('Failed to create Request: ${response.statusCode}');
+       print(response.body);
+       return "Failed to create Request: ${response.statusCode}"; // Return false on failure
+     }
+   } catch (e) {
+     print('Error creating Request: $e');
+     return "Error creating Request"; // Return false on exception
+   }
+ }
 
 }
