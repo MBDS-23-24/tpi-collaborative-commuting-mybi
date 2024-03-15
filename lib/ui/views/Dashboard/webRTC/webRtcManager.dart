@@ -25,12 +25,12 @@ class webRtcManager {
   };
 
   // Remplacer par votre URL de serveur WebSocket pour signaling
-  final _channel = IOWebSocketChannel.connect('wss://integrationlalabi.azurewebsites.net:443');
+  final _channel = IOWebSocketChannel.connect('wss://lalabi.azurewebsites.net:443');
 
   // Remplacer par votre URL de serveur WebSocket pour signaling
   /*
   late IO.Socket socket;
-  socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
+  socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
 
 
   'transports': ['websocket'],

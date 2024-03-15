@@ -40,7 +40,7 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
 
   // Initialize socket and fetch passengers
   void initializeSocketAndFetchPassengers() {
-   socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
+   socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
 
 
     'transports': ['websocket'],

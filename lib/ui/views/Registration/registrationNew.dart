@@ -1,5 +1,4 @@
 
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tpi_mybi/CostumColor.dart';
@@ -39,6 +38,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   late String pathImage = "";
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final biographyController = TextEditingController();
 
 
   bool agreePersonalData = true;
@@ -83,11 +84,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
 
 
-      var manager = DataManager.instance;
+    var manager = DataManager.instance;
 
-      UserModel user = UserModel(userID : 0,email: emailController.text.trim(), firstName: firstNameController.text.trim(), lastName: lastNameController.text.trim(), pathImage: pathImage, password: passwordController.text.trim(), role: role);
+    UserModel user = UserModel(email: emailController.text.trim(), firstName: firstNameController.text.trim(), lastName: lastNameController.text.trim(), pathImage: pathImage, password: passwordController.text.trim(), role: role, biograthy: biographyController.text.trim());
 
-     // manager.setUser(user);
+    // manager.setUser(user);
 
 
     var loader = DataLoader.instance;
@@ -96,8 +97,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
 
 
-     // UserModel userModel = UserModel.fromFirebaseUser(userCredential.user!);
-      /*
+    // UserModel userModel = UserModel.fromFirebaseUser(userCredential.user!);
+    /*
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -142,8 +143,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         break;
     }
   }
-
-
 
 
 // nom / prenom / mdp / email / photo
@@ -355,56 +354,113 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 25.0,
                       ),
-
+                      TextFormField(
+                        controller: confirmPasswordController,
+                        obscureText: true,
+                        obscuringCharacter: '*',
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please confirm Password';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          label: const Text('ConfirmPassword'),
+                          hintText: 'Enter same Password',
+                          hintStyle: const TextStyle(
+                            color: Colors.black26,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.black12, // Default border color
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.black12, // Default border color
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 25.0,
+                      ),
+                      TextFormField(
+                        controller: biographyController,
+                        decoration: InputDecoration(
+                          label: const Text('Bio'),
+                          hintText: 'Enter biography',
+                          hintStyle: const TextStyle(
+                            color: Colors.black26,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.black12, // Default border color
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.black12, // Default border color
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 25.0,
+                      ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Role :',
-                            style: TextStyle(
-                              color: Colors.black45,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Role :',
+                              style: TextStyle(
+                                color: Colors.black45,
+                              ),
                             ),
-                          ),
-                          const Text(
-                            'Passenger ',
-                            style: TextStyle(
-                              color: Colors.black45,
+                            const Text(
+                              'Passenger ',
+                              style: TextStyle(
+                                color: Colors.black45,
+                              ),
                             ),
-                          ),
-                          Checkbox(
-                            value: agreePassenger,
-                            onChanged: (bool? value) {
-                              _handleCheckboxChange('Passenger', value);
-                            },
-                            activeColor: myPrimaryColor,
-                          ),
-                          const Text(
-                            'Driver ',
-                            style: TextStyle(
-                              color: Colors.black45,
+                            Checkbox(
+                              value: agreePassenger,
+                              onChanged: (bool? value) {
+                                _handleCheckboxChange('Passenger', value);
+                              },
+                              activeColor: myPrimaryColor,
                             ),
-                          ),
-                          Checkbox(
-                            value: agreeDriver,
-                            onChanged: (bool? value) {
-                              _handleCheckboxChange('Driver', value);
-                            },
-                            activeColor: myPrimaryColor,
-                          ),
-                          const Text(
-                            'Both ',
-                            style: TextStyle(
-                              color: Colors.black45,
+                            const Text(
+                              'Driver ',
+                              style: TextStyle(
+                                color: Colors.black45,
+                              ),
                             ),
-                          ),
-                          Checkbox(
-                            value: agreeBoth,
-                            onChanged: (bool? value) {
-                              _handleCheckboxChange('Both', value);
-                            },
-                            activeColor: myPrimaryColor,
-                          )
-                        ]
+                            Checkbox(
+                              value: agreeDriver,
+                              onChanged: (bool? value) {
+                                _handleCheckboxChange('Driver', value);
+                              },
+                              activeColor: myPrimaryColor,
+                            ),
+                            const Text(
+                              'Both ',
+                              style: TextStyle(
+                                color: Colors.black45,
+                              ),
+                            ),
+                            Checkbox(
+                              value: agreeBoth,
+                              onChanged: (bool? value) {
+                                _handleCheckboxChange('Both', value);
+                              },
+                              activeColor: myPrimaryColor,
+                            )
+                          ]
 
                       ),
 
@@ -447,6 +503,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: ElevatedButton(
                           onPressed: () async {
                             await registerUser();
+
                           },
                           child: const Text('Sign up'),
                         ),
@@ -530,7 +587,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 20.0,
                       ),
-                   
+
                     ],
 
                   ),
