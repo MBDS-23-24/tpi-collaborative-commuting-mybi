@@ -39,9 +39,12 @@ class _TripsScreenState extends State<TripsScreen> {
   // Track input status of departure and destination locations
   bool _isDepartureLocationSelected = false;
   bool _isDestinationLocationSelected = false;
+  late TextEditingController _seatController;
+
   _TripsScreenState() {
+    _seatController = TextEditingController(); // Initialize the seat controller
     // Initialize the socket in the constructor
-  socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
+  socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
 
 
     'transports': ['websocket'],
@@ -55,7 +58,7 @@ class _TripsScreenState extends State<TripsScreen> {
   void initState() {
     super.initState();
     // Replace 'http://localhost:3001' with your server address
-    socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
+    socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
 
 
     'transports': ['websocket'],
@@ -90,6 +93,7 @@ class _TripsScreenState extends State<TripsScreen> {
   void dispose() {
     timer.cancel();
     socket.dispose();
+    _seatController.dispose();
     super.dispose();
   }
   void findRide() async {
@@ -100,8 +104,9 @@ class _TripsScreenState extends State<TripsScreen> {
     gmaps.LatLng departLocation = _markers.firstWhere((marker) => marker.markerId.value == 'departLocation').position;
     gmaps.LatLng destinationLocation = _markers.firstWhere((marker) => marker.markerId.value == 'destinationLocation').position;
 
-
+    int numberOfSeats = int.tryParse(_seatController.text) ?? 0;
     // Create Request object
+    
     Request userRequest = Request(
       userId: user.userID,
       type: user.role.toString(),
@@ -109,6 +114,7 @@ class _TripsScreenState extends State<TripsScreen> {
       originLong: departLocation.longitude,
       destinationLat: destinationLocation.latitude,
       destinationLong: destinationLocation.longitude,
+      seats: numberOfSeats,
 
 
       time: DateTime.now(),
@@ -270,7 +276,7 @@ class _TripsScreenState extends State<TripsScreen> {
                   Row(
                     children: <Widget>[
                       Expanded(child: _buildLocationTile(Icons.calendar_today, 'Date & time', () {/* handle date & time */})),
-                      Expanded(child: _buildLocationTile(Icons.person, 'No. of seat', () {/* handle number of seats */})),
+                      Expanded(child: _buildSeatsInputField()),
                     ],
                   ),
                   SizedBox(height: 10),
@@ -355,9 +361,19 @@ class _TripsScreenState extends State<TripsScreen> {
     );
   }
 
+  Widget _buildSeatsInputField() {
+    return TextFormField(
+      controller: _seatController,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        labelText: 'Number of seats',
+        icon: Icon(Icons.event_seat, color: myPrimaryColor),
+      ),
+    );
+  }
+
   // Method to handle the onPressed event of the Find ride button
   void _findRideButtonPressed() {
-
 
     findRide();
   }

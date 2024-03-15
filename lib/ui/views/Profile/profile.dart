@@ -5,15 +5,16 @@ import 'package:tpi_mybi/ui/views/Profile/editProfile.dart';
 
 class ProfilePage extends StatelessWidget {
   final UserModel user;
+  final bool isCurrentUserProfile;
 
-  ProfilePage({required this.user});
+  ProfilePage({required this.user, required this.isCurrentUserProfile});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profil'),
-        backgroundColor: Colors.indigo, // Choisissez une couleur de votre choix
+        backgroundColor: Colors.indigo,
       ),
       body: Center(
         child: Padding(
@@ -37,7 +38,6 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                // Photo du profil
                 Stack(
                   alignment: Alignment.bottomRight,
                   children: [
@@ -45,30 +45,28 @@ class ProfilePage extends StatelessWidget {
                       backgroundImage: NetworkImage(user.pathImage ?? ''),
                       radius: 60,
                     ),
-                    // Bouton vers la page edit
-                    CircleAvatar(
-                      backgroundColor: Colors.indigo,
-                      child: IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    EditProfilePage(user: user)),
-                          );
-                        },
-                        color: Colors.white,
+                    if (isCurrentUserProfile)
+                      CircleAvatar(
+                        backgroundColor: Colors.indigo,
+                        child: IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditProfilePage(user: user)),
+                            );
+                          },
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
                   ],
                 ),
                 SizedBox(height: 20),
-                // Informations du profil
                 _ProfileInfo(user: user),
               ],
             ),
-
           ),
         ),
       ),
@@ -85,7 +83,6 @@ class _ProfileInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Nom et prénom
         Text(
           "${user.firstName} ${user.lastName}",
           style: TextStyle(
@@ -103,7 +100,6 @@ class _ProfileInfo extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 15),
-        // Rôle
         Text(
           '${user.role ?? "N/A"}',
           style: TextStyle(
@@ -113,7 +109,6 @@ class _ProfileInfo extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 30),
-        // Biographie
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(

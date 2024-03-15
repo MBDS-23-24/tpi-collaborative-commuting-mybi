@@ -36,7 +36,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     TripsScreen(), // Your trips screen
     ChatScreen(/*chatmodels: DataManager.instance.getUsers(), sourchat: DataManager.instance.userModel*/), // Replace with your messages screen
    // TripsScreen(), // Replace with your messages screen
-    ProfilePage(user: DataManager.instance.getUser()), // Replace with your more options screen
+    ProfilePage(user: DataManager.instance.getUser(), isCurrentUserProfile: true,), // Replace with your more options screen
     //TripsScreen(),
    // testing(),
   //  PassangerAccepted(DriverID:20),
