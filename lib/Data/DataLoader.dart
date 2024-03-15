@@ -8,6 +8,7 @@ import 'package:tpi_mybi/model/login.dart';
 import 'package:tpi_mybi/ui/views/Chat/LatestMessageModel.dart';
 
 import '../model/AccessToken.dart';
+import '../model/Passenger.dart';
 import '../model/Rating.dart';
 import '../ui/views/Chat/Meesage.dart'; // Pour qutiliser json.encode
 
@@ -413,11 +414,11 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
     }
   }
 
-  Future<List<UserModel>?> getPassengersByIdTrip(int? voyageId) async {
+  Future<List<Passenger>?> getPassengersByIdTrip(int? voyageId) async {
     var manager = DataManager.instance;
     var token2 = DataManager.instance.token;
    // var baseUrl = 'http://localhost:3000/api/trip/getPassengersByTrip/$voyageId';
-    var url = Uri.parse('http://localhost:3000/api/trip/getPassengersByTrip/$voyageId');
+      var url = Uri.parse('http://localhost:3000/api/trip/getPassengersByTrip/$voyageId');
     // var url = Uri.parse('http://localhost:3000/api/users');
     try {
       var headers = {
@@ -426,10 +427,10 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
       };
       var response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
-        List<dynamic> userJson = json.decode(response.body);
-        List<UserModel> users = userJson.map((json) => UserModel.fromJson(json)).toList();
+        List<dynamic> paasengerJson = json.decode(response.body);
+        List<Passenger> paasangers = paasengerJson.map((json) => Passenger.fromJson(json)).toList();
         print('Réponse de l\'API: ${response.body}');
-        return users;
+        return paasangers;
       } else if( response.statusCode == 204){
         return null;
       }

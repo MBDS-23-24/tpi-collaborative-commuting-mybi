@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tpi_mybi/model/Passenger.dart';
 
 // Assurez-vous d'avoir les bons chemins d'import pour vos modèles et DataLoader
 import '../../../Data/DataLoader.dart';
@@ -18,7 +19,7 @@ class TripDetailScreen extends StatefulWidget {
 }
 class _TripDetailScreenState extends State<TripDetailScreen> {
   UserModel? _user;
-  List<UserModel>? passengers;
+  List<Passenger>? passengers;
   UserModel? currentUser;
   bool _isLoading = true; // Indicateur de chargement
 
@@ -31,6 +32,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   void _loadUserInformation() async {
     _user = await DataLoader.instance.getUser(widget.trip.conducteurId);
     passengers = await DataLoader.instance.getPassengersByIdTrip(widget.trip.voyageId);
+    print(passengers);
+    print(passengers?[0].email);
     currentUser = DataManager.instance.getUser();
     setState(() {
       _isLoading = false; // Les données sont chargées, on arrête l'indication de chargement
@@ -99,10 +102,23 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                         Divider(),
                         DetailItem(label: "Name", value: "${_user!.firstName} ${_user!.lastName}"),
                         DetailItem(label: "Email", value: _user!.email ?? 'No email'),
+                        if (currentUser?.role == "PASSAGER") // Ajouter conditionnellement l'icône de message
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end, // Aligner l'icône à droite
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.message, color: Colors.blue),
+                                onPressed: () {
+                                  // Logique pour ouvrir la conversation avec le conducteur ici
+                                },
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                   ),
                 ),
+
               SizedBox(height: 20),
               // Passengers information
               if (passengers != null)
@@ -124,14 +140,15 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min, // Important pour s'assurer que le Row s'adapte au contenu
                               children: [
-                                if (true) // Supposons que isAccepted détermine si le bouton Accepter doit être affiché
+                                if (currentUser?.role=="CONDUCTEUR") // Supposons que isAccepted détermine si le bouton Accepter doit être affiché
                                   ElevatedButton(
                                     onPressed: () {
                                       // Implémentez la logique pour accepter le passager ici
                                     },
                                     child: Text('Accept'),
                                   ),
-                                IconButton(
+                                if (currentUser?.role=="CONDUCTEUR") // Supposons que isAccepted détermine si le bouton Accepter doit être affiché
+                                  IconButton(
                                   icon: Icon(Icons.message, color: Colors.blue),
                                   onPressed: () {
                                     // Logique pour ouvrir la conversation avec le passager ici
