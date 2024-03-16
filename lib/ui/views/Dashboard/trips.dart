@@ -44,7 +44,7 @@ class _TripsScreenState extends State<TripsScreen> {
   _TripsScreenState() {
     _seatController = TextEditingController(); // Initialize the seat controller
     // Initialize the socket in the constructor
-  socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
+  socket = IO.io('http://localhost:3000', <String, dynamic>{
 
 
     'transports': ['websocket'],
@@ -58,7 +58,7 @@ class _TripsScreenState extends State<TripsScreen> {
   void initState() {
     super.initState();
     // Replace 'http://localhost:3001' with your server address
-    socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
+    socket = IO.io('http://localhost:3000', <String, dynamic>{
 
 
     'transports': ['websocket'],
@@ -108,7 +108,7 @@ class _TripsScreenState extends State<TripsScreen> {
     // Create Request object
     
     Request userRequest = Request(
-      userId: user.userID,
+      userId: user.userID!,
       type: user.role.toString(),
       originLat: departLocation.latitude,
       originLong: departLocation.longitude,
@@ -123,12 +123,13 @@ class _TripsScreenState extends State<TripsScreen> {
 
     // Send user request via socket
     socket.emit('addRequest', userRequest.toJson());
+    print(userRequest);
 
     // Clean up the markers and reset UI elements
     _resetUI();
 
     // Navigate to the corresponding page based on user role
-    _navigateBasedOnUserRole(user, departLocation, destinationLocation);
+    _navigateBasedOnUserRole(user, departLocation, destinationLocation, numberOfSeats as double);
 
     // Now properly disconnect and dispose off the socket
     socket.disconnect();
@@ -146,7 +147,7 @@ class _TripsScreenState extends State<TripsScreen> {
     });
   }
 
-  Future<void> _navigateBasedOnUserRole(UserModel user, gmaps.LatLng departLocation, gmaps.LatLng destinationLocation) async {
+  Future<void> _navigateBasedOnUserRole(UserModel user, gmaps.LatLng departLocation, gmaps.LatLng destinationLocation, double requiredSeats) async {
     if (user.role.toString() == 'PASSAGER') {
       await Navigator.push(
         context,
@@ -154,7 +155,8 @@ class _TripsScreenState extends State<TripsScreen> {
           departLat: departLocation.latitude,
           departLong: departLocation.longitude,
           destLat: destinationLocation.latitude,
-          destLong: destinationLocation.longitude, 
+          destLong: destinationLocation.longitude,
+          requiredSeats: requiredSeats,
         )),
       );
     } else if (user.role.toString() == 'CONDUCTEUR') {

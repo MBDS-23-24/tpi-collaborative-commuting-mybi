@@ -27,8 +27,8 @@ class DataLoader {
   Future<void> getUsers(String token) async {
     var manager = DataManager.instance;
     var token2 = DataManager.instance.token;
-    var url = Uri.parse('https://lalabi.azurewebsites.net/api/users');
-    //var url = Uri.parse('http://localhost:3000/api/users');
+    //var url = Uri.parse('https://lalabi.azurewebsites.net/api/users');
+    var url = Uri.parse('http://localhost:3000/api/users');
     try {
       var headers = {
         'Authorization': 'Bearer $token2' // Remplacez VOTRE_TOKEN_ICI par votre token réel
@@ -57,9 +57,9 @@ class DataLoader {
 
   Future<void> createUser(UserModel user) async {
     var manager = DataManager.instance;
-    var url = Uri.parse('https://lalabi.azurewebsites.net/api/users');
+    //var url = Uri.parse('https://lalabi.azurewebsites.net/api/users');
 
-    //var url = Uri.parse('http://localhost:3000/api/users');
+    var url = Uri.parse('http://localhost:3000/api/users');
     // Convertir l'objet UserModel en JSON
     var userJson = user.toJson(); // Assurez-vous que vous avez une méthode toJson dans votre classe UserModel
     print(userJson);
@@ -91,8 +91,8 @@ class DataLoader {
 
   Future<void> login(LoginModel login) async {
     var manager = DataManager.instance;
-    var url = Uri.parse('https://lalabi.azurewebsites.net/login');
-    //var url = Uri.parse('http://localhost:3000/login');
+    //var url = Uri.parse('https://lalabi.azurewebsites.net/login');
+    var url = Uri.parse('http://localhost:3000/login');
     // Convertir l'objet UserModel en JSON
     var userJson = login.toJson(); // Assurez-vous que vous avez une méthode toJson dans votre classe UserModel
 
@@ -129,7 +129,8 @@ class DataLoader {
 
   Future<void> postMessage(String message, int? sourceId, int? targetId) async{
 
-    var url = Uri.parse('https://lalabi.azurewebsites.net/api/messages/');
+    //var url = Uri.parse('https://lalabi.azurewebsites.net/api/messages/');
+    var url = Uri.parse('http://localhost:3000/api/messages/');
     var messageSended = new MessageModel(0, targetId, sourceId, message, DateTime.now());
     var messageJson = messageSended.toJson();
 
@@ -166,8 +167,8 @@ class DataLoader {
 
 Future<void> getMessages(int? sourceId, int? targetId) async {
     var manager = DataManager.instance;
-    var url = Uri.parse('https://lalabi.azurewebsites.net/api/messages/messagesBetween/$sourceId/$targetId');
-    //var url = Uri.parse('http://localhost:3000/api/messages/$sourceId/$targetId');
+    //var url = Uri.parse('https://lalabi.azurewebsites.net/api/messages/messagesBetween/$sourceId/$targetId');
+    var url = Uri.parse('http://localhost:3000/api/messages/$sourceId/$targetId');
    // var url = Uri.parse('https://lalabi.azurewebsites.net/api/messages/messagesBetween/7/5');
 
     try {
@@ -197,8 +198,8 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
 
   Future<void> getLatestMessages(int? idUser) async {
     var manager = DataManager.instance;
-    var url = Uri.parse('https://lalabi.azurewebsites.net/api/messages/getLatestMessages/$idUser');
-    //var url = Uri.parse('http://localhost:3000/api/messages/latestMessages/$idUser');
+    //var url = Uri.parse('https://lalabi.azurewebsites.net/api/messages/getLatestMessages/$idUser');
+    var url = Uri.parse('http://localhost:3000/api/messages/latestMessages/$idUser');
     try {
       var headers = {
         'Authorization': 'Bearer ${DataManager.instance.token}' // Remplacez VOTRE_TOKEN_ICI par votre token réel
@@ -226,8 +227,8 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
 
   Future<void> rateUser(int? idUser, double rating, String? content) async {
     var manager = DataManager.instance;
-    var url = Uri.parse('https://lalabi.azurewebsites.net/api/avis/');
-    // var url = Uri.parse('http://localhost:3000/api/avis/');
+    //var url = Uri.parse('https://lalabi.azurewebsites.net/api/avis/');
+     var url = Uri.parse('http://localhost:3000/api/avis/');
 
     var rateSended = RatingModel(0,DataManager.instance.getUser().userID, idUser, content , rating.toInt());
     var rateJson = rateSended.toJson();
@@ -255,8 +256,8 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
 
   Future<void> deleteUser(int userID) async {
   var manager = DataManager.instance;
-  var url = Uri.parse('https://lalabi.azurewebsites.net/api/users/$userID');
-  //var url = Uri.parse('http://localhost:3000/api/avis/$userID');
+  //var url = Uri.parse('https://lalabi.azurewebsites.net/api/users/$userID');
+  var url = Uri.parse('http://localhost:3000/api/avis/$userID');
 
   try {
     var response = await http.delete(
@@ -282,8 +283,8 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
 
 Future<void> updateUser(UserModel user) async {
   var manager = DataManager.instance;
-  var url = Uri.parse('https://lalabi.azurewebsites.net/api/users/${user.userID}');
-  //var url = Uri.parse('http://localhost:3000/api/users/${user.userID}');
+  //var url = Uri.parse('https://lalabi.azurewebsites.net/api/users/${user.userID}');
+  var url = Uri.parse('http://localhost:3000/api/users/${user.userID}');
   
 
   // Convertir l'objet UserModel en JSON

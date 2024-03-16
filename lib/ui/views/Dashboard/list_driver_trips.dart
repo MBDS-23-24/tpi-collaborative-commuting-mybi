@@ -13,12 +13,14 @@ class ListDriverTrips extends StatefulWidget {
   final double departLong;
   final double destLat;
   final double destLong;
+  final double requiredSeats;
 
   ListDriverTrips({
     required this.departLat,
     required this.departLong,
     required this.destLat,
     required this.destLong,
+    required this.requiredSeats,
   });
 
   @override
@@ -40,7 +42,7 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
 
   // Initialize socket and fetch drivers
   void initializeSocketAndFetchDrivers() {
- socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
+ socket = IO.io('http://localhost:3000', <String, dynamic>{
 
 
     'transports': ['websocket'],
@@ -151,6 +153,7 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
       'originLong': widget.departLong,
       'destinationLat': widget.destLat,
       'destinationLong': widget.destLong,
+      'requiredSeats': widget.requiredSeats,
     });
   }
 
@@ -282,6 +285,7 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
       'originLong': widget.departLong,
       'destinationLat': widget.destLat,
       'destinationLong': widget.destLong,
+      'requiredSeats': widget.requiredSeats,
     });
   }
 
