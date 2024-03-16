@@ -12,12 +12,12 @@ class UserModel {
   final String? pathImage;
   final String? password;
   final String? role;
-  final String? biograthy;
+  final String? biography;
   String? token;
   String currentMessage = "Hello";
   String time = "4:00";
 
-  UserModel({this.userID, this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biograthy});
+  UserModel({this.userID, this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
 
  // UserModel({required this.uid, /*required this.uid,*/ this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
 
@@ -34,14 +34,14 @@ class UserModel {
 
   // Méthode toJson pour la sérialisation JSON
   Map<String, dynamic> toJson() => {
-    'userID': userID,
-    'email': email,
+    //'userID': userID,
     'firstName': firstName,
     'lastName': lastName,
-    'photoURL': pathImage,
+    'email': email,
     'password': password,
+    'photoURL': pathImage,
+    'biography': biography,
     'role': role,
-    'biograthy': biograthy,
     // Ajoutez d'autres champs ici
   };
 
@@ -54,7 +54,7 @@ class UserModel {
       email: json['email'],
       password: json['password'],
       pathImage: json['photoURL'],
-      biograthy: json['biograthy'],
+        biography: json['biography'],
       role: json['role']
     );
   }

@@ -35,9 +35,17 @@ class _DriverAcceptedState extends State<DriverAccepted> {
   LocationData? _currentLocation;
   @override
   void dispose() {
-    peer.dispose();
-    _controller.dispose();
+
     super.dispose();
+    if (conn != null) {
+
+
+
+      _controller.dispose();
+    }
+
+    _locationUpdateTimer?.cancel();
+
   }
 
   @override
@@ -46,19 +54,19 @@ class _DriverAcceptedState extends State<DriverAccepted> {
     _initLocationService();
     final UserModel user = DataManager.instance.getUser();
     peer = Peer(id: user.userID.toString()); // Initialize peer here
-
+    if (!mounted) return;
     peer.on("open", null, (ev, context) {
       setState(() {
-        print("jes suis dans DriverAccepted open =  ${peer.id}");
+        print("jes suis dans DriverAccepted open peer =  ${peer.id}");
         peerId = peer.id;
       });
     });
 
     peer.on("connection", null, (ev, context) {
 
-      print("je suis dans DriverAccepted connection  ev.eventData =  ${ev.eventData}");
+      print("je suis dans DriverAccepted peer  dans connection ev.eventData =  ${ev.eventData}");
       conn = ev.eventData as DataConnection;
-
+      if (!mounted) return;
       setState(() {
         connected = true;
       });
@@ -66,11 +74,12 @@ class _DriverAcceptedState extends State<DriverAccepted> {
 
     peer.on("data", null, (ev, _) {
       final data = ev.eventData as String;
-      print("je suis dans DriverAccepted data  data=  $data");
+      print("je suis dans DriverAccepted peer  data=  $data");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
 
 
       Map<String, double> latLng = parseLatLng(data);
+      if (!mounted) return;
       setState(() {
         _markers.add(
           Marker(
@@ -82,7 +91,13 @@ class _DriverAcceptedState extends State<DriverAccepted> {
       });
 
     });
+    BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(48, 48)), 'assets/driverIcon.webp')
+        .then((d) {
+      customIcon = d;
+    });
   }
+  late BitmapDescriptor customIcon;
 
   Map<String, double> parseLatLng(String latLngString) {
     // Assurez-vous que la chaîne d'entrée est formatée correctement comme du JSON
@@ -128,6 +143,7 @@ class _DriverAcceptedState extends State<DriverAccepted> {
             ),
           ),
         );
+        if (!mounted) return;
         setState(() {
           _markers.add(
             Marker(
@@ -143,17 +159,42 @@ class _DriverAcceptedState extends State<DriverAccepted> {
     final connection = peer.connect(_controller.text);
     conn = connection;
 
+    if (!mounted) return;
     conn?.on("open", null, (ev, _) {
-      print("je suis dans DriverAccepted open  ev.eventData=  ${ev.eventData}");
+      print("je suis dans DriverAccepted open conn  ev.eventData= sendLocationUpdatesTest ");
+      sendLocationUpdatesTest();
       setState(() {
+        sendLocationUpdatesTest();
         connected = true;
       });
 
       conn?.on("data", null, (ev, _) {
         final data = ev.eventData as String;
-        print("je suis dans DriverAccepted data  data=  ${ev.eventData}");
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(data)));
+        print("je suis dans DriverAccepted conn  data=  ${ev.eventData}");
+        //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
+        if (!mounted) return;
+        Map<String, double> latLng = parseLatLng(data);
+        setState(() {
+
+          mapController!.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(
+                target: LatLng(latLng['latitude']!, latLng['longitude']!),
+                zoom: 14,
+              ),
+            ),
+          );
+
+          print("je suis dans passangerAccepted data  data=  ${latLng['latitude']}");
+          _markers.add(
+            Marker(
+                markerId: MarkerId("peerLocation"),
+                position: LatLng(latLng['latitude']!, latLng['longitude']!),
+                icon:customIcon /*BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet)*/
+            ),
+          );
+        });
+        //---------------------
       });
     });
   }
@@ -180,14 +221,93 @@ class _DriverAcceptedState extends State<DriverAccepted> {
       }
     });
   }
-  @override
+
+  Timer? _locationUpdateTimer;
+
+  void sendLocationUpdatesTest() {
+    _locationUpdateTimer?.cancel();
+    // Function to send static location updates to peer every 3 seconds
+    _locationUpdateTimer =  Timer.periodic(const Duration(seconds: 10), (Timer t) {
+      // Localisation statique de Cannes, France pour le test
+      const double staticLatitude = 43.552847; // Latitude statique de Cannes
+      const double staticLongitude = 7.017369; // Longitude statique de Cannes
+
+      print("Envoi de la localisation statique de Cannes: latitude=$staticLatitude longitude=$staticLongitude");
+
+      // Création du paquet de données de localisation avec les coordonnées statiques
+      final Map<String, dynamic> locationData = {
+        "latitude": staticLatitude,
+        "longitude": staticLongitude,
+      };
+
+      // Envoi des données de localisation statique au pair
+      conn?.send(locationData.toString());
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("Driver Accepted"), // Titre optionnel pour l'AppBar
+        actions: [/*
+          IconButton(
+            icon: Icon(
+              Icons.chat,
+              color: Colors.blue,
+            ),
+            onPressed: () {
+              conn?.close();
+              peer.socket.close();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => IndividualPage(
+                    chatModel: DataManager.instance.getUserById(passengerId),
+                    sourchat: DataManager.instance.getUser(),
+                  ),
+                ),
+              );
+            },
+          ),
+        */],
+      ),
       body: Column(
         children: [
           Expanded(
-            flex: 5,
+            flex: 3,
+            child: Container(
+              padding: EdgeInsets.all(8), // Ajoute un peu d'espace autour
+              color: Colors.white,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  _renderState(), // Affiche l'état de connexion
+                  IconButton(
+                    icon: Icon(
+                      Icons.chat,
+                      color: Colors.blue,
+                    ),
+                    onPressed: () {
+                      conn?.close();
+                      peer.socket.close();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => IndividualPage(
+                            chatModel: DataManager.instance.getUserById(passengerId),
+                            sourchat: DataManager.instance.getUser(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          Expanded(
+            flex: 7, // Donne plus d'espace à la carte
             child: gmaps.GoogleMap(
               mapType: gmaps.MapType.normal,
               initialCameraPosition: gmaps.CameraPosition(
@@ -200,50 +320,6 @@ class _DriverAcceptedState extends State<DriverAccepted> {
               markers: _markers,
             ),
           ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              color: Colors.white,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _renderState(),
-                    const Text(
-                      'Connection ID:',
-                    ),
-                    SelectableText("Peer ID"),
-                    ElevatedButton(
-                      onPressed: () {
-                        //sendHelloWorld();
-                        sendLocationUpdates();
-                      },
-                      child: const Text("Send Hello World to peer"),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-        Expanded(
-          flex: 1,
-        child: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (contex) => IndividualPage(
-                        chatModel: DataManager.instance.getUserById(passengerId),
-                        sourchat: DataManager.instance.getUser()
-                      )));
-            },
-            child: Icon(
-              Icons.chat,
-              color: Colors.black,
-            ),
-          ),
-        ),
         ],
       ),
     );

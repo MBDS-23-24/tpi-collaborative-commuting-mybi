@@ -21,13 +21,13 @@ class DataLoader {
     return _instance!;
   }
 
-  String urlPathHosted = "https://integrationlalabi.azurewebsites.net/";
+  String urlPathHosted = "https://lalabi.azurewebsites.net/";
   String urlPathLocal = "http://localhost:3000/";
 
   Future<void> getUsers(String token) async {
     var manager = DataManager.instance;
     var token2 = DataManager.instance.token;
-    var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users');
+    var url = Uri.parse('${urlPathHosted}api/users');
    // var url = Uri.parse('http://localhost:3000/api/users');
     try {
       var headers = {
@@ -57,7 +57,7 @@ class DataLoader {
 
   Future<void> createUser(UserModel user) async {
     var manager = DataManager.instance;
-    var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/users');
+    var url = Uri.parse('${urlPathHosted}api/users');
 
    // var url = Uri.parse('http://localhost:3000/api/users');
     // Convertir l'objet UserModel en JSON
@@ -91,7 +91,7 @@ class DataLoader {
 
   Future<void> login(LoginModel login) async {
     var manager = DataManager.instance;
-    var url = Uri.parse('https://integrationlalabi.azurewebsites.net/login');
+    var url = Uri.parse('${urlPathHosted}login');
    // var url = Uri.parse('http://localhost:3000/login');
     // Convertir l'objet UserModel en JSON
     var userJson = login.toJson(); // Assurez-vous que vous avez une méthode toJson dans votre classe UserModel
@@ -129,7 +129,7 @@ class DataLoader {
 
   Future<void> postMessage(String message, int? sourceId, int? targetId) async{
 
-    var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/messages/');
+    var url = Uri.parse('${urlPathHosted}api/messages/');
     var messageSended = new MessageModel(0, targetId, sourceId, message, DateTime.now());
     var messageJson = messageSended.toJson();
 
@@ -166,7 +166,7 @@ class DataLoader {
 
 Future<void> getMessages(int? sourceId, int? targetId) async {
     var manager = DataManager.instance;
-    var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/messages/messagesBetween/$sourceId/$targetId');
+    var url = Uri.parse('${urlPathHosted}api/messages/messagesBetween/$sourceId/$targetId');
     //var url = Uri.parse('http://localhost:3000/api/messages/$sourceId/$targetId');
    // var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/messages/messagesBetween/7/5');
 
@@ -197,7 +197,7 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
 
   Future<void> getLatestMessages(int? idUser) async {
     var manager = DataManager.instance;
-    var url = Uri.parse('https://integrationlalabi.azurewebsites.net/api/messages/getLatestMessages/$idUser');
+    var url = Uri.parse('${urlPathHosted}api/messages/getLatestMessages/$idUser');
     //var url = Uri.parse('http://localhost:3000/api/messages/latestMessages/$idUser');
     try {
       var headers = {

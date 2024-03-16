@@ -41,12 +41,13 @@ class _TripsScreenState extends State<TripsScreen> {
   bool _isDestinationLocationSelected = false;
   _TripsScreenState() {
     // Initialize the socket in the constructor
-  socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
-
-
+  /*
+    socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
     'transports': ['websocket'],
       'autoConnect': false,
     });
+
+   */
 
     // Add listeners and perform other initialization tasks here if needed
   }
@@ -55,19 +56,22 @@ class _TripsScreenState extends State<TripsScreen> {
   void initState() {
     super.initState();
     // Replace 'http://localhost:3001' with your server address
-    socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
 
-
-    'transports': ['websocket'],
-      'autoConnect': false,
+    socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
+    'transports': ['websocket'], 'autoConnect': false,
     });
 
+    /*
     socket.onConnect((_) {
       print('connected');
       // Automatically fetch the list of drivers after connection
-      fetchDrivers();
+   //   fetchDrivers();
       // Start the timer to fetch drivers periodically
-      timer = Timer.periodic(Duration(seconds: 10), (Timer t) => fetchDrivers());
+      timer = Timer.periodic(Duration(seconds: 10), (Timer t) =>
+      {
+       // fetchDrivers(),
+        print("chui dans timer pour fetch drivers")
+      } );
     });
 
     socket.on('allDrivers', (data) {
@@ -79,6 +83,8 @@ class _TripsScreenState extends State<TripsScreen> {
     });
 
     socket.connect();
+    */
+
   }
 
   // Function to fetch drivers from the server
@@ -88,9 +94,17 @@ class _TripsScreenState extends State<TripsScreen> {
   }
   @override
   void dispose() {
-    timer.cancel();
-    socket.dispose();
+  //  timer.cancel();
+    //socket.dispose();
     super.dispose();
+
+    /*
+    socket.emit('disconnect');
+    socket.disconnect();
+    socket.dispose();
+     */
+
+
   }
   void findRide() async {
     // Get current user details
@@ -122,8 +136,7 @@ class _TripsScreenState extends State<TripsScreen> {
     _navigateBasedOnUserRole(user, departLocation, destinationLocation);
 
     // Now properly disconnect and dispose off the socket
-    socket.disconnect();
-    socket.dispose();
+
   }
 
   void _resetUI() {
@@ -366,8 +379,6 @@ class _TripsScreenState extends State<TripsScreen> {
 
   // Method to handle the onPressed event of the Find ride button
   void _findRideButtonPressed() {
-
-
     findRide();
   }
 

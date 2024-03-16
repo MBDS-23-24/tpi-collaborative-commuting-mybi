@@ -77,6 +77,12 @@ class _IndividualPageState extends State<IndividualPage> {
   void dispose() {
     super.dispose();
     DataManager.instance.removeListener(_onResponse);
+    /*
+    socket.emit("disconnect");
+    socket.disconnect();
+    socket.close();
+
+     */
   }
 
   void _onResponse(DataManagerUpdateType type) {
@@ -92,7 +98,7 @@ class _IndividualPageState extends State<IndividualPage> {
   void connect() {
    // MessageModel messageModel = MessageModel(0, widget.chatModel.uid, widget.sourchat.uid,  );
 
-    socket = IO.io("wss://integrationlalabi.azurewebsites.net:443", <String, dynamic>{
+    socket = IO.io("wss://lalabi.azurewebsites.net:443", <String, dynamic>{
       "transports": ["websocket"],
       "autoConnect": false,
       "upgrade": false

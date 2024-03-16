@@ -40,9 +40,7 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
 
   // Initialize socket and fetch passengers
   void initializeSocketAndFetchPassengers() {
-   socket = IO.io('wss://integrationlalabi.azurewebsites.net:443', <String, dynamic>{
-
-
+   socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
     'transports': ['websocket'],
       'autoConnect': false,
     });
@@ -50,6 +48,7 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
     socket.connect();
 
     socket.onConnect((_) {
+      print ('connect webSocket passengers');
       fetchPassengers();
       timer = Timer.periodic(Duration(seconds: 1), (Timer t) => fetchPassengers());
     });
@@ -70,6 +69,7 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
 
   // Function to fetch passengers from the server
   void fetchPassengers() {
+    print('Fetching passengers...');
     UserModel user = DataManager.instance.getUser();
     socket.emit('getDriverRequests', {
       'driverId': user.userID,
@@ -257,7 +257,12 @@ class _ListPassengersTripsState extends State<ListPassengersTrips> {
   @override
   void dispose() {
     timer.cancel();
-    socket.dispose();
     super.dispose();
+    /*
+    if (socket.connected) {
+      socket.disconnect();
+    }
+
+     */
   }
 }
