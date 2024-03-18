@@ -112,6 +112,13 @@ class DataManager {
     }
   }
 
+  void logout() {
+  userModel = UserModel(); // Réinitialisez l'utilisateur
+  token = ""; // Effacez le jeton
+  SaveDataManager().removeToken(); // Supprimez le token des préférences partagées
+  SaveDataManager().removeUser(); // Supprimez les données utilisateur des préférences partagées
+}
+
   responseGetUsers(bool hasError){
     for (var listener in _listeners) {
       if (!hasError){

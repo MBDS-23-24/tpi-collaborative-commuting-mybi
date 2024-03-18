@@ -1,4 +1,3 @@
-// Update the model class to include the 'type' property
 class Request {
   final int? userId;
   final double originLat;
@@ -8,6 +7,7 @@ class Request {
   final DateTime time;
   final String status;
   final String type; // Add the 'type' property
+  final int seats; // Add the 'seats' property
 
   Request({
     required this.userId,
@@ -18,7 +18,9 @@ class Request {
     required this.time,
     required this.status,
     required this.type, // Initialize the 'type' property
+    required this.seats, // Initialize the 'seats' property
   });
+
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
@@ -29,8 +31,10 @@ class Request {
       'time': time.toIso8601String(),
       'status': status,
       'type': type,
+      'seats': seats, // Serialize the 'seats' property
     };
   }
+
   // Add factory method to deserialize JSON
   factory Request.fromJson(Map<String, dynamic> json) {
     return Request(
@@ -42,6 +46,7 @@ class Request {
       time: DateTime.parse(json['time']),
       status: json['status'],
       type: json['type'], // Deserialize the 'type' property
+      seats: json['seats'], // Deserialize the 'seats' property
     );
   }
 }

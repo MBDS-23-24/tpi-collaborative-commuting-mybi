@@ -17,7 +17,9 @@ class UserModel {
   String currentMessage = "Hello";
   String time = "4:00";
 
+
   UserModel({this.userID, this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
+
 
  // UserModel({required this.uid, /*required this.uid,*/ this.email, this.firstName, this.lastName, this.pathImage, this.password, this.role, this.biography});
 
@@ -42,6 +44,7 @@ class UserModel {
     'photoURL': pathImage,
     'biography': biography,
     'role': role,
+
     // Ajoutez d'autres champs ici
   };
 
@@ -55,6 +58,7 @@ class UserModel {
       password: json['password'],
       pathImage: json['photoURL'],
         biography: json['biography'],
+
       role: json['role']
     );
   }
