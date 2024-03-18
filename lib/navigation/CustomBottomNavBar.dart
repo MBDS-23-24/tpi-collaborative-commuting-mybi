@@ -36,7 +36,6 @@ class CustomBottomNavBar extends StatelessWidget {
             pageType: PageType.Navigation,
           ),
           _buildBottomNavItem(
-
             icon: Icons.message,
             label: 'Messages',
             index: 2,
@@ -50,9 +49,17 @@ class CustomBottomNavBar extends StatelessWidget {
             context: context,
             pageType: PageType.More,
           ),
+          _buildBottomNavItem( // Nouvelle icône ajoutée
+            icon: Icons.travel_explore, // Changez selon l'icône que vous souhaitez
+            label: 'Voyages',
+            index: 4, // Nouvel index pour le nouveau bouton
+            context: context,
+            pageType: PageType.Voyages,
+          ),
         ],
       ),
     );
+
   }
 
   Widget _buildBottomNavItem({
@@ -96,5 +103,7 @@ enum PageType {
   Home,
   Navigation,
   Messages,
-  More
+  More,
+  Voyages, // Nouvelle page ajoutée
+
 }

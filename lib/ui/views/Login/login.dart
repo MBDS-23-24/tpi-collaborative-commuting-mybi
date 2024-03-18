@@ -57,9 +57,9 @@ class _SignInScreenState extends State<SignInScreen> {
             builder: (context) => DashboardScreen(user: DataManager.instance.getUser()),
           ),
         );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User logged in successfully')),
-        );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User logged in successfully')),
+          );
       });
       break;
     case DataManagerUpdateType.userLoginError:

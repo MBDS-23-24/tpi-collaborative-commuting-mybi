@@ -1,4 +1,5 @@
 import 'package:tpi_mybi/Data/SaveDataManager.dart';
+import 'package:tpi_mybi/model/Trip.dart';
 import 'package:tpi_mybi/model/User.dart';
 import 'package:tpi_mybi/ui/views/Chat/Meesage.dart';
 
@@ -12,6 +13,7 @@ enum DataManagerUpdateType {
   getUsersSuccess,
   getUsersError,
   getMessagesSuccess,
+  getTripsSuccess,
   getLatestMessagesSuccess,
   getLatestMessagesError
 
@@ -33,6 +35,7 @@ class DataManager {
    String token = "";
    List<UserModel> users = [];
    List<MessageModel> messages = [];
+   List<VoyageModel> trips = [];
    List<LatestMessageModel> latestMessages = [];
 
   // Méthodes pour manipuler les données
@@ -141,6 +144,8 @@ class DataManager {
     return messages;
   }
 
+
+
   List<LatestMessageModel> getLatestMessages() {
     return latestMessages;
   }
@@ -149,15 +154,27 @@ class DataManager {
     this.latestMessages = latestMessages;
   }
 
-  responseGetLatestMessages(bool hasError){
-    for (var listener in _listeners) {
-      if (!hasError){
-        listener(DataManagerUpdateType.getLatestMessagesSuccess);
-      }
-      else {
-        listener(DataManagerUpdateType.getLatestMessagesError);
+    responseGetLatestMessages(bool hasError){
+      for (var listener in _listeners) {
+        if (!hasError){
+          listener(DataManagerUpdateType.getLatestMessagesSuccess);
+        }
+        else {
+          listener(DataManagerUpdateType.getLatestMessagesError);
+        }
       }
     }
+
+    List<VoyageModel> getTrips() {
+      return trips;
+    }
+
+  setTrips(List<VoyageModel>  trips) {
+    this.trips = trips;
+    for (var listener in _listeners) {
+      listener(DataManagerUpdateType.getTripsSuccess);
+    }
   }
+
 
 }

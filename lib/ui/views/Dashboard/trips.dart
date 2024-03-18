@@ -4,17 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_location_search/flutter_location_search.dart';
+import 'package:tpi_mybi/Data/DataLoader.dart';
 import 'package:tpi_mybi/Data/DataManager.dart';
+import 'package:tpi_mybi/model/Trip.dart';
 import 'package:tpi_mybi/model/User.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:http/http.dart' as http;
 import 'package:tpi_mybi/model/request.dart';
+import 'package:tpi_mybi/ui/views/Dashboard/dashboard.dart';
 import 'package:tpi_mybi/ui/views/Dashboard/direction_info.dart';
+import 'package:tpi_mybi/ui/views/ListTrip/ListTripForPassenger.dart';
 import 'package:tpi_mybi/ui/views/Profile/profile.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../../../CostumColor.dart';
+import '../ListTrip/ListTripScreen.dart';
 import 'list_driver_trips.dart';
 import 'list_passengers_trips.dart';
+import 'package:intl/intl.dart';
 
 class TripsScreen extends StatefulWidget {
   @override
@@ -31,6 +37,10 @@ class _TripsScreenState extends State<TripsScreen> {
   String _destinationLocationText = 'Destination location';
   Set<gmaps.Polyline> _polylines = {};
   List<gmaps.LatLng> polylineCoordinates = [];
+  String _selectedDateText = 'Date & time';
+  int _selectedSeats = 1; // Default value is 1 seat
+  String _numberOfSeats = 'No. of seat';
+
 
   late IO.Socket socket;
   List<dynamic> listDrivers = [];
@@ -45,12 +55,9 @@ class _TripsScreenState extends State<TripsScreen> {
     _seatController = TextEditingController(); // Initialize the seat controller
     // Initialize the socket in the constructor
 
+
     socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
-
 //  socket = IO.io('http://localhost:3000', <String, dynamic>{
-
-
-
       'transports': ['websocket'],
       'autoConnect': false,
     });
@@ -62,6 +69,7 @@ class _TripsScreenState extends State<TripsScreen> {
   void initState() {
     super.initState();
     // Replace 'http://localhost:3001' with your server address
+
     socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
   //  socket = IO.io('http://localhost:3000', <String, dynamic>{
 
@@ -110,7 +118,12 @@ class _TripsScreenState extends State<TripsScreen> {
     gmaps.LatLng departLocation = _markers.firstWhere((marker) => marker.markerId.value == 'departLocation').position;
     gmaps.LatLng destinationLocation = _markers.firstWhere((marker) => marker.markerId.value == 'destinationLocation').position;
 
-    int numberOfSeats = int.tryParse(_seatController.text) ?? 0;
+
+    DateTime selectedDate = DateTime.parse(_selectedDateText);
+    int numberOfSeats = _selectedSeats;
+
+   // int numberOfSeats = int.tryParse(_seatController.text) ?? 0;
+
     // Create Request object
     
     Request userRequest = Request(
@@ -291,12 +304,19 @@ class _TripsScreenState extends State<TripsScreen> {
                   Divider(),
                   Row(
                     children: <Widget>[
-                      Expanded(child: _buildLocationTile(Icons.calendar_today, 'Date & time', () {/* handle date & time */})),
-                      Expanded(child: _buildSeatsInputField()),
+
+                      Expanded(child: _buildLocationTile(Icons.calendar_today, _selectedDateText, _selectDate)),
+                      Expanded(child: _buildLocationTile(Icons.person, _numberOfSeats, () {
+                        // Handle number of seats
+                      })),
+
+                   //   Expanded(child: _buildLocationTile(Icons.calendar_today, 'Date & time', () {/* handle date & time */})),
+                    //  Expanded(child: _buildSeatsInputField()),
+
                     ],
                   ),
                   SizedBox(height: 10),
-                  _buildFindRideButton(),
+                    _buildFindRideButton(),
                 ],
               ),
             ),
@@ -352,16 +372,50 @@ class _TripsScreenState extends State<TripsScreen> {
   }
 
   Widget _buildLocationTile(IconData icon, String title, VoidCallback onTap) {
+    UserModel user = DataManager.instance.getUser(); // Récupérez les informations de l'utilisateur
+    if(user.role=="PASSAGER")
+    _numberOfSeats="";
+
+
     return ListTile(
       leading: Icon(icon, color: myPrimaryColor),
       title: Text(title),
       onTap: onTap,
+      trailing: (title == _numberOfSeats && user.role != "PASSAGER")
+          ? DropdownButton<int>(
+        value: _selectedSeats,
+        items: [1, 2, 3, 4, 5] // Ajoutez plus de valeurs si nécessaire
+            .map((int value) {
+          return DropdownMenuItem<int>(
+            value: value,
+            child: Text(value.toString()),
+          );
+        }).toList(),
+        onChanged: (int? newValue) {
+          setState(() {
+            _selectedSeats = newValue!;
+          });
+        },
+      )
+          : null,
     );
   }
 
+
+
   Widget _buildFindRideButton() {
+    UserModel user = DataManager.instance.getUser();
     // Disable the button if either departure or destination location is not selected
     bool isButtonDisabled = !_isDepartureLocationSelected || !_isDestinationLocationSelected;
+
+    String buttonText = "Find ride"; // Texte par défaut
+
+    // Vérifiez le rôle de l'utilisateur et ajustez le texte du bouton en conséquence
+    if (user.role.toString() == 'PASSAGER') {
+      buttonText = _selectedDateText != 'Date & time' ? 'Find Ride in the Future' : 'Find Ride';
+    } else if (user.role.toString() == 'CONDUCTEUR') {
+      buttonText = _selectedDateText != 'Date & time' ? 'Planify a Trip' : 'Find Passengers';
+    }
 
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -373,12 +427,27 @@ class _TripsScreenState extends State<TripsScreen> {
         ),
         elevation: 2,
       ),
-      onPressed: isButtonDisabled ? null : _findRideButtonPressed, // Use null to disable the button
+      onPressed: isButtonDisabled ? null : () => _findRideButtonPressed(buttonText), // Pass buttonText to the method
       child: Center(
-        child: Text('Find ride'),
+        child: Text(buttonText), // Utilisez buttonText ici
       ),
     );
   }
+
+
+
+  // Method to handle the onPressed event of the Find ride button
+  void _findRideButtonPressed(String buttonText) {
+    if (buttonText == 'Planify a Trip') {
+      // Call the method for planning a trip
+      planATrip();
+    } else if (buttonText == 'Find Ride in the Future') {
+      // Call the method for finding a ride in the future
+      findFutureRide();
+    } else {
+      // Default action
+      findRide();
+    }
 
   Widget _buildSeatsInputField() {
     return TextFormField(
@@ -392,10 +461,13 @@ class _TripsScreenState extends State<TripsScreen> {
   }
 
   // Method to handle the onPressed event of the Find ride button
+    /*
   void _findRideButtonPressed() {
 
     findRide();
+
   }
+  */
 
   void _showLocationSearch(BuildContext context, {required bool isPickupLocation}) async {
     LocationData? locationData = await LocationSearch.show(
@@ -511,4 +583,112 @@ class _TripsScreenState extends State<TripsScreen> {
     directionInfo.encodedPoints = jsonData['routes'][0]['overview_polyline']['points'];
     return directionInfo;
   }
+
+  Future<void> _selectDate() async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 365)),
+    );
+    if (selectedDate != null) {
+      TimeOfDay? selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+      if (selectedTime != null) {
+        setState(() {
+          // Combine selected date and time
+          DateTime combinedDateTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute);
+          // Format the combined date time to remove seconds and milliseconds
+          String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm').format(combinedDateTime); // Format neutre
+          _selectedDateText = formattedDateTime;
+        });
+      }
+      }
+    print(_selectedDateText);
+    print(DateTime.parse(_selectedDateText));
+    }
+
+  void planATrip() async {
+    UserModel user = DataManager.instance.getUser();
+
+    // Create a new trip object with the required details
+    VoyageModel trip = VoyageModel(
+      conducteurId: user.userID,
+      depart: _pickupLocationText,
+      destination: _destinationLocationText,
+      timestamp: DateTime.parse(_selectedDateText), // Ensure this is a valid DateTime string
+      placeDisponible: _selectedSeats,
+    );
+    bool isSuccess = await DataLoader.instance.createVoyage(trip);
+
+    if (isSuccess) {
+     // remiseaZeroFormulaire();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Trip created successfully')),
+      );
+      // Add a slight delay to allow the user to see the SnackBar message
+      await Future.delayed(Duration(seconds: 1));
+      // Navigate to the ListTripScreenListTripScreen
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) =>  DashboardScreen(user: user)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to create Trip')),
+      );
+    }
+  }
+
+
+  void findFutureRide() async {
+      UserModel user = DataManager.instance.getUser();
+
+
+      // Create a new trip object with the required details
+      VoyageModel trip = VoyageModel(
+        conducteurId: user.userID,
+        depart: _pickupLocationText,
+        destination: _destinationLocationText,
+        timestamp: DateTime.parse(_selectedDateText), // Ensure this is a valid DateTime string
+        placeDisponible: _selectedSeats,
+      );
+      List<VoyageModel>? trips = await DataLoader.instance.getTripsForPassenger(trip);
+      print(trips);
+      if (trips != null ) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) =>  ListTripForPassenger(trips: trips)),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to get Trips')),
+        );
+      }
+
+
+
+    }
+
+  void remiseaZeroFormulaire() {
+     gmaps.GoogleMapController mapController;
+     gmaps.LatLng _center = const gmaps.LatLng(48.8566, 2.3522);
+     Set<gmaps.Marker> _markers = {};
+     _isFindRideSelected = true;
+     _pickupLocationText = 'Depart location';
+     _destinationLocationText = 'Destination location';
+    Set<gmaps.Polyline> _polylines = {};
+    List<gmaps.LatLng> polylineCoordinates = [];
+    _selectedDateText = 'Date & time';
+    _selectedSeats = 1; // Default value is 1 seat
+     _numberOfSeats = 'No. of seat';
+     IO.Socket socket;
+     List<dynamic> listDrivers = [];
+    Timer timer;
+  }
 }
+
+//}
+

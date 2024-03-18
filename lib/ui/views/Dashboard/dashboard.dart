@@ -9,6 +9,7 @@ import 'package:tpi_mybi/ui/views/Profile/profile.dart';
 import 'package:tpi_mybi/ui/views/home.dart';
 import '../../../Data/SaveDataManager.dart';
 import '../Chat/chat.dart';
+import '../ListTrip/ListTripScreen.dart';
 import '../Login/login.dart';
 import 'trips.dart'; // Import your TripsScreen
 import 'package:tpi_mybi/ui/views/Dashboard/DriverAccepted.dart';
@@ -33,7 +34,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Create a list of pages to make it easier to manage
   final List<Widget> _pages = [
     TripsScreen(), // Replace with your actual home screen
-    TripsScreen(), // Your trips screen
+    ListTripScreen(), // Your trips screen
     ChatScreen(/*chatmodels: DataManager.instance.getUsers(), sourchat: DataManager.instance.userModel*/), // Replace with your messages screen
    // TripsScreen(), // Replace with your messages screen
     ProfilePage(user: DataManager.instance.getUser(), isCurrentUserProfile: true,), // Replace with your more options screen
@@ -83,7 +84,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         height: 50.0,
         items: <Widget>[
           Icon(Icons.home, size: 30),
-          Icon(Icons.location_pin, size: 30),
+          Icon(Icons.list, size: 30),
           Icon(Icons.message, size: 30),
           Icon(Icons.account_circle, size: 30),
         ],
