@@ -28,7 +28,6 @@ class ListDriverTrips extends StatefulWidget {
 class _ListDriverTripsState extends State<ListDriverTrips> {
   late IO.Socket socket;
   List<dynamic> drivers = [];
-  List<dynamic> latestDriversList = [];
 
   late Timer timer;
 
@@ -42,12 +41,11 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
   // Initialize socket and fetch drivers
   void initializeSocketAndFetchDrivers() {
     socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
-    'transports': ['websocket'],
+
+
+      'transports': ['websocket'],
       'autoConnect': false,
     });
-
-    socket.connect();
-
     socket.on('rideAccepted', (data) {
       final status = data['status'];
       final driverId = data['driverId'];
@@ -120,17 +118,13 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
 
 
     });
-
-
-  //  fetchDrivers();
-    Map<int, dynamic> latestDriversMap = {};
+    socket.connect();
+    fetchDrivers();
 
     socket.onConnect((_) {
-      print ('connect webSocket drivers');
       fetchDrivers();
       // Start timer to periodically fetch drivers
-    //  timer = Timer.periodic(Duration(seconds: 10), (Timer t) => fetchDrivers());
-
+      timer = Timer.periodic(Duration(seconds: 3), (Timer t) => fetchDrivers());
     });
     socket.on('callDrivers', (data) {
       print('callDrivers callDrivers callDrivers: $data');
@@ -138,30 +132,14 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
       fetchDrivers();
 
     });
-
     socket.on('drivers', (data) {
       print('rani dkholt: $data');
+
       setState(() {
-        print('socket drivers drivers: $data');
-        List<dynamic> drivers = List.from(data);
-
-        drivers.forEach((driver) {
-          int userId = driver['userId'];
-          DateTime driverTime = DateTime.parse(driver['time']);
-
-          // Mettre à jour latestDriversMap avec le conducteur le plus récent pour chaque userId
-          if (!latestDriversMap.containsKey(userId) || DateTime.parse(latestDriversMap[userId]['time']).isBefore(driverTime)) {
-            latestDriversMap[userId] = driver;
-          }
-        });
-
-        // Convertir le Map en List<dynamic> pour obtenir la liste des conducteurs les plus récents
-         latestDriversList = latestDriversMap.values.toList();
-
-        // À ce stade, vous pouvez utiliser latestDriversList comme votre liste de conducteurs les plus récents
-        // Cette liste contient maintenant un seul élément par userId, celui ayant le timestamp le plus récent
+        // drivers.clear();
+        drivers = List.from(data);
       });
-  });
+    });
   }
 
   // Function to fetch drivers from the server
@@ -331,13 +309,7 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
   @override
   void dispose() {
     timer.cancel(); // Cancel the timer when disposing the widget
-    // Dispose the socket when disposing the widget
+    socket.dispose(); // Dispose the socket when disposing the widget
     super.dispose();
-    /*
-    if (socket.connected) {
-      socket.disconnect();
-    }
-
-     */
   }
 }

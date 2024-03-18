@@ -41,13 +41,12 @@ class _TripsScreenState extends State<TripsScreen> {
   bool _isDestinationLocationSelected = false;
   _TripsScreenState() {
     // Initialize the socket in the constructor
-  /*
     socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
-    'transports': ['websocket'],
+
+
+      'transports': ['websocket'],
       'autoConnect': false,
     });
-
-   */
 
     // Add listeners and perform other initialization tasks here if needed
   }
@@ -56,22 +55,19 @@ class _TripsScreenState extends State<TripsScreen> {
   void initState() {
     super.initState();
     // Replace 'http://localhost:3001' with your server address
-
     socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
-    'transports': ['websocket'], 'autoConnect': false,
+
+
+      'transports': ['websocket'],
+      'autoConnect': false,
     });
 
-    /*
     socket.onConnect((_) {
       print('connected');
       // Automatically fetch the list of drivers after connection
-   //   fetchDrivers();
+      fetchDrivers();
       // Start the timer to fetch drivers periodically
-      timer = Timer.periodic(Duration(seconds: 10), (Timer t) =>
-      {
-       // fetchDrivers(),
-        print("chui dans timer pour fetch drivers")
-      } );
+      timer = Timer.periodic(Duration(seconds: 10), (Timer t) => fetchDrivers());
     });
 
     socket.on('allDrivers', (data) {
@@ -83,8 +79,6 @@ class _TripsScreenState extends State<TripsScreen> {
     });
 
     socket.connect();
-    */
-
   }
 
   // Function to fetch drivers from the server
@@ -94,17 +88,9 @@ class _TripsScreenState extends State<TripsScreen> {
   }
   @override
   void dispose() {
-  //  timer.cancel();
-    //socket.dispose();
-    super.dispose();
-
-    /*
-    socket.emit('disconnect');
-    socket.disconnect();
+    timer.cancel();
     socket.dispose();
-     */
-
-
+    super.dispose();
   }
   void findRide() async {
     // Get current user details
@@ -136,7 +122,8 @@ class _TripsScreenState extends State<TripsScreen> {
     _navigateBasedOnUserRole(user, departLocation, destinationLocation);
 
     // Now properly disconnect and dispose off the socket
-
+    socket.disconnect();
+    socket.dispose();
   }
 
   void _resetUI() {
@@ -181,28 +168,34 @@ class _TripsScreenState extends State<TripsScreen> {
     mapController = controller;
     var currentLocation = await _getCurrentLocation();
 
-    setState(() {
+    setState(() async {
       mapController.animateCamera(
         gmaps.CameraUpdate.newCameraPosition(
-          gmaps.CameraPosition(target: currentLocation, zoom: 14.0),
+          gmaps.CameraPosition(target: currentLocation, zoom: 20.0),
         ),
       );
+
+      final icon = await gmaps.BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(48, 48)), 'assets/driverIconNew.png');
 
       _markers.add(
         gmaps.Marker(
           markerId: gmaps.MarkerId('currentLocation'),
           position: currentLocation,
-          icon: gmaps.BitmapDescriptor.defaultMarker,
+          icon:icon
+
         ),
       );
 
+      final iconDriver = await gmaps.BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(48, 48)), 'assets/driverIconNew.png');
       // Add markers for all drivers
       for (var driver in listDrivers) {
         _markers.add(
           gmaps.Marker(
             markerId: gmaps.MarkerId(driver['userId'].toString()), // Unique marker ID for each driver
             position: gmaps.LatLng(driver['originLat'], driver['originLong']), // Origin location
-            icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(gmaps.BitmapDescriptor.hueGreen), // Custom icon
+            icon: iconDriver, // Custom icon
           ),
         );
 
@@ -210,23 +203,16 @@ class _TripsScreenState extends State<TripsScreen> {
     });
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Text('Trips'),
+            Text('Home'),
             SizedBox(width: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage(user: DataManager.instance.getUser())),
-                );
-              },
-              child: Text('Profile'),
-            ),
           ],
         ),
         backgroundColor: myPrimaryColor,
@@ -306,11 +292,11 @@ class _TripsScreenState extends State<TripsScreen> {
   Widget _buildRideButtons() {
     return Row(
       children: <Widget>[
+        /*
         Expanded(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: _isFindRideSelected ? myPrimaryColor : Colors.white,
-              onPrimary: _isFindRideSelected ? Colors.white : myPrimaryColor,
+              foregroundColor: _isFindRideSelected ? Colors.white : myPrimaryColor, backgroundColor: _isFindRideSelected ? myPrimaryColor : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -328,8 +314,7 @@ class _TripsScreenState extends State<TripsScreen> {
         Expanded(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: !_isFindRideSelected ? myPrimaryColor : Colors.white,
-              onPrimary: !_isFindRideSelected ? Colors.white : myPrimaryColor,
+              foregroundColor: !_isFindRideSelected ? Colors.white : myPrimaryColor, backgroundColor: !_isFindRideSelected ? myPrimaryColor : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -343,7 +328,7 @@ class _TripsScreenState extends State<TripsScreen> {
             child: Text('Offer ride'),
           ),
         ),
-      ],
+      */],
     );
   }
 
@@ -361,8 +346,7 @@ class _TripsScreenState extends State<TripsScreen> {
 
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        primary: myPrimaryColor,
-        onPrimary: Colors.white,
+        foregroundColor: Colors.white, backgroundColor: myPrimaryColor,
         padding: EdgeInsets.symmetric(vertical: 15),
         textStyle: TextStyle(fontSize: 18),
         shape: RoundedRectangleBorder(
@@ -379,6 +363,8 @@ class _TripsScreenState extends State<TripsScreen> {
 
   // Method to handle the onPressed event of the Find ride button
   void _findRideButtonPressed() {
+
+
     findRide();
   }
 

@@ -33,7 +33,7 @@ class CustomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        /*
+
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -44,12 +44,12 @@ class CustomCard extends StatelessWidget {
             double rating = 3.0;
 
 
-              AlertDialog(
-              title: const Text('Noter l\'utilisateur'),
+             return AlertDialog(
+              title: const Text('Noter le conducteur'),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
-                    Text('Donnez une note et un commentaire à cet utilisateur.'),
+                    Text('Donnez une note et un commentaire à ce conducteur.'),
                     // Widget de notation
                     RatingBar.builder(
                       initialRating: 3,
@@ -99,15 +99,17 @@ class CustomCard extends StatelessWidget {
                 ),
               ],
             );
-          },
+
+          }
 
                 );
 
-               */
 
 
 
 
+
+      /*
          child: Navigator.push(
             context,
             MaterialPageRoute(
@@ -115,7 +117,7 @@ class CustomCard extends StatelessWidget {
                   chatModel: chatModel,
                   sourchat: sourchat,
 
-                )));
+                )));*/
       },
 
 
