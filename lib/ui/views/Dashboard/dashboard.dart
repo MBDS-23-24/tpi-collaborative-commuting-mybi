@@ -53,7 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     DataLoader dataLoader = DataLoader.instance;
     DataManager dataManager = DataManager.instance;
   //  dataLoader.getUsers(DataManager.instance.getToken());
-    dataLoader.getLatestMessages(DataManager.instance.getUser().userID);
+    // dataLoader.getLatestMessages(DataManager.instance.getUser().userID);
     dataManager.addListener(_onResponse);
   }
 

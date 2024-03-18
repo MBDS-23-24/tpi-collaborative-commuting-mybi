@@ -44,10 +44,14 @@ class _TripsScreenState extends State<TripsScreen> {
   _TripsScreenState() {
     _seatController = TextEditingController(); // Initialize the seat controller
     // Initialize the socket in the constructor
-  socket = IO.io('http://localhost:3000', <String, dynamic>{
+
+    socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
+
+//  socket = IO.io('http://localhost:3000', <String, dynamic>{
 
 
-    'transports': ['websocket'],
+
+      'transports': ['websocket'],
       'autoConnect': false,
     });
 
@@ -58,10 +62,12 @@ class _TripsScreenState extends State<TripsScreen> {
   void initState() {
     super.initState();
     // Replace 'http://localhost:3001' with your server address
-    socket = IO.io('http://localhost:3000', <String, dynamic>{
+    socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
+  //  socket = IO.io('http://localhost:3000', <String, dynamic>{
 
 
-    'transports': ['websocket'],
+
+      'transports': ['websocket'],
       'autoConnect': false,
     });
 
@@ -179,34 +185,42 @@ class _TripsScreenState extends State<TripsScreen> {
     mapController = controller;
     var currentLocation = await _getCurrentLocation();
 
-    setState(() {
+    setState(() async {
       mapController.animateCamera(
         gmaps.CameraUpdate.newCameraPosition(
-          gmaps.CameraPosition(target: currentLocation, zoom: 14.0),
+          gmaps.CameraPosition(target: currentLocation, zoom: 20.0),
         ),
       );
+
+      final icon = await gmaps.BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(48, 48)), 'assets/driverIconNew.png');
 
       _markers.add(
         gmaps.Marker(
           markerId: gmaps.MarkerId('currentLocation'),
           position: currentLocation,
-          icon: gmaps.BitmapDescriptor.defaultMarker,
+          icon:icon
+
         ),
       );
 
+      final iconDriver = await gmaps.BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(48, 48)), 'assets/driverIconNew.png');
       // Add markers for all drivers
       for (var driver in listDrivers) {
         _markers.add(
           gmaps.Marker(
             markerId: gmaps.MarkerId(driver['userId'].toString()), // Unique marker ID for each driver
             position: gmaps.LatLng(driver['originLat'], driver['originLong']), // Origin location
-            icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(gmaps.BitmapDescriptor.hueGreen), // Custom icon
+            icon: iconDriver, // Custom icon
           ),
         );
 
       }
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -294,6 +308,46 @@ class _TripsScreenState extends State<TripsScreen> {
 
   Widget _buildRideButtons() {
     return Row(
+
+      children: <Widget>[
+        /*
+        Expanded(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              foregroundColor: _isFindRideSelected ? Colors.white : myPrimaryColor, backgroundColor: _isFindRideSelected ? myPrimaryColor : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              elevation: 2,
+            ),
+            onPressed: () {
+              setState(() {
+                _isFindRideSelected = true;
+              });
+            },
+            child: Text('Find ride'),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              foregroundColor: !_isFindRideSelected ? Colors.white : myPrimaryColor, backgroundColor: !_isFindRideSelected ? myPrimaryColor : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              elevation: 2,
+            ),
+            onPressed: () {
+              setState(() {
+                _isFindRideSelected = false;
+              });
+            },
+            child: Text('Offer ride'),
+          ),
+        ),
+      */],
+
     );
   }
 

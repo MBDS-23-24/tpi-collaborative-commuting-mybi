@@ -87,7 +87,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       var manager = DataManager.instance;
 
+
+   //   UserModel user = UserModel(userID : 0,email: emailController.text.trim(), firstName: firstNameController.text.trim(), lastName: lastNameController.text.trim(), pathImage: pathImage, password: passwordController.text.trim(), role: role, biography: "test");
+
       UserModel user = UserModel(email: emailController.text.trim(), firstName: firstNameController.text.trim(), lastName: lastNameController.text.trim(), pathImage: pathImage, password: passwordController.text.trim(), role: role, biography: biographyController.text.trim());
+
 
      // manager.setUser(user);
 

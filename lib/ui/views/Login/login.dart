@@ -136,7 +136,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Welcome back',
+                        'LALABI App',
                         style: TextStyle(
                           fontSize: 30.0,
                           fontWeight: FontWeight.w900,

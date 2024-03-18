@@ -42,10 +42,12 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
 
   // Initialize socket and fetch drivers
   void initializeSocketAndFetchDrivers() {
- socket = IO.io('http://localhost:3000', <String, dynamic>{
+
+    socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
 
 
-    'transports': ['websocket'],
+
+      'transports': ['websocket'],
       'autoConnect': false,
     });
     socket.on('rideAccepted', (data) {
@@ -138,7 +140,7 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
       print('rani dkholt: $data');
 
       setState(() {
-       // drivers.clear();
+        // drivers.clear();
         drivers = List.from(data);
       });
     });
