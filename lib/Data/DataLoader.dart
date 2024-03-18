@@ -511,4 +511,33 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
    }
  }
 
+  Future<bool> changeEtatPassenger(String status, int? voyageId, int? userId) async {
+    var baseUrl = 'http://localhost:3000/api/trip';
+    var url = Uri.parse('$baseUrl/changeEtatPassenger/$voyageId/$userId');
+
+    try {
+      var response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${DataManager.instance.token}', // Assurez-vous que le token est correctement récupéré
+        },
+        body: json.encode({'status': status}), // Correction ici
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print('Server error: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error sending request: $e');
+      return false;
+    }
+  }
+
+
+
+
+
 }

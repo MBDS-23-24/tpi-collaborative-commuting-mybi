@@ -7,6 +7,7 @@ import '../../../Data/DataLoader.dart';
 import '../../../Data/DataManager.dart';
 import '../../../model/Trip.dart';
 import '../../../model/User.dart';
+import '../Chat/IndividualPage.dart';
 import '../Dashboard/dashboard.dart';
 
 class TripDetailScreen extends StatefulWidget {
@@ -32,12 +33,12 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
   void _loadUserInformation() async {
     _user = await DataLoader.instance.getUser(widget.trip.conducteurId);
     passengers = await DataLoader.instance.getPassengersByIdTrip(widget.trip.voyageId);
-    print(passengers);
-    print(passengers?[0].email);
     currentUser = DataManager.instance.getUser();
-    setState(() {
-      _isLoading = false; // Les données sont chargées, on arrête l'indication de chargement
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = false; // Les données sont chargées, on arrête l'indication de chargement
+      });
+    }
   }
 
   @override
@@ -108,7 +109,10 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                             children: [
                               IconButton(
                                 icon: Icon(Icons.message, color: Colors.blue),
-                                onPressed: () {
+                                  onPressed: () async {
+                                    UserModel? passengerInstaceUcer = await DataLoader.instance.getUser(_user?.userID);
+                                    if(passengerInstaceUcer != null)
+                                      Navigator.push( context, MaterialPageRoute( builder: (contex) => IndividualPage( chatModel:passengerInstaceUcer   , sourchat:DataManager.instance.getUser() )));
                                   // Logique pour ouvrir la conversation avec le conducteur ici
                                 },
                               ),
@@ -121,8 +125,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
 
               SizedBox(height: 20),
               // Passengers information
-              if (passengers != null)
-              Card(
+              if (passengers != null)              Card(
                 elevation: 5,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 child: Padding(
@@ -132,7 +135,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                     children: [
                       Text("Passengers Information:", style: Theme.of(context).textTheme.headline6),
                       Divider(),
-                      ...?passengers?.map((passenger) => Column(
+                      // Filter out passengers with "REFUSE" status before mapping
+                      ...?passengers?.where((passenger) => passenger.status != "REFUSE").map((passenger) => Column(
                         children: [
                           ListTile(
                             title: Text("${passenger.firstName} ${passenger.lastName}"),
@@ -140,58 +144,69 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min, // Important pour s'assurer que le Row s'adapte au contenu
                               children: [
-                                if (currentUser?.role=="CONDUCTEUR") // Supposons que isAccepted détermine si le bouton Accepter doit être affiché
+                                if (currentUser?.role == "CONDUCTEUR" && passenger.status == "EN-ATTENTE")
                                   ElevatedButton(
                                     onPressed: () {
-                                      // Implémentez la logique pour accepter le passager ici
+                                      onchangeEtat("ACCETPTE", widget.trip.voyageId, passenger.userID);
                                     },
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.green, // Définit la couleur de fond du bouton à vert
+                                    ),
                                     child: Text('Accept'),
                                   ),
-                                if (currentUser?.role=="CONDUCTEUR") // Supposons que isAccepted détermine si le bouton Accepter doit être affiché
+                                if (currentUser?.role == "CONDUCTEUR" && passenger.status == "EN-ATTENTE")
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      onchangeEtat("REFUSE", widget.trip.voyageId, passenger.userID);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.red, // Définit la couleur de fond du bouton à rouge
+                                    ),
+                                    child: Text('Refuse'),
+                                  ),
+                                if (currentUser?.role == "CONDUCTEUR")
                                   IconButton(
-                                  icon: Icon(Icons.message, color: Colors.blue),
-                                  onPressed: () {
-                                    // Logique pour ouvrir la conversation avec le passager ici
-                                  },
-                                ),
+                                    icon: Icon(Icons.message, color: Colors.blue),
+                                    onPressed: () async {
+                                      UserModel? passengerInstaceUcer = await DataLoader.instance.getUser(passenger.userID);
+                                      if(passengerInstaceUcer != null)
+                                      Navigator.push( context, MaterialPageRoute( builder: (contex) => IndividualPage( chatModel:passengerInstaceUcer   , sourchat:DataManager.instance.getUser() )));
+                                    },
+                                  ),
                               ],
                             ),
                             onTap: () {
-                              // Logique pour voir le profil du passager
+                              // badis ici ajoute la redrection de profil
                             },
                           ),
                           Divider(),
                         ],
-                      )),
-
+                      )).toList(), // Convert the filtered and mapped iterable to a list
                     ],
                   ),
                 ),
               ),
               // Boutons Modifier et Supprimer le voyage
               Padding(
-                padding: EdgeInsets.only(top: 7), // Ajoute un espace en haut de 7 pixels
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    currentUser!.role == "CONDUCTEUR"
-                        ? ElevatedButton(
-                      onPressed: () {
-                        // Logique pour supprimer le voyage
-                      },
-                      style: ElevatedButton.styleFrom(primary: Colors.red[300]),
-                      child: Text("Delete Trip"),
-                    )
-                        : ElevatedButton(
-                      onPressed: () {
-                        requestTrip(widget.trip.voyageId,currentUser?.userID);
+                    padding: EdgeInsets.only(top: 7), // Adds space at the top of 7 pixels
+                    child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                    if (currentUser!.role == "PASSAGER" && widget.trip.placeDisponible > 0)
+                        ElevatedButton(
+                        onPressed: () {
+                        requestTrip(widget.trip.voyageId, currentUser?.userID);
                         },
-                      style: ElevatedButton.styleFrom(primary: Theme.of(context).canvasColor),
-                      child: Text("Request to Join Trip"),
-                    ),
-                  ],
-                ),
+                        style: ElevatedButton.styleFrom(primary: Theme.of(context).canvasColor),
+                        child: Text("Request to Join Trip"),
+                        )
+                        else if (currentUser!.role == "PASSAGER" && widget.trip.placeDisponible <= 0)
+                       Text("No more seats available", style: TextStyle(color: Colors.red)),
+    // Optionally, add other conditions as needed
+              ],
               ),
+              ),
+
             ],
           ),
         ),
@@ -220,6 +235,33 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
       }
 
   }
+
+  Future<void> onchangeEtat(String status, int? voyageId, int? userID) async {
+
+   bool result = await DataLoader.instance.changeEtatPassenger(status,voyageId,userID);
+
+   if(result){
+     String s= status == "ACCETPTE" ? "Passenger Accepted  successfully" : "Passenger Refused  successfully";
+     ScaffoldMessenger.of(context).showSnackBar(
+       SnackBar(content: Text(s)),
+     );
+     // Add a slight delay to allow the user to see the SnackBar message
+     await Future.delayed(Duration(seconds: 1));
+     // Navigate to the ListTripScreenListTripScreen
+     Navigator.push(
+       context,
+       MaterialPageRoute(builder: (context) =>  DashboardScreen(user: DataManager.instance.getUser())),
+     );
+
+   }
+   else{
+     ScaffoldMessenger.of(context).showSnackBar(
+       SnackBar(content: Text("Problem with server")),
+     );
+   }
+
+  }
+
 }
 
 class DetailItem extends StatelessWidget {
