@@ -192,14 +192,14 @@ class _TripsScreenState extends State<TripsScreen> {
         ),
       );
 
-      final icon = await gmaps.BitmapDescriptor.fromAssetImage(
-          ImageConfiguration(size: Size(48, 48)), 'assets/driverIconNew.png');
+      final passengerIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(48, 48)), 'assets/passengerIconNew.png');
 
       _markers.add(
         gmaps.Marker(
           markerId: gmaps.MarkerId('currentLocation'),
           position: currentLocation,
-          icon:icon
+          icon:passengerIcon
 
         ),
       );
@@ -423,7 +423,7 @@ class _TripsScreenState extends State<TripsScreen> {
           },
         );
       } else {
-        setState(() {
+        setState(() async {
           if (isPickupLocation) {
             _isDepartureLocationSelected = true; // Update departure location input status
             _markers.removeWhere((marker) => marker.markerId.value == 'currentLocation');
@@ -437,12 +437,15 @@ class _TripsScreenState extends State<TripsScreen> {
 
             _pickupLocationText = locationData.address;
           } else {
+
+            final destinationIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+                ImageConfiguration(size: Size(48, 48)), 'assets/destinationIconNew.png');
             _isDestinationLocationSelected = true; // Update destination location input status
             _markers.add(
               gmaps.Marker(
                 markerId: gmaps.MarkerId('destinationLocation'),
                 position: gmaps.LatLng(locationData.latitude, locationData.longitude),
-                icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(gmaps.BitmapDescriptor.hueBlue),
+                icon: destinationIcon,
               ),
             );
 

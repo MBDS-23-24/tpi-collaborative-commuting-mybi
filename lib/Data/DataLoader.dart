@@ -63,7 +63,7 @@ class DataLoader {
     var url = Uri.parse('${urlPathHosted}api/users');
 
 
-    var url = Uri.parse('http://localhost:3000/api/users');
+   // var url = Uri.parse('http://localhost:3000/api/users');
     // Convertir l'objet UserModel en JSON
     var userJson = user.toJson(); // Assurez-vous que vous avez une méthode toJson dans votre classe UserModel
     print(userJson);

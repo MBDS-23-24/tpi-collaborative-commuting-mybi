@@ -105,7 +105,7 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
 
 
     BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(48, 48)), 'assets/driverIcon.webp')
+        ImageConfiguration(size: Size(48, 48)), 'assets/driverIconNew.webp')
         .then((d) {
       customIcon = d;
     });

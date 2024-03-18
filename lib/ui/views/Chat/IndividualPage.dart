@@ -73,17 +73,18 @@ class _IndividualPageState extends State<IndividualPage> {
      connect();
   }
 
+/*
   @override
   void dispose() {
     super.dispose();
     DataManager.instance.removeListener(_onResponse);
-    /*
+
     socket.emit("disconnect");
     socket.disconnect();
     socket.close();
 
-     */
   }
+  */
 
   void _onResponse(DataManagerUpdateType type) {
     if (type == DataManagerUpdateType.getMessagesSuccess) {
