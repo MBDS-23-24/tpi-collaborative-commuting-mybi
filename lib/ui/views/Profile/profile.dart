@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tpi_mybi/Data/DataLoader.dart';
+import 'package:tpi_mybi/Data/DataManager.dart';
 import 'package:tpi_mybi/model/User.dart';
+import 'package:tpi_mybi/ui/views/Login/login.dart';
 import 'package:tpi_mybi/ui/views/Profile/editProfile.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -9,11 +11,30 @@ class ProfilePage extends StatelessWidget {
 
   ProfilePage({required this.user, required this.isCurrentUserProfile});
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profil'),
+        title: Row(
+          children: [
+            Text('Profil'),
+            Spacer(), // Pour occuper l'espace restant
+            ElevatedButton(
+              onPressed: () {
+                DataManager.instance.logout();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SignInScreen(),
+                  ),
+                );
+              },
+              child: Text('Logout'),
+            ),
+          ],
+        ),
         backgroundColor: Colors.indigo,
       ),
       body: Center(
@@ -108,7 +129,7 @@ class _ProfileInfo extends StatelessWidget {
             color: Colors.grey,
           ),
         ),
-        const SizedBox(height: 30),
+        const SizedBox(height: 20),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
@@ -120,6 +141,7 @@ class _ProfileInfo extends StatelessWidget {
             ),
           ),
         ),
+    
       ],
     );
   }

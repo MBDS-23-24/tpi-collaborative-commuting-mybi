@@ -294,43 +294,6 @@ class _TripsScreenState extends State<TripsScreen> {
 
   Widget _buildRideButtons() {
     return Row(
-      children: <Widget>[
-        Expanded(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              foregroundColor: _isFindRideSelected ? Colors.white : myPrimaryColor, backgroundColor: _isFindRideSelected ? myPrimaryColor : Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              elevation: 2,
-            ),
-            onPressed: () {
-              setState(() {
-                _isFindRideSelected = true;
-              });
-            },
-            child: Text('Find ride'),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              foregroundColor: !_isFindRideSelected ? Colors.white : myPrimaryColor, backgroundColor: !_isFindRideSelected ? myPrimaryColor : Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              elevation: 2,
-            ),
-            onPressed: () {
-              setState(() {
-                _isFindRideSelected = false;
-              });
-            },
-            child: Text('Offer ride'),
-          ),
-        ),
-      ],
     );
   }
 
