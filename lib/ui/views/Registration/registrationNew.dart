@@ -19,7 +19,47 @@
     State<SignUpScreen> createState() => _SignUpScreenState();
   }
 
+
   class _SignUpScreenState extends State<SignUpScreen> {
+
+  @override
+  void dispose() {
+    super.dispose();
+    DataManager.instance.removeListener(_onUserUpdated);
+  }
+  final _formSignupKey = GlobalKey<FormState>();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  late String pathImage = "";
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final biographyController = TextEditingController();
+
+
+  bool agreePersonalData = true;
+  bool agreePassenger = false;
+  bool agreeDriver = false;
+  bool agreeBoth = false ;
+
+  void _handleCheckboxChange(String role, bool? value) {
+    setState(() {
+      // Réinitialiser toutes les valeurs à false
+      agreePassenger = false;
+      agreeDriver = false;
+      agreeBoth = false;
+
+      // Activer la case à cocher sélectionnée
+      if (role == 'Passenger') {
+        agreePassenger = value!;
+      } else if (role == 'Driver') {
+        agreeDriver = value!;
+      } else if (role == 'Both') {
+        agreeBoth = value!;
+      }
+    });
+  }
+
 
     @override
     void initState() {
@@ -86,7 +126,12 @@
 
       var manager = DataManager.instance;
 
-      UserModel user = UserModel(email: emailController.text.trim(), firstName: firstNameController.text.trim(), lastName: lastNameController.text.trim(), pathImage: pathImage, password: passwordController.text.trim(), role: role, biograthy: biographyController.text.trim());
+
+   //   UserModel user = UserModel(userID : 0,email: emailController.text.trim(), firstName: firstNameController.text.trim(), lastName: lastNameController.text.trim(), pathImage: pathImage, password: passwordController.text.trim(), role: role, biography: "test");
+
+      UserModel user = UserModel(email: emailController.text.trim(), firstName: firstNameController.text.trim(), lastName: lastNameController.text.trim(), pathImage: pathImage, password: passwordController.text.trim(), role: role, biography: biographyController.text.trim());
+
+
 
       // manager.setUser(user);
 
@@ -114,6 +159,7 @@
 
     }
 
+/*
     void _onUserUpdated(DataManagerUpdateType type) {
       switch (type) {
         case DataManagerUpdateType.userCreateSuccess:
@@ -156,6 +202,18 @@
               child: SizedBox(
                 height: 10,
               ),
+*/
+// nom / prenom / mdp / email / photo
+  @override
+  Widget build(BuildContext context) {
+    return CustomTheme(
+      child: Column(
+        children: [
+          const Expanded(
+            flex: 1,
+            child: SizedBox(
+              height: 10,
+
             ),
             Expanded(
               flex: 7,
@@ -351,24 +409,76 @@
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 25.0,
+                      ),
+                      const SizedBox(
+                        height: 25.0,
+                      ),
+                      TextFormField(
+                        controller: confirmPasswordController,
+                        obscureText: true,
+                        obscuringCharacter: '*',
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please confirm Password';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          label: const Text('ConfirmPassword'),
+                          hintText: 'Enter same Password',
+                          hintStyle: const TextStyle(
+                            color: Colors.black26,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.black12, // Default border color
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.black12, // Default border color
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                        TextFormField(
-                          controller: confirmPasswordController,
-                          obscureText: true,
-                          obscuringCharacter: '*',
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please confirm Password';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            label: const Text('ConfirmPassword'),
-                            hintText: 'Enter same Password',
-                            hintStyle: const TextStyle(
-                              color: Colors.black26,
+                      ),
+                      const SizedBox(
+                        height: 25.0,
+                      ),
+                      TextFormField(
+                        controller: biographyController,
+                        decoration: InputDecoration(
+                          label: const Text('Bio'),
+                          hintText: 'Enter biography',
+                          hintStyle: const TextStyle(
+                            color: Colors.black26,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.black12, // Default border color
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.black12, // Default border color
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 25.0,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Role :',
+                            style: TextStyle(
+                              color: Colors.black45,
+
                             ),
                             border: OutlineInputBorder(
                               borderSide: const BorderSide(
@@ -485,17 +595,22 @@
                                 color: Colors.black45,
                               ),
                             ),
-                            Text(
-                              'Personal data',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: myPrimaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 25.0,
+
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 25.0,
+                      ),
+                      // signup button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            await registerUser();
+                            
+                          },
+                          child: const Text('Sign up'),
                         ),
                         // signup button
                         SizedBox(

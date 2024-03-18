@@ -13,12 +13,14 @@ class ListDriverTrips extends StatefulWidget {
   final double departLong;
   final double destLat;
   final double destLong;
+  final double requiredSeats;
 
   ListDriverTrips({
     required this.departLat,
     required this.departLong,
     required this.destLat,
     required this.destLong,
+    required this.requiredSeats,
   });
 
   @override
@@ -40,10 +42,13 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
 
   // Initialize socket and fetch drivers
   void initializeSocketAndFetchDrivers() {
- socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
 
 
-    'transports': ['websocket'],
+    socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
+
+
+
+      'transports': ['websocket'],
       'autoConnect': false,
     });
     socket.on('rideAccepted', (data) {
@@ -136,7 +141,7 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
       print('rani dkholt: $data');
 
       setState(() {
-       // drivers.clear();
+        // drivers.clear();
         drivers = List.from(data);
       });
     });
@@ -151,6 +156,7 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
       'originLong': widget.departLong,
       'destinationLat': widget.destLat,
       'destinationLong': widget.destLong,
+      'requiredSeats': widget.requiredSeats,
     });
   }
 
@@ -233,6 +239,7 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
                             children: [
                               Text('Time: $timeDifference'),
                               Text('Distance to Driver: $distance'),
+                              Text('Seats available: ${driver['seats'] ?? 'Unknown'}'),
                               Text('Status: $status'),
                             ],
                           ),
@@ -281,6 +288,7 @@ class _ListDriverTripsState extends State<ListDriverTrips> {
       'originLong': widget.departLong,
       'destinationLat': widget.destLat,
       'destinationLong': widget.destLong,
+      'requiredSeats': widget.requiredSeats,
     });
   }
 

@@ -30,6 +30,7 @@ class _ChatScreenState extends State<ChatScreen> {
     DataLoader dataLoader = DataLoader.instance;
      dataManager = DataManager.instance;
     dataLoader.getUsers(dataManager.getToken());
+    dataLoader.getLatestMessages(DataManager.instance.getUser().userID);
     dataManager.addListener(_onResponse);
   }
 

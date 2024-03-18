@@ -50,6 +50,10 @@ class DataManager {
     return userModel;
   }
 
+  UserModel getUserById(int? id){
+    return users.firstWhere((element) => element.userID == id);
+  }
+
   void setToken(String token) {
     this.token = token;
     this.userModel.setToken(token);
@@ -73,6 +77,8 @@ class DataManager {
   List<UserModel> getUsers() {
     return users;
   }
+
+
 
   final List<void Function(DataManagerUpdateType)> _listeners = [];
 
@@ -108,6 +114,13 @@ class DataManager {
       }
     }
   }
+
+  void logout() {
+  userModel = UserModel(); // Réinitialisez l'utilisateur
+  token = ""; // Effacez le jeton
+  SaveDataManager().removeToken(); // Supprimez le token des préférences partagées
+  SaveDataManager().removeUser(); // Supprimez les données utilisateur des préférences partagées
+}
 
   responseGetUsers(bool hasError){
     for (var listener in _listeners) {

@@ -1,9 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:peerdart/peerdart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_widget/google_maps_widget.dart' as gmaps;
 import 'package:google_maps_widget/google_maps_widget.dart';
 import 'package:location/location.dart';
+
+import '../../../Data/DataManager.dart';
+import '../Chat/IndividualPage.dart';
 
 class PassangerAccepted extends StatefulWidget {
 
@@ -34,9 +40,23 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
   LocationData? _currentLocation;
   @override
   void dispose() {
-    peer.dispose();
-    _controller.dispose();
     super.dispose();
+    /*
+    if (conn != null) {
+      conn!.clear();
+      conn!.close();
+    }
+
+     */
+
+    peer.dispose();
+
+    // Ferme la connexion Peer si elle est établie
+
+    // Assurez-vous de nettoyer le reste, comme les controllers
+    _controller.dispose();
+
+    _locationUpdateTimer?.cancel();
   }
 
   @override
@@ -47,6 +67,7 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
     connect();
     print("jes suis dans passangerAccepted ");
     peer.on("open", null, (ev, context) {
+      if (!mounted) return;
       setState(() {
         print("jes suis dans passangerAccepted open peer.id =  ${peer.id}");
         peerId = peer.id;
@@ -56,19 +77,60 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
     peer.on("connection", null, (ev, context) {
       print("jes suis dans passangerAccepted connection  ev.eventData=  ${ev.eventData}");
       conn = ev.eventData as DataConnection;
-
+      if (!mounted) return;
       setState(() {
         connected = true;
       });
     });
 
     peer.on("data", null, (ev, _) {
-      print("jes suis dans passangerAccepted data  data=  ${ev.eventData}");
+      print("je suis dans passangerAccepted data dans initState data=  ${ev.eventData}");
       final data = ev.eventData as String;
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
+      Map<String, double> latLng = parseLatLng(data);
+      if (!mounted) return;
+      setState(() {
+        print("je suis dans passangerAccepted data dans initState data=  ${latLng['latitude']}");
+        _markers.add(
+          Marker(
+            markerId: MarkerId("peerLocation"),
+            position: LatLng(latLng['latitude']!, latLng['longitude']!),
+              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet)
+          ),
+        );
+      });
+
+    });
+
+
+    BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(48, 48)), 'assets/driverIconNew.webp')
+        .then((d) {
+      customIcon = d;
     });
   }
+  late BitmapDescriptor customIcon;
+
+
+
+// Fonction pour parser la chaîne de caractères et retourner un Map avec latitude et longitude en double
+  Map<String, double> parseLatLng(String latLngString) {
+    // Assurez-vous que la chaîne d'entrée est formatée correctement comme du JSON
+    String correctedString = latLngString.replaceAllMapped(
+        RegExp(r'([a-zA-Z]+):'), (Match match) => '"${match[1]}":');
+
+    // Décodage de la chaîne JSON
+    Map<String, dynamic> json = jsonDecode(correctedString);
+
+    // Extraction et conversion des valeurs en double
+    double latitude = double.parse(json['latitude'].toString());
+    double longitude = double.parse(json['longitude'].toString());
+
+    return {'latitude': latitude, 'longitude': longitude};
+  }
+
+
   void _initLocationService() async {
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -90,15 +152,18 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
     location.onLocationChanged.listen((LocationData currentLocation) {
       _currentLocation = currentLocation;
       if (mapController != null) {
-        mapController!.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-              zoom: 14,
-            ),
-          ),
-        );
+
+        if (!mounted) return;
         setState(() {
+          mapController!.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(
+                target: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+                zoom: 14,
+              ),
+            ),
+          );
+
           _markers.add(
             Marker(
               markerId: MarkerId("currentLocation"),
@@ -116,36 +181,42 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
     final connection = peer.connect(widget.DriverID.toString());
     print ("jes suis dans passangerAccepted connect()  connection=  $connection with id = ${peerId}");
     conn = connection;
-
+    if (!mounted) return;
     conn?.on("open", null, (ev, _) {
+      sendLocationUpdatesTest();
       setState(() {
         connected = true;
       });
+    });
 
       conn?.on("data", null, (ev, _) {
-        print("jes suis dans passangerAccepted data  data=  ${ev.eventData}");
+        print("jes suis dans passangerAccepted conn  data=  ${ev.eventData}");
         final dynamic data = ev.eventData;
 
-        if (data is String) {
-          // Handle "Hello world!" message
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
-        } else if (data is Map<String, dynamic>) {
-          // Handle location updates
-          final double latitude = data["latitude"];
-          final double longitude = data["longitude"];
+        Map<String, double> latLng = parseLatLng(data);
+        if (!mounted) return;
+        setState(() {
 
-          // Process latitude and longitude received from the peer
-          // Example: Update markers on the map
-          setState(() {
-            _markers.add(
-              Marker(
-                markerId: MarkerId("peerLocation"),
-                position: LatLng(latitude, longitude),
+          mapController!.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(
+                target: LatLng(latLng['latitude']!, latLng['longitude']!),
+                zoom: 14,
               ),
-            );
-          });
-        }
-      });
+            ),
+          );
+
+          print("je suis dans passangerAccepted data  data=  ${latLng['latitude']}");
+          _markers.add(
+            Marker(
+                markerId: MarkerId("peerLocation"),
+                position: LatLng(latLng['latitude']!, latLng['longitude']!),
+                icon:customIcon /*BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet)*/
+
+            ),
+          );
+        });
+
 
     });
   }
@@ -159,14 +230,107 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
     }
   }
 
-  @override
+  Timer? _locationUpdateTimer;
+
+  void sendLocationUpdates() {
+    // Function to send location updates to peer every 1 second
+    _locationUpdateTimer?.cancel();
+    _locationUpdateTimer =  Timer.periodic(const Duration(seconds: 150), (Timer t) {
+      if (_currentLocation != null) {
+        final Map<String, dynamic> locationData = {
+          "latitude": _currentLocation!.latitude,
+          "longitude": _currentLocation!.longitude,
+        };
+        conn?.send(locationData.toString());
+      }
+    });
+  }
+
+  void sendLocationUpdatesTest() {
+    _locationUpdateTimer?.cancel();
+    // Function to send static location updates to peer every 150 seconds
+    _locationUpdateTimer =  Timer.periodic(const Duration(seconds: 10), (Timer t) {
+      // Localisation statique d'Antibes, France pour le test
+      const double staticLatitude = 43.580418; // Latitude statique d'Antibes
+      const double staticLongitude = 7.125102; // Longitude statique d'Antibes
+
+      print("Envoi de la localisation statique d'Antibes: latitude=$staticLatitude longitude=$staticLongitude");
+
+      // Création du paquet de données de localisation avec les coordonnées statiques
+      final Map<String, dynamic> locationData = {
+        "latitude": staticLatitude,
+        "longitude": staticLongitude,
+      };
+
+      // Envoi des données de localisation statique au pair
+      conn?.send(locationData.toString());
+    });
+  }
+
+
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("Passenger Accepted"), // Titre optionnel pour l'AppBar
+        actions: [/*
+          IconButton(
+            icon: Icon(
+              Icons.chat,
+              color: Colors.blue,
+            ),
+            onPressed: () {
+              conn?.close();
+              peer.socket.close();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => IndividualPage(
+                    chatModel: DataManager.instance.getUserById(passengerId),
+                    sourchat: DataManager.instance.getUser(),
+                  ),
+                ),
+              );
+            },
+          ),
+        */],
+      ),
       body: Column(
         children: [
           Expanded(
-            flex: 5,
+            flex: 3,
+            child: Container(
+              padding: EdgeInsets.all(8), // Ajoute un peu d'espace autour
+              color: Colors.white,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  _renderState(), // Affiche l'état de connexion
+                  IconButton(
+                    icon: Icon(
+                      Icons.chat,
+                      color: Colors.blue,
+                    ),
+                    onPressed: () {
+                      conn?.close();
+                      peer.socket.close();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => IndividualPage(
+                            chatModel: DataManager.instance.getUserById(widget.DriverID!),
+                            sourchat: DataManager.instance.getUser(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          Expanded(
+            flex: 7, // Donne plus d'espace à la carte
             child: gmaps.GoogleMap(
               mapType: gmaps.MapType.normal,
               initialCameraPosition: gmaps.CameraPosition(
@@ -179,34 +343,11 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
               markers: _markers,
             ),
           ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              color: Colors.white,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _renderState(),
-                     Text(
-                      'Connection ID: {$meTest}  ',
-                    ),
-                    SelectableText("Peer ID = ${peerId}"),
-                    ElevatedButton(
-                      onPressed: () {
-                        sendHelloWorld();
-                      },
-                      child: const Text("Send Hello World to peer"),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
+
 
   Widget _renderState() {
     Color bgColor = connected ? Colors.green : Colors.grey;

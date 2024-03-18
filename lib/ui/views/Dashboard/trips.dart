@@ -49,12 +49,16 @@ class _TripsScreenState extends State<TripsScreen> {
   // Track input status of departure and destination locations
   bool _isDepartureLocationSelected = false;
   bool _isDestinationLocationSelected = false;
+  late TextEditingController _seatController;
+
   _TripsScreenState() {
+    _seatController = TextEditingController(); // Initialize the seat controller
     // Initialize the socket in the constructor
-  socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
 
 
-    'transports': ['websocket'],
+    socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
+//  socket = IO.io('http://localhost:3000', <String, dynamic>{
+      'transports': ['websocket'],
       'autoConnect': false,
     });
 
@@ -65,11 +69,13 @@ class _TripsScreenState extends State<TripsScreen> {
   void initState() {
     super.initState();
     // Replace 'http://localhost:3001' with your server address
-//https://lalabi.azurewebsites.net/
+
     socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
+  //  socket = IO.io('http://localhost:3000', <String, dynamic>{
 
 
-    'transports': ['websocket'],
+
+      'transports': ['websocket'],
       'autoConnect': false,
     });
 
@@ -101,6 +107,7 @@ class _TripsScreenState extends State<TripsScreen> {
   void dispose() {
     timer.cancel();
     socket.dispose();
+    _seatController.dispose();
     super.dispose();
   }
   void findRide() async {
@@ -111,28 +118,37 @@ class _TripsScreenState extends State<TripsScreen> {
     gmaps.LatLng departLocation = _markers.firstWhere((marker) => marker.markerId.value == 'departLocation').position;
     gmaps.LatLng destinationLocation = _markers.firstWhere((marker) => marker.markerId.value == 'destinationLocation').position;
 
+
     DateTime selectedDate = DateTime.parse(_selectedDateText);
     int numberOfSeats = _selectedSeats;
+
+   // int numberOfSeats = int.tryParse(_seatController.text) ?? 0;
+
     // Create Request object
+    
     Request userRequest = Request(
-      userId: user.userID,
+      userId: user.userID!,
       type: user.role.toString(),
       originLat: departLocation.latitude,
       originLong: departLocation.longitude,
       destinationLat: destinationLocation.latitude,
       destinationLong: destinationLocation.longitude,
+      seats: numberOfSeats,
+
+
       time: DateTime.now(),
       status: 'pending',
     );
 
     // Send user request via socket
     socket.emit('addRequest', userRequest.toJson());
+    print(userRequest);
 
     // Clean up the markers and reset UI elements
     _resetUI();
 
     // Navigate to the corresponding page based on user role
-    _navigateBasedOnUserRole(user, departLocation, destinationLocation);
+    _navigateBasedOnUserRole(user, departLocation, destinationLocation, numberOfSeats as double);
 
     // Now properly disconnect and dispose off the socket
     socket.disconnect();
@@ -150,7 +166,7 @@ class _TripsScreenState extends State<TripsScreen> {
     });
   }
 
-  Future<void> _navigateBasedOnUserRole(UserModel user, gmaps.LatLng departLocation, gmaps.LatLng destinationLocation) async {
+  Future<void> _navigateBasedOnUserRole(UserModel user, gmaps.LatLng departLocation, gmaps.LatLng destinationLocation, double requiredSeats) async {
     if (user.role.toString() == 'PASSAGER') {
       await Navigator.push(
         context,
@@ -159,6 +175,7 @@ class _TripsScreenState extends State<TripsScreen> {
           departLong: departLocation.longitude,
           destLat: destinationLocation.latitude,
           destLong: destinationLocation.longitude,
+          requiredSeats: requiredSeats,
         )),
       );
     } else if (user.role.toString() == 'CONDUCTEUR') {
@@ -181,28 +198,34 @@ class _TripsScreenState extends State<TripsScreen> {
     mapController = controller;
     var currentLocation = await _getCurrentLocation();
 
-    setState(() {
+    setState(() async {
       mapController.animateCamera(
         gmaps.CameraUpdate.newCameraPosition(
-          gmaps.CameraPosition(target: currentLocation, zoom: 14.0),
+          gmaps.CameraPosition(target: currentLocation, zoom: 20.0),
         ),
       );
+
+      final passengerIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(48, 48)), 'assets/passengerIconNew.png');
 
       _markers.add(
         gmaps.Marker(
           markerId: gmaps.MarkerId('currentLocation'),
           position: currentLocation,
-          icon: gmaps.BitmapDescriptor.defaultMarker,
+          icon:passengerIcon
+
         ),
       );
 
+      final iconDriver = await gmaps.BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(48, 48)), 'assets/driverIconNew.png');
       // Add markers for all drivers
       for (var driver in listDrivers) {
         _markers.add(
           gmaps.Marker(
             markerId: gmaps.MarkerId(driver['userId'].toString()), // Unique marker ID for each driver
             position: gmaps.LatLng(driver['originLat'], driver['originLong']), // Origin location
-            icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(gmaps.BitmapDescriptor.hueGreen), // Custom icon
+            icon: iconDriver, // Custom icon
           ),
         );
 
@@ -210,23 +233,16 @@ class _TripsScreenState extends State<TripsScreen> {
     });
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Text('Trips'),
+            Text('Home'),
             SizedBox(width: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage(user: DataManager.instance.getUser())),
-                );
-              },
-              child: Text('Profile'),
-            ),
           ],
         ),
         backgroundColor: myPrimaryColor,
@@ -288,10 +304,15 @@ class _TripsScreenState extends State<TripsScreen> {
                   Divider(),
                   Row(
                     children: <Widget>[
+
                       Expanded(child: _buildLocationTile(Icons.calendar_today, _selectedDateText, _selectDate)),
                       Expanded(child: _buildLocationTile(Icons.person, _numberOfSeats, () {
                         // Handle number of seats
                       })),
+
+                   //   Expanded(child: _buildLocationTile(Icons.calendar_today, 'Date & time', () {/* handle date & time */})),
+                    //  Expanded(child: _buildSeatsInputField()),
+
                     ],
                   ),
                   SizedBox(height: 10),
@@ -307,12 +328,13 @@ class _TripsScreenState extends State<TripsScreen> {
 
   Widget _buildRideButtons() {
     return Row(
+
       children: <Widget>[
+        /*
         Expanded(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: _isFindRideSelected ? myPrimaryColor : Colors.white,
-              onPrimary: _isFindRideSelected ? Colors.white : myPrimaryColor,
+              foregroundColor: _isFindRideSelected ? Colors.white : myPrimaryColor, backgroundColor: _isFindRideSelected ? myPrimaryColor : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -330,8 +352,7 @@ class _TripsScreenState extends State<TripsScreen> {
         Expanded(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: !_isFindRideSelected ? myPrimaryColor : Colors.white,
-              onPrimary: !_isFindRideSelected ? Colors.white : myPrimaryColor,
+              foregroundColor: !_isFindRideSelected ? Colors.white : myPrimaryColor, backgroundColor: !_isFindRideSelected ? myPrimaryColor : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -345,7 +366,8 @@ class _TripsScreenState extends State<TripsScreen> {
             child: Text('Offer ride'),
           ),
         ),
-      ],
+      */],
+
     );
   }
 
@@ -397,8 +419,7 @@ class _TripsScreenState extends State<TripsScreen> {
 
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        primary: myPrimaryColor,
-        onPrimary: Colors.white,
+        foregroundColor: Colors.white, backgroundColor: myPrimaryColor,
         padding: EdgeInsets.symmetric(vertical: 15),
         textStyle: TextStyle(fontSize: 18),
         shape: RoundedRectangleBorder(
@@ -414,6 +435,7 @@ class _TripsScreenState extends State<TripsScreen> {
   }
 
 
+
   // Method to handle the onPressed event of the Find ride button
   void _findRideButtonPressed(String buttonText) {
     if (buttonText == 'Planify a Trip') {
@@ -426,7 +448,26 @@ class _TripsScreenState extends State<TripsScreen> {
       // Default action
       findRide();
     }
+
+  Widget _buildSeatsInputField() {
+    return TextFormField(
+      controller: _seatController,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        labelText: 'Number of seats',
+        icon: Icon(Icons.event_seat, color: myPrimaryColor),
+      ),
+    );
   }
+
+  // Method to handle the onPressed event of the Find ride button
+    /*
+  void _findRideButtonPressed() {
+
+    findRide();
+
+  }
+  */
 
   void _showLocationSearch(BuildContext context, {required bool isPickupLocation}) async {
     LocationData? locationData = await LocationSearch.show(
@@ -454,7 +495,7 @@ class _TripsScreenState extends State<TripsScreen> {
           },
         );
       } else {
-        setState(() {
+        setState(() async {
           if (isPickupLocation) {
             _isDepartureLocationSelected = true; // Update departure location input status
             _markers.removeWhere((marker) => marker.markerId.value == 'currentLocation');
@@ -468,12 +509,15 @@ class _TripsScreenState extends State<TripsScreen> {
 
             _pickupLocationText = locationData.address;
           } else {
+
+            final destinationIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+                ImageConfiguration(size: Size(48, 48)), 'assets/destinationIconNew.png');
             _isDestinationLocationSelected = true; // Update destination location input status
             _markers.add(
               gmaps.Marker(
                 markerId: gmaps.MarkerId('destinationLocation'),
                 position: gmaps.LatLng(locationData.latitude, locationData.longitude),
-                icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(gmaps.BitmapDescriptor.hueBlue),
+                icon: destinationIcon,
               ),
             );
 
@@ -539,6 +583,7 @@ class _TripsScreenState extends State<TripsScreen> {
     directionInfo.encodedPoints = jsonData['routes'][0]['overview_polyline']['points'];
     return directionInfo;
   }
+
   Future<void> _selectDate() async {
     DateTime? selectedDate = await showDatePicker(
       context: context,
@@ -644,3 +689,6 @@ class _TripsScreenState extends State<TripsScreen> {
     Timer timer;
   }
 }
+
+//}
+
