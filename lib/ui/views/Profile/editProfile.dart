@@ -23,13 +23,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  //final TextEditingController confirmPasswordController = TextEditingController();
   final TextEditingController roleController = TextEditingController();
   final TextEditingController biographyController = TextEditingController();
 
-  bool _isPasswordVisible = false;
-  bool _isConfirmationPasswordVisible = false;
 
   String? _newImagePath;
 
@@ -151,6 +148,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                 ),
                 SizedBox(height: 10),
+                /*
                 TextFormField(
                   controller: passwordController,
                   obscureText: !_isPasswordVisible,
@@ -217,6 +215,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ),
                 ),
+                */
+                
+
                 SizedBox(height: 10),
                 
                 DropdownButtonFormField<String>(
@@ -335,27 +336,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _updateUser() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      UserModel updatedUser = UserModel(
-        userID: widget.user.userID,
-        firstName: firstNameController.text,
-        lastName: lastNameController.text,
-        email: emailController.text,
-        password: passwordController.text,
-        role: roleController.text,
-        biography: biographyController.text,
-        pathImage: _newImagePath ?? widget.user.pathImage,
-      );
+  if (_formKey.currentState?.validate() ?? false) {
+    UserModel updatedUser = UserModel(
+      userID: widget.user.userID,
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
+      email: emailController.text,
+      password: passwordController.text,
+      role: roleController.text,
+      biography: biographyController.text,
+      pathImage: _newImagePath ?? widget.user.pathImage,
+    );
+    print(widget.user.password);
+    print(updatedUser);
 
-      await DataLoader.instance.updateUser(updatedUser);
+    await DataLoader.instance.updateUser(updatedUser);
 
-      DataManager.instance.setUser(updatedUser);
+    DataManager.instance.setUser(updatedUser);
 
-      Navigator.pop(context);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => ProfilePage(user: updatedUser, isCurrentUserProfile: true,)),
-      );
-    }
+    Navigator.pop(context);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => ProfilePage(user: updatedUser, isCurrentUserProfile: true,)),
+    );
   }
+}
 }
