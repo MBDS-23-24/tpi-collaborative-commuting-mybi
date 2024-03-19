@@ -40,6 +40,7 @@ class _TripsScreenState extends State<TripsScreen> {
   String _selectedDateText = 'Date & time';
   int _selectedSeats = 1; // Default value is 1 seat
   String _numberOfSeats = 'No. of seat';
+  late gmaps.BitmapDescriptor driverIcon, destinationIcon, passengerIcon;
 
 
   late IO.Socket socket;
@@ -70,6 +71,7 @@ class _TripsScreenState extends State<TripsScreen> {
     super.initState();
     // Replace 'http://localhost:3001' with your server address
 
+    loadIcon();
     socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
       //  socket = IO.io('http://localhost:3000', <String, dynamic>{
 
@@ -96,6 +98,20 @@ class _TripsScreenState extends State<TripsScreen> {
     });
 
     socket.connect();
+  }
+
+  void loadIcon() async {
+    driverIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(48, 48)),
+        'assets/driverIconNew.png');
+
+    destinationIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(48, 48)),
+        'assets/destinationIconNew.png');
+
+    passengerIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(48, 48)),
+        'assets/passengerIconNew.png');
   }
 
   // Function to fetch drivers from the server
@@ -207,16 +223,14 @@ class _TripsScreenState extends State<TripsScreen> {
     mapController = controller;
     var currentLocation = await _getCurrentLocation();
 
-    setState(() async {
+    setState(()  {
       mapController.animateCamera(
         gmaps.CameraUpdate.newCameraPosition(
           gmaps.CameraPosition(target: currentLocation, zoom: 9.0),
         ),
       );
 
-      final passengerIcon = await gmaps.BitmapDescriptor.fromAssetImage(
-          ImageConfiguration(size: Size(48, 48)),
-          'assets/passengerIconNew.png');
+
 
       _markers.add(
         gmaps.Marker(
@@ -227,8 +241,7 @@ class _TripsScreenState extends State<TripsScreen> {
         ),
       );
 
-      final iconDriver = await gmaps.BitmapDescriptor.fromAssetImage(
-          ImageConfiguration(size: Size(48, 48)), 'assets/driverIconNew.png');
+
       // Add markers for all drivers
       for (var driver in listDrivers) {
         _markers.add(
@@ -237,7 +250,7 @@ class _TripsScreenState extends State<TripsScreen> {
             // Unique marker ID for each driver
             position: gmaps.LatLng(driver['originLat'], driver['originLong']),
             // Origin location
-            icon: iconDriver, // Custom icon
+            icon: driverIcon, // Custom icon
           ),
         );
       }
@@ -521,7 +534,7 @@ class _TripsScreenState extends State<TripsScreen> {
           },
         );
       } else {
-        setState(() async {
+        setState(()  {
           if (isPickupLocation) {
             _isDepartureLocationSelected =
             true; // Update departure location input status
@@ -538,9 +551,7 @@ class _TripsScreenState extends State<TripsScreen> {
 
             _pickupLocationText = locationData.address;
           } else {
-            final destinationIcon = await gmaps.BitmapDescriptor.fromAssetImage(
-                ImageConfiguration(size: Size(48, 48)),
-                'assets/destinationIconNew.png');
+
             _isDestinationLocationSelected =
             true; // Update destination location input status
             _markers.add(

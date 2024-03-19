@@ -72,7 +72,7 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
     connect();
     UserModel user = DataManager.instance.getUser();
     peer = Peer(id: user.userID.toString());
-    print("jes suis dans passangerAccepted ");
+    print("je suis dans passangerAccepted userId = ${user.userID.toString()}");
     peer.on("open", null, (ev, context) {
       if (!mounted) return;
       setState(() {
