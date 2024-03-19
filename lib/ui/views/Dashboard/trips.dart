@@ -71,8 +71,7 @@ class _TripsScreenState extends State<TripsScreen> {
     // Replace 'http://localhost:3001' with your server address
 
     socket = IO.io('wss://lalabi.azurewebsites.net:443', <String, dynamic>{
-  //  socket = IO.io('http://localhost:3000', <String, dynamic>{
-
+      //  socket = IO.io('http://localhost:3000', <String, dynamic>{
 
 
       'transports': ['websocket'],
@@ -84,7 +83,8 @@ class _TripsScreenState extends State<TripsScreen> {
       // Automatically fetch the list of drivers after connection
       fetchDrivers();
       // Start the timer to fetch drivers periodically
-      timer = Timer.periodic(Duration(seconds: 10), (Timer t) => fetchDrivers());
+      timer =
+          Timer.periodic(Duration(seconds: 10), (Timer t) => fetchDrivers());
     });
 
     socket.on('allDrivers', (data) {
@@ -103,6 +103,7 @@ class _TripsScreenState extends State<TripsScreen> {
     // Emitting 'getAllDrivers' event to get all drivers from the server
     socket.emit('getAllDrivers');
   }
+
   @override
   void dispose() {
     timer.cancel();
@@ -110,22 +111,27 @@ class _TripsScreenState extends State<TripsScreen> {
     _seatController.dispose();
     super.dispose();
   }
+
   void findRide() async {
     // Get current user details
     UserModel user = DataManager.instance.getUser();
 
     // Get departure and destination locations
-    gmaps.LatLng departLocation = _markers.firstWhere((marker) => marker.markerId.value == 'departLocation').position;
-    gmaps.LatLng destinationLocation = _markers.firstWhere((marker) => marker.markerId.value == 'destinationLocation').position;
+    gmaps.LatLng departLocation = _markers
+        .firstWhere((marker) => marker.markerId.value == 'departLocation')
+        .position;
+    gmaps.LatLng destinationLocation = _markers
+        .firstWhere((marker) => marker.markerId.value == 'destinationLocation')
+        .position;
 
 
-    DateTime selectedDate = DateTime.parse(_selectedDateText);
+    //DateTime selectedDate = DateTime.parse(_selectedDateText);
     int numberOfSeats = _selectedSeats;
 
-   // int numberOfSeats = int.tryParse(_seatController.text) ?? 0;
+    // int numberOfSeats = int.tryParse(_seatController.text) ?? 0;
 
     // Create Request object
-    
+
     Request userRequest = Request(
       userId: user.userID!,
       type: user.role.toString(),
@@ -134,8 +140,6 @@ class _TripsScreenState extends State<TripsScreen> {
       destinationLat: destinationLocation.latitude,
       destinationLong: destinationLocation.longitude,
       seats: numberOfSeats,
-
-
       time: DateTime.now(),
       status: 'pending',
     );
@@ -148,7 +152,8 @@ class _TripsScreenState extends State<TripsScreen> {
     _resetUI();
 
     // Navigate to the corresponding page based on user role
-    _navigateBasedOnUserRole(user, departLocation, destinationLocation, numberOfSeats as double);
+    _navigateBasedOnUserRole(
+        user, departLocation, destinationLocation, numberOfSeats as double);
 
     // Now properly disconnect and dispose off the socket
     socket.disconnect();
@@ -158,7 +163,9 @@ class _TripsScreenState extends State<TripsScreen> {
   void _resetUI() {
     setState(() {
       // Clean up markers for departLocation and destinationLocation
-      _markers.removeWhere((marker) => marker.markerId.value == 'departLocation' || marker.markerId.value == 'destinationLocation');
+      _markers.removeWhere((marker) =>
+      marker.markerId.value == 'departLocation' ||
+          marker.markerId.value == 'destinationLocation');
       _pickupLocationText = 'Depart location';
       _destinationLocationText = 'Destination location';
       _isDepartureLocationSelected = false;
@@ -166,32 +173,34 @@ class _TripsScreenState extends State<TripsScreen> {
     });
   }
 
-  Future<void> _navigateBasedOnUserRole(UserModel user, gmaps.LatLng departLocation, gmaps.LatLng destinationLocation, double requiredSeats) async {
+  Future<void> _navigateBasedOnUserRole(UserModel user,
+      gmaps.LatLng departLocation, gmaps.LatLng destinationLocation,
+      double requiredSeats) async {
     if (user.role.toString() == 'PASSAGER') {
       await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ListDriverTrips(
-          departLat: departLocation.latitude,
-          departLong: departLocation.longitude,
-          destLat: destinationLocation.latitude,
-          destLong: destinationLocation.longitude,
-          requiredSeats: requiredSeats,
-        )),
+        MaterialPageRoute(builder: (context) =>
+            ListDriverTrips(
+              departLat: departLocation.latitude,
+              departLong: departLocation.longitude,
+              destLat: destinationLocation.latitude,
+              destLong: destinationLocation.longitude,
+              requiredSeats: requiredSeats,
+            )),
       );
     } else if (user.role.toString() == 'CONDUCTEUR') {
       await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ListPassengersTrips(
-          departLat: departLocation.latitude,
-          departLong: departLocation.longitude,
-          destLat: destinationLocation.latitude,
-          destLong: destinationLocation.longitude,
-        )),
+        MaterialPageRoute(builder: (context) =>
+            ListPassengersTrips(
+              departLat: departLocation.latitude,
+              departLong: departLocation.longitude,
+              destLat: destinationLocation.latitude,
+              destLong: destinationLocation.longitude,
+            )),
       );
     }
   }
-
-
 
 
   void _onMapCreated(gmaps.GoogleMapController controller) async {
@@ -201,18 +210,19 @@ class _TripsScreenState extends State<TripsScreen> {
     setState(() async {
       mapController.animateCamera(
         gmaps.CameraUpdate.newCameraPosition(
-          gmaps.CameraPosition(target: currentLocation, zoom: 20.0),
+          gmaps.CameraPosition(target: currentLocation, zoom: 9.0),
         ),
       );
 
       final passengerIcon = await gmaps.BitmapDescriptor.fromAssetImage(
-          ImageConfiguration(size: Size(48, 48)), 'assets/passengerIconNew.png');
+          ImageConfiguration(size: Size(48, 48)),
+          'assets/passengerIconNew.png');
 
       _markers.add(
         gmaps.Marker(
-          markerId: gmaps.MarkerId('currentLocation'),
-          position: currentLocation,
-          icon:passengerIcon
+            markerId: gmaps.MarkerId('currentLocation'),
+            position: currentLocation,
+            icon: passengerIcon
 
         ),
       );
@@ -223,16 +233,16 @@ class _TripsScreenState extends State<TripsScreen> {
       for (var driver in listDrivers) {
         _markers.add(
           gmaps.Marker(
-            markerId: gmaps.MarkerId(driver['userId'].toString()), // Unique marker ID for each driver
-            position: gmaps.LatLng(driver['originLat'], driver['originLong']), // Origin location
+            markerId: gmaps.MarkerId(driver['userId'].toString()),
+            // Unique marker ID for each driver
+            position: gmaps.LatLng(driver['originLat'], driver['originLong']),
+            // Origin location
             icon: iconDriver, // Custom icon
           ),
         );
-
       }
     });
   }
-
 
 
   @override
@@ -274,7 +284,8 @@ class _TripsScreenState extends State<TripsScreen> {
                 children: [
                   _buildRideButtons(),
                   Divider(),
-                  _buildLocationTile(Icons.location_on, _pickupLocationText, () {
+                  _buildLocationTile(
+                      Icons.location_on, _pickupLocationText, () {
                     _showLocationSearch(context, isPickupLocation: true);
                   }),
                   Divider(),
@@ -287,7 +298,8 @@ class _TripsScreenState extends State<TripsScreen> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: Text('Error'),
-                            content: Text('Pick-up and destination locations cannot be the same.'),
+                            content: Text(
+                                'Pick-up and destination locations cannot be the same.'),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () {
@@ -305,18 +317,21 @@ class _TripsScreenState extends State<TripsScreen> {
                   Row(
                     children: <Widget>[
 
-                      Expanded(child: _buildLocationTile(Icons.calendar_today, _selectedDateText, _selectDate)),
-                      Expanded(child: _buildLocationTile(Icons.person, _numberOfSeats, () {
+                      Expanded(child: _buildLocationTile(
+                          Icons.calendar_today, _selectedDateText,
+                          _selectDate)),
+                      Expanded(child: _buildLocationTile(
+                          Icons.person, _numberOfSeats, () {
                         // Handle number of seats
                       })),
 
-                   //   Expanded(child: _buildLocationTile(Icons.calendar_today, 'Date & time', () {/* handle date & time */})),
-                    //  Expanded(child: _buildSeatsInputField()),
+                      //   Expanded(child: _buildLocationTile(Icons.calendar_today, 'Date & time', () {/* handle date & time */})),
+                      //  Expanded(child: _buildSeatsInputField()),
 
                     ],
                   ),
                   SizedBox(height: 10),
-                    _buildFindRideButton(),
+                  _buildFindRideButton(),
                 ],
               ),
             ),
@@ -366,15 +381,17 @@ class _TripsScreenState extends State<TripsScreen> {
             child: Text('Offer ride'),
           ),
         ),
-      */],
+      */
+      ],
 
     );
   }
 
   Widget _buildLocationTile(IconData icon, String title, VoidCallback onTap) {
-    UserModel user = DataManager.instance.getUser(); // Récupérez les informations de l'utilisateur
-    if(user.role=="PASSAGER")
-    _numberOfSeats="";
+    UserModel user = DataManager.instance
+        .getUser(); // Récupérez les informations de l'utilisateur
+    if (user.role == "PASSAGER")
+      _numberOfSeats = "";
 
 
     return ListTile(
@@ -402,24 +419,28 @@ class _TripsScreenState extends State<TripsScreen> {
   }
 
 
-
   Widget _buildFindRideButton() {
     UserModel user = DataManager.instance.getUser();
     // Disable the button if either departure or destination location is not selected
-    bool isButtonDisabled = !_isDepartureLocationSelected || !_isDestinationLocationSelected;
+    bool isButtonDisabled = !_isDepartureLocationSelected ||
+        !_isDestinationLocationSelected;
 
     String buttonText = "Find ride"; // Texte par défaut
 
     // Vérifiez le rôle de l'utilisateur et ajustez le texte du bouton en conséquence
     if (user.role.toString() == 'PASSAGER') {
-      buttonText = _selectedDateText != 'Date & time' ? 'Find Ride in the Future' : 'Find Ride';
+      buttonText = _selectedDateText != 'Date & time'
+          ? 'Find Ride in the Future'
+          : 'Find Ride';
     } else if (user.role.toString() == 'CONDUCTEUR') {
-      buttonText = _selectedDateText != 'Date & time' ? 'Planify a Trip' : 'Find Passengers';
+      buttonText =
+      _selectedDateText != 'Date & time' ? 'Planify a Trip' : 'Find Passengers';
     }
 
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white, backgroundColor: myPrimaryColor,
+        foregroundColor: Colors.white,
+        backgroundColor: myPrimaryColor,
         padding: EdgeInsets.symmetric(vertical: 15),
         textStyle: TextStyle(fontSize: 18),
         shape: RoundedRectangleBorder(
@@ -427,7 +448,8 @@ class _TripsScreenState extends State<TripsScreen> {
         ),
         elevation: 2,
       ),
-      onPressed: isButtonDisabled ? null : () => _findRideButtonPressed(buttonText), // Pass buttonText to the method
+      onPressed: isButtonDisabled ? null : () =>
+          _findRideButtonPressed(buttonText), // Pass buttonText to the method
       child: Center(
         child: Text(buttonText), // Utilisez buttonText ici
       ),
@@ -435,9 +457,9 @@ class _TripsScreenState extends State<TripsScreen> {
   }
 
 
-
   // Method to handle the onPressed event of the Find ride button
   void _findRideButtonPressed(String buttonText) {
+
     if (buttonText == 'Planify a Trip') {
       // Call the method for planning a trip
       planATrip();
@@ -448,6 +470,8 @@ class _TripsScreenState extends State<TripsScreen> {
       // Default action
       findRide();
     }
+
+  }
 
   Widget _buildSeatsInputField() {
     return TextFormField(
@@ -461,7 +485,7 @@ class _TripsScreenState extends State<TripsScreen> {
   }
 
   // Method to handle the onPressed event of the Find ride button
-    /*
+  /*
   void _findRideButtonPressed() {
 
     findRide();
@@ -469,7 +493,8 @@ class _TripsScreenState extends State<TripsScreen> {
   }
   */
 
-  void _showLocationSearch(BuildContext context, {required bool isPickupLocation}) async {
+  void _showLocationSearch(BuildContext context,
+      {required bool isPickupLocation}) async {
     LocationData? locationData = await LocationSearch.show(
       context: context,
       lightAdress: true,
@@ -482,7 +507,8 @@ class _TripsScreenState extends State<TripsScreen> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Error'),
-              content: Text('Pick-up and destination locations cannot be the same.'),
+              content: Text(
+                  'Pick-up and destination locations cannot be the same.'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -497,36 +523,46 @@ class _TripsScreenState extends State<TripsScreen> {
       } else {
         setState(() async {
           if (isPickupLocation) {
-            _isDepartureLocationSelected = true; // Update departure location input status
-            _markers.removeWhere((marker) => marker.markerId.value == 'currentLocation');
+            _isDepartureLocationSelected =
+            true; // Update departure location input status
+            _markers.removeWhere((marker) =>
+            marker.markerId.value == 'currentLocation');
             _markers.add(
               gmaps.Marker(
                 markerId: gmaps.MarkerId('departLocation'),
-                position: gmaps.LatLng(locationData.latitude, locationData.longitude),
+                position: gmaps.LatLng(
+                    locationData.latitude, locationData.longitude),
                 icon: gmaps.BitmapDescriptor.defaultMarker,
               ),
             );
 
             _pickupLocationText = locationData.address;
           } else {
-
             final destinationIcon = await gmaps.BitmapDescriptor.fromAssetImage(
-                ImageConfiguration(size: Size(48, 48)), 'assets/destinationIconNew.png');
-            _isDestinationLocationSelected = true; // Update destination location input status
+                ImageConfiguration(size: Size(48, 48)),
+                'assets/destinationIconNew.png');
+            _isDestinationLocationSelected =
+            true; // Update destination location input status
             _markers.add(
               gmaps.Marker(
                 markerId: gmaps.MarkerId('destinationLocation'),
-                position: gmaps.LatLng(locationData.latitude, locationData.longitude),
+                position: gmaps.LatLng(
+                    locationData.latitude, locationData.longitude),
                 icon: destinationIcon,
               ),
             );
 
             _destinationLocationText = locationData.address;
 
-            gmaps.LatLng pickupLocation = _markers.firstWhere((marker) => marker.markerId.value == 'departLocation').position;
-            gmaps.LatLng destinationLocation = gmaps.LatLng(locationData.latitude, locationData.longitude);
+            gmaps.LatLng pickupLocation = _markers
+                .firstWhere((marker) =>
+            marker.markerId.value == 'departLocation')
+                .position;
+            gmaps.LatLng destinationLocation = gmaps.LatLng(
+                locationData.latitude, locationData.longitude);
             if (pickupLocation != null && destinationLocation != null) {
-              getDirections(pickupLocation, destinationLocation).then((directionInfo) {
+              getDirections(pickupLocation, destinationLocation).then((
+                  directionInfo) {
                 setState(() async {
                   Navigator.pop(context);
                   PolylinePoints polylinePoints = PolylinePoints();
@@ -537,7 +573,8 @@ class _TripsScreenState extends State<TripsScreen> {
                   polylineCoordinates.clear();
                   if (results.isNotEmpty) {
                     results.forEach((PointLatLng point) {
-                      polylineCoordinates.add(gmaps.LatLng(point.latitude, point.longitude));
+                      polylineCoordinates.add(
+                          gmaps.LatLng(point.latitude, point.longitude));
                     });
                   }
                   _polylines.clear();
@@ -563,24 +600,35 @@ class _TripsScreenState extends State<TripsScreen> {
   }
 
   Future<gmaps.LatLng> _getCurrentLocation() async {
-    var position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    var position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     return gmaps.LatLng(position.latitude, position.longitude);
   }
 
-  Future<DirectionInfo> getDirections(gmaps.LatLng start, gmaps.LatLng end) async {
-    final urlOriginToDest = Uri.parse("https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&key=YOUR_API_KEY");
+  Future<DirectionInfo> getDirections(gmaps.LatLng start,
+      gmaps.LatLng end) async {
+    final urlOriginToDest = Uri.parse(
+        "https://maps.googleapis.com/maps/api/directions/json?origin=${start
+            .latitude},${start.longitude}&destination=${end.latitude},${end
+            .longitude}&key=YOUR_API_KEY");
     var response = await http.get(urlOriginToDest);
     var jsonData = jsonDecode(response.body);
 
     DirectionInfo directionInfo = DirectionInfo(encodedPoints: '');
-    directionInfo.e_points = jsonData['routes'][0]['overview_polyline']['points'];
+    directionInfo.e_points =
+    jsonData['routes'][0]['overview_polyline']['points'];
 
-    directionInfo.distance_text = jsonData['routes'][0]["legs"][0]['distance']['text'];
-    directionInfo.distance_value = jsonData['routes'][0]["legs"][0]['distance']['value'];
+    directionInfo.distance_text =
+    jsonData['routes'][0]["legs"][0]['distance']['text'];
+    directionInfo.distance_value =
+    jsonData['routes'][0]["legs"][0]['distance']['value'];
 
-    directionInfo.duration_text = jsonData['routes'][0]["legs"][0]['duration']['text'];
-    directionInfo.duration_value = jsonData['routes'][0]["legs"][0]['duration']['value'];
-    directionInfo.encodedPoints = jsonData['routes'][0]['overview_polyline']['points'];
+    directionInfo.duration_text =
+    jsonData['routes'][0]["legs"][0]['duration']['text'];
+    directionInfo.duration_value =
+    jsonData['routes'][0]["legs"][0]['duration']['value'];
+    directionInfo.encodedPoints =
+    jsonData['routes'][0]['overview_polyline']['points'];
     return directionInfo;
   }
 
@@ -599,16 +647,19 @@ class _TripsScreenState extends State<TripsScreen> {
       if (selectedTime != null) {
         setState(() {
           // Combine selected date and time
-          DateTime combinedDateTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute);
+          DateTime combinedDateTime = DateTime(
+              selectedDate.year, selectedDate.month, selectedDate.day,
+              selectedTime.hour, selectedTime.minute);
           // Format the combined date time to remove seconds and milliseconds
-          String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm').format(combinedDateTime); // Format neutre
+          String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm').format(
+              combinedDateTime); // Format neutre
           _selectedDateText = formattedDateTime;
         });
       }
-      }
+    }
     print(_selectedDateText);
     print(DateTime.parse(_selectedDateText));
-    }
+  }
 
   void planATrip() async {
     UserModel user = DataManager.instance.getUser();
@@ -618,13 +669,14 @@ class _TripsScreenState extends State<TripsScreen> {
       conducteurId: user.userID,
       depart: _pickupLocationText,
       destination: _destinationLocationText,
-      timestamp: DateTime.parse(_selectedDateText), // Ensure this is a valid DateTime string
+      timestamp: DateTime.parse(_selectedDateText),
+      // Ensure this is a valid DateTime string
       placeDisponible: _selectedSeats,
     );
     bool isSuccess = await DataLoader.instance.createVoyage(trip);
 
     if (isSuccess) {
-     // remiseaZeroFormulaire();
+      // remiseaZeroFormulaire();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Trip created successfully')),
       );
@@ -633,7 +685,7 @@ class _TripsScreenState extends State<TripsScreen> {
       // Navigate to the ListTripScreenListTripScreen
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) =>  DashboardScreen(user: user)),
+        MaterialPageRoute(builder: (context) => DashboardScreen(user: user)),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -644,51 +696,51 @@ class _TripsScreenState extends State<TripsScreen> {
 
 
   void findFutureRide() async {
-      UserModel user = DataManager.instance.getUser();
+    UserModel user = DataManager.instance.getUser();
 
 
-      // Create a new trip object with the required details
-      VoyageModel trip = VoyageModel(
-        conducteurId: user.userID,
-        depart: _pickupLocationText,
-        destination: _destinationLocationText,
-        timestamp: DateTime.parse(_selectedDateText), // Ensure this is a valid DateTime string
-        placeDisponible: _selectedSeats,
+    // Create a new trip object with the required details
+    VoyageModel trip = VoyageModel(
+      conducteurId: user.userID,
+      depart: _pickupLocationText,
+      destination: _destinationLocationText,
+      timestamp: DateTime.parse(_selectedDateText),
+      // Ensure this is a valid DateTime string
+      placeDisponible: _selectedSeats,
+    );
+    List<VoyageModel>? trips = await DataLoader.instance.getTripsForPassenger(
+        trip);
+    print(trips);
+    if (trips != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ListTripForPassenger(trips: trips)),
       );
-      List<VoyageModel>? trips = await DataLoader.instance.getTripsForPassenger(trip);
-      print(trips);
-      if (trips != null ) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) =>  ListTripForPassenger(trips: trips)),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to get Trips')),
-        );
-      }
-
-
-
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to get Trips')),
+      );
     }
+  }
 
   void remiseaZeroFormulaire() {
-     gmaps.GoogleMapController mapController;
-     gmaps.LatLng _center = const gmaps.LatLng(48.8566, 2.3522);
-     Set<gmaps.Marker> _markers = {};
-     _isFindRideSelected = true;
-     _pickupLocationText = 'Depart location';
-     _destinationLocationText = 'Destination location';
+    gmaps.GoogleMapController mapController;
+    gmaps.LatLng _center = const gmaps.LatLng(48.8566, 2.3522);
+    Set<gmaps.Marker> _markers = {};
+    _isFindRideSelected = true;
+    _pickupLocationText = 'Depart location';
+    _destinationLocationText = 'Destination location';
     Set<gmaps.Polyline> _polylines = {};
     List<gmaps.LatLng> polylineCoordinates = [];
     _selectedDateText = 'Date & time';
     _selectedSeats = 1; // Default value is 1 seat
-     _numberOfSeats = 'No. of seat';
-     IO.Socket socket;
-     List<dynamic> listDrivers = [];
+    _numberOfSeats = 'No. of seat';
+    IO.Socket socket;
+    List<dynamic> listDrivers = [];
     Timer timer;
   }
-}
+
 
 //}
-
+}

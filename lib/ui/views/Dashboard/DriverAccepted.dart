@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_maps_widget/google_maps_widget.dart' as gmaps;
 import 'package:google_maps_widget/google_maps_widget.dart';
 import 'package:location/location.dart';
 import 'package:peerdart/peerdart.dart';
 
+import '../../../Data/DataLoader.dart';
 import '../../../Data/DataManager.dart';
 import '../../../model/User.dart';
 import '../Chat/IndividualPage.dart';
@@ -21,7 +24,7 @@ class DriverAccepted extends StatefulWidget {
 
 class _DriverAcceptedState extends State<DriverAccepted> {
   late int? passengerId = widget.passengerId;
-  late Peer peer; // Declare peer variable here
+  late Peer peer = Peer( id:"myid" ); // Declare peer variable here
   final TextEditingController _controller = TextEditingController();
   String? peerId;
   PeerConnectOption peerop =PeerConnectOption();
@@ -33,6 +36,9 @@ class _DriverAcceptedState extends State<DriverAccepted> {
   bool _serviceEnabled = false;
   PermissionStatus _permissionGranted = PermissionStatus.denied;
   LocationData? _currentLocation;
+
+  late gmaps.BitmapDescriptor driverIcon, destinationIcon, passengerIcon;
+
   @override
   void dispose() {
 
@@ -51,6 +57,9 @@ class _DriverAcceptedState extends State<DriverAccepted> {
   @override
   void initState() {
     super.initState();
+
+    loadDriverIcon();
+    connect();
     _initLocationService();
     final UserModel user = DataManager.instance.getUser();
     peer = Peer(id: user.userID.toString()); // Initialize peer here
@@ -72,25 +81,130 @@ class _DriverAcceptedState extends State<DriverAccepted> {
       });
     });
 
-    peer.on("data", null, (ev, _) {
+    peer.on("data", null, (ev, _)  {
       final data = ev.eventData as String;
       print("je suis dans DriverAccepted peer  data=  $data");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
-
-
       Map<String, double> latLng = parseLatLng(data);
+
+      print("je suis dans DriverAccepted peer  distance =   ${calculateDistance(latLng['latitude']!, latLng['longitude']!, 43.5749038, 7.125102)}");
+
+  /*    if ( calculateDistance(latLng['latitude']!, latLng['longitude']!, 43.5749038, 7.125102) <= 0.5) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              // Variable pour stocker le commentaire saisi par l'utilisateur
+              String userComment = '';
+
+              // Variable pour stocker la note
+              double rating = 3.0;
+
+
+              return AlertDialog(
+                title: const Text('Noter le conducteur'),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: <Widget>[
+                      Text('Donnez une note et un commentaire à ce conducteur.'),
+                      // Widget de notation
+                      RatingBar.builder(
+                        initialRating: 3,
+                        minRating: 1,
+                        direction: Axis.horizontal,
+                        allowHalfRating: true,
+                        itemCount: 5,
+                        itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                        itemBuilder: (context, _) => Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        onRatingUpdate: (newRating) {
+                          print(newRating);
+                          rating = newRating; // Met à jour la note
+                        },
+                      ),
+                      SizedBox(height: 20), // Ajoute un espace entre les éléments
+                      // Champ de saisie pour le commentaire
+                      TextField(
+                        onChanged: (value) {
+                          userComment = value; // Met à jour le commentaire à chaque saisie
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Entrez votre commentaire ici",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('Annuler'),
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Ferme la popup
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Soumettre'),
+                    onPressed: () {
+                      // Ici, vous pouvez gérer la soumission de la note et du commentaire
+                      // Par exemple, en les envoyant à un serveur ou en les stockant localement
+                      DataLoader.instance.rateUser(passengerId, rating, userComment);
+                      Navigator.of(context).pop(); // Ferme la popup après la soumission
+                    },
+                  ),
+                ],
+              );
+
+            }
+
+        );
+      }
+
+*/
       if (!mounted) return;
-      setState(() {
-        _markers.add(
-          Marker(
-            markerId: MarkerId("peerLocation"),
-            position: LatLng(latLng['latitude']!, latLng['longitude']!),
-              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
+      setState(()  {
+
+        mapController!.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: LatLng(latLng['latitude']!, latLng['longitude']!),
+              zoom: 14,
+            ),
           ),
         );
+
+        /*
+        final driverIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(size: Size(48, 48)),
+            'assets/driverIconNew.png');
+
+         */
+
+        _markers.add(
+          gmaps.Marker(
+            markerId: MarkerId("peerLocation"),
+            position: LatLng(latLng['latitude']!, latLng['longitude']!),
+              icon: driverIcon  /*BitmapDescriptor.defaultMarker*/,
+          ),
+        );
+
+        _markers.add(
+          Marker(
+              markerId: MarkerId("destination"),
+              position: LatLng(43.70036, 7.26095),
+              icon: destinationIcon
+          ),
+        );
+
       });
 
     });
+
+
+
+
+
     BitmapDescriptor.fromAssetImage(
         ImageConfiguration(size: Size(48, 48)), 'assets/driverIcon.webp')
         .then((d) {
@@ -98,6 +212,22 @@ class _DriverAcceptedState extends State<DriverAccepted> {
     });
   }
   late BitmapDescriptor customIcon;
+
+  void loadDriverIcon() async {
+    driverIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(48, 48)),
+        'assets/driverIconNew.png');
+
+    destinationIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(48, 48)),
+        'assets/destinationIconNew.png');
+
+    passengerIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(48, 48)),
+        'assets/passengerIconNew.png');
+  }
+
+
 
   Map<String, double> parseLatLng(String latLngString) {
     // Assurez-vous que la chaîne d'entrée est formatée correctement comme du JSON
@@ -139,16 +269,23 @@ class _DriverAcceptedState extends State<DriverAccepted> {
           CameraUpdate.newCameraPosition(
             CameraPosition(
               target: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-              zoom: 14,
+              zoom: 10,
             ),
           ),
         );
         if (!mounted) return;
         setState(() {
+          // Coordonnées de départ : Antibes (pour la première itération seulement)
+          double currentLatitude = 43.580418;
+          double currentLongitude = 7.125102;
+
           _markers.add(
             Marker(
               markerId: MarkerId("currentLocation"),
-              position: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+            //  position: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+              position: LatLng(currentLatitude, currentLongitude),
+              icon: passengerIcon,
+
             ),
           );
         });
@@ -180,7 +317,7 @@ class _DriverAcceptedState extends State<DriverAccepted> {
             CameraUpdate.newCameraPosition(
               CameraPosition(
                 target: LatLng(latLng['latitude']!, latLng['longitude']!),
-                zoom: 14,
+                zoom: 15,
               ),
             ),
           );
@@ -337,5 +474,13 @@ class _DriverAcceptedState extends State<DriverAccepted> {
         Theme.of(context).textTheme.titleLarge?.copyWith(color: txtColor),
       ),
     );
+  }
+
+  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    var p = 0.017453292519943295;    // Pi / 180
+    var a = 0.5 - cos((lat2 - lat1) * p)/2 +
+        cos(lat1 * p) * cos(lat2 * p) *
+            (1 - cos((lon2 - lon1) * p))/2;
+    return 12742 * asin(sqrt(a)); // 2 * R; R = 6371 km
   }
 }

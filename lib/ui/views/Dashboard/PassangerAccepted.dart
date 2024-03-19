@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_widget/google_maps_widget.dart' as gmaps;
 import 'package:google_maps_widget/google_maps_widget.dart';
 import 'package:location/location.dart';
+import 'package:tpi_mybi/model/User.dart';
 
 import '../../../Data/DataManager.dart';
 import '../Chat/IndividualPage.dart';
@@ -24,10 +25,11 @@ class PassangerAccepted extends StatefulWidget {
 
 class _PassangerAcceptedState extends State<PassangerAccepted> {
   PeerOptions options = PeerOptions();
-  final Peer peer = Peer( id:"myid" );
+  late Peer peer = Peer( id:"myid" );
   final TextEditingController _controller = TextEditingController();
   String? peerId;
   bool me = false;
+  late gmaps.BitmapDescriptor driverIcon, destinationIcon, passengerIcon;
 
   PeerConnectOption peerop =PeerConnectOption();
   late DataConnection? conn = DataConnection(peer.id.toString(),null,peerop) ;
@@ -62,9 +64,14 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
   @override
   void initState() {
     _initLocationService();
+
+    loadIcons();
+
     print("jes suis dans passangerAccepted peerop =  ${peer.id.toString()}");
     super.initState();
     connect();
+    UserModel user = DataManager.instance.getUser();
+    peer = Peer(id: user.userID.toString());
     print("jes suis dans passangerAccepted ");
     peer.on("open", null, (ev, context) {
       if (!mounted) return;
@@ -104,6 +111,17 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
     });
 
 
+    setState(() {
+      _markers.add(
+        Marker(
+            markerId: MarkerId("destination"),
+            position: LatLng(43.70036, 43.70036),
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet)
+        ),
+      );
+    });
+
+
     BitmapDescriptor.fromAssetImage(
         ImageConfiguration(size: Size(48, 48)), 'assets/driverIconNew.webp')
         .then((d) {
@@ -112,7 +130,19 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
   }
   late BitmapDescriptor customIcon;
 
+  void loadIcons() async {
+    driverIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(48, 48)),
+        'assets/driverIconNew.png');
 
+    destinationIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(48, 48)),
+        'assets/destinationIconNew.png');
+
+    passengerIcon = await gmaps.BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(48, 48)),
+        'assets/passengerIconNew.png');
+  }
 
 // Fonction pour parser la chaîne de caractères et retourner un Map avec latitude et longitude en double
   Map<String, double> parseLatLng(String latLngString) {
@@ -183,7 +213,7 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
     conn = connection;
     if (!mounted) return;
     conn?.on("open", null, (ev, _) {
-      sendLocationUpdatesTest();
+      sendFakeLocationUpdates();
       setState(() {
         connected = true;
       });
@@ -266,6 +296,69 @@ class _PassangerAcceptedState extends State<PassangerAccepted> {
       conn?.send(locationData.toString());
     });
   }
+
+  void sendFakeLocationUpdates() {
+    _locationUpdateTimer?.cancel();
+
+    int iterationCount = 0; // Compteur pour suivre le nombre d'itérations
+    const int maxIterations = 5; // Le nombre maximum d'itérations
+
+    void updateLocation() {
+      if (iterationCount >= maxIterations) {
+        _locationUpdateTimer?.cancel(); // Si on a atteint le nombre d'itérations désiré, arrêtons le timer
+        return; // Et sortons de la fonction
+      }
+
+      // Coordonnées de départ : cannes (pour la première itération seulement)
+      double currentLatitude = 43.552847;
+      double currentLongitude = 7.017369;
+
+      // Coordonnées d'arrivée : antibes
+      final double destinationLatitude = 43.580418;
+      final double destinationLongitude = 7.125102;
+
+      // Calculons les différences de coordonnées et divisons par 5 pour 5 itérations
+      final double latitudeIncrement = (destinationLatitude - currentLatitude) / 5;
+      final double longitudeIncrement = (destinationLongitude - currentLongitude) / 5;
+
+      _locationUpdateTimer = Timer.periodic(Duration(seconds: 10), (Timer t) {
+        if (iterationCount < maxIterations) {
+          // Incrémentons la position actuelle
+          currentLatitude += latitudeIncrement;
+          currentLongitude += longitudeIncrement;
+
+          // Vérifions si nous avons atteint ou dépassé notre destination
+          if (currentLatitude >= destinationLatitude && currentLongitude >= destinationLongitude) {
+            currentLatitude = destinationLatitude;
+            currentLongitude = destinationLongitude;
+          }
+
+          print("Envoi de la localisation fictive : latitude=$currentLatitude, longitude=$currentLongitude");
+
+          // Création du paquet de données de localisation avec les coordonnées fictives
+          final Map<String, dynamic> locationData = {
+            "latitude": currentLatitude,
+            "longitude": currentLongitude,
+          };
+
+          // Envoi des données de localisation fictive au pair
+          conn?.send(locationData.toString());
+
+          iterationCount++; // Incrémentons le compteur d'itérations
+
+          if (iterationCount == maxIterations) {
+            _locationUpdateTimer?.cancel(); // Arrêtons le timer après la dernière itération
+          }
+        }
+      });
+    }
+
+    updateLocation(); // Appelons la fonction pour démarrer le processus
+  }
+
+
+
+
 
 
   Widget build(BuildContext context) {
