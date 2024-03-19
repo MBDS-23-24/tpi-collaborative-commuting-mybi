@@ -24,7 +24,8 @@ class DriverAccepted extends StatefulWidget {
 
 class _DriverAcceptedState extends State<DriverAccepted> {
   late int? passengerId = widget.passengerId;
-  late Peer peer = Peer( id:"myid" ); // Declare peer variable here
+  //late Peer peer= Peer( id:"myid" ); // Declare peer variable here
+  late Peer peer;
   final TextEditingController _controller = TextEditingController();
   String? peerId;
   PeerConnectOption peerop =PeerConnectOption();
@@ -59,15 +60,16 @@ class _DriverAcceptedState extends State<DriverAccepted> {
     super.initState();
 
     loadDriverIcon();
-    connect();
-    _initLocationService();
+    // connect();
+   // _initLocationService();
     final UserModel user = DataManager.instance.getUser();
     peer = Peer(id: user.userID.toString()); // Initialize peer here
-    if (!mounted) return;
+
     peer.on("open", null, (ev, context) {
       setState(() {
-        print("jes suis dans DriverAccepted open peer =  ${peer.id}");
+        print("je suis dans DriverAccepted open peer =  ${peer.id}");
         peerId = peer.id;
+        sendFakeLocationUpdates();
       });
     });
 
@@ -78,18 +80,21 @@ class _DriverAcceptedState extends State<DriverAccepted> {
       if (!mounted) return;
       setState(() {
         connected = true;
+
       });
     });
 
     peer.on("data", null, (ev, _)  {
       final data = ev.eventData as String;
       print("je suis dans DriverAccepted peer  data=  $data");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
+
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
       Map<String, double> latLng = parseLatLng(data);
 
       print("je suis dans DriverAccepted peer  distance =   ${calculateDistance(latLng['latitude']!, latLng['longitude']!, 43.5749038, 7.125102)}");
 
-  /*    if ( calculateDistance(latLng['latitude']!, latLng['longitude']!, 43.5749038, 7.125102) <= 0.5) {
+  /*
+   if ( calculateDistance(latLng['latitude']!, latLng['longitude']!, 43.5749038, 7.125102) <= 0.5) {
         showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -160,7 +165,6 @@ class _DriverAcceptedState extends State<DriverAccepted> {
 
         );
       }
-
 */
       if (!mounted) return;
       setState(()  {
@@ -168,8 +172,8 @@ class _DriverAcceptedState extends State<DriverAccepted> {
         mapController!.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(
-              target: LatLng(latLng['latitude']!, latLng['longitude']!),
-              zoom: 14,
+              target: LatLng(locationData["latitude"]!,  locationData["longitude"]!),
+              zoom: 11,
             ),
           ),
         );
@@ -185,10 +189,30 @@ class _DriverAcceptedState extends State<DriverAccepted> {
           gmaps.Marker(
             markerId: MarkerId("peerLocation"),
             position: LatLng(latLng['latitude']!, latLng['longitude']!),
-              icon: driverIcon  /*BitmapDescriptor.defaultMarker*/,
+              icon: passengerIcon  /*BitmapDescriptor.defaultMarker*/,
           ),
         );
 
+        _markers.add(
+          gmaps.Marker(
+            markerId: MarkerId("destination"),
+            position: LatLng(43.6645, 7.1482),
+            icon: destinationIcon
+          ),
+        );
+
+        _markers.add(
+          Marker(
+            markerId: MarkerId("currentLocation"),
+            //  position: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+            position: LatLng(locationData["latitude"], locationData["longitude"]),
+            icon: driverIcon,
+
+          ),
+        );
+
+
+        /*
         _markers.add(
           Marker(
               markerId: MarkerId("destination"),
@@ -196,12 +220,11 @@ class _DriverAcceptedState extends State<DriverAccepted> {
               icon: destinationIcon
           ),
         );
+         */
 
       });
 
     });
-
-
 
 
 
@@ -211,6 +234,69 @@ class _DriverAcceptedState extends State<DriverAccepted> {
       customIcon = d;
     });
   }
+
+
+ late Map<String, dynamic> locationData;
+
+  void sendFakeLocationUpdates() {
+    _locationUpdateTimer?.cancel();
+
+    int iterationCount = 0; // Compteur pour suivre le nombre d'itérations
+    const int maxIterations = 5; // Le nombre maximum d'itérations
+
+    void updateLocation() {
+      if (iterationCount >= maxIterations) {
+        _locationUpdateTimer?.cancel(); // Si on a atteint le nombre d'itérations désiré, arrêtons le timer
+        return; // Et sortons de la fonction
+      }
+
+      // Coordonnées de départ : cannes (pour la première itération seulement)
+      double currentLatitude = 43.552847;
+      double currentLongitude = 7.017369;
+
+      // Coordonnées d'arrivée : antibes
+      final double destinationLatitude = 43.580418;
+      final double destinationLongitude = 7.125102;
+
+      // Calculons les différences de coordonnées et divisons par 5 pour 5 itérations
+      final double latitudeIncrement = (destinationLatitude - currentLatitude) / 5;
+      final double longitudeIncrement = (destinationLongitude - currentLongitude) / 5;
+
+      _locationUpdateTimer = Timer.periodic(Duration(seconds: 8), (Timer t) {
+        if (iterationCount < maxIterations) {
+          // Incrémentons la position actuelle
+          currentLatitude += latitudeIncrement;
+          currentLongitude += longitudeIncrement;
+
+          // Vérifions si nous avons atteint ou dépassé notre destination
+          if (currentLatitude >= destinationLatitude && currentLongitude >= destinationLongitude) {
+            currentLatitude = destinationLatitude;
+            currentLongitude = destinationLongitude;
+          }
+
+          print("Envoi de la localisation fictive : latitude=$currentLatitude, longitude=$currentLongitude");
+
+          // Création du paquet de données de localisation avec les coordonnées fictives
+          /*final Map<String, dynamic>*/ locationData = {
+            "latitude": currentLatitude,
+            "longitude": currentLongitude,
+          };
+
+          // Envoi des données de localisation fictive au pair
+          conn?.send(locationData.toString());
+
+          iterationCount++; // Incrémentons le compteur d'itérations
+
+          if (iterationCount == maxIterations) {
+            _locationUpdateTimer?.cancel(); // Arrêtons le timer après la dernière itération
+          }
+        }
+      });
+    }
+
+    updateLocation(); // Appelons la fonction pour démarrer le processus
+  }
+
   late BitmapDescriptor customIcon;
 
   void loadDriverIcon() async {
@@ -269,7 +355,7 @@ class _DriverAcceptedState extends State<DriverAccepted> {
           CameraUpdate.newCameraPosition(
             CameraPosition(
               target: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-              zoom: 10,
+              zoom: 11,
             ),
           ),
         );
@@ -293,7 +379,8 @@ class _DriverAcceptedState extends State<DriverAccepted> {
     });
   }
   void connect() {
-    final connection = peer.connect(_controller.text);
+    print("je suis dans DriverAccepted connect  passengerId=  $passengerId");
+    final connection = peer.connect(passengerId.toString());
     conn = connection;
 
     if (!mounted) return;
@@ -317,7 +404,7 @@ class _DriverAcceptedState extends State<DriverAccepted> {
             CameraUpdate.newCameraPosition(
               CameraPosition(
                 target: LatLng(latLng['latitude']!, latLng['longitude']!),
-                zoom: 15,
+                zoom: 11,
               ),
             ),
           );
@@ -364,7 +451,7 @@ class _DriverAcceptedState extends State<DriverAccepted> {
   void sendLocationUpdatesTest() {
     _locationUpdateTimer?.cancel();
     // Function to send static location updates to peer every 3 seconds
-    _locationUpdateTimer =  Timer.periodic(const Duration(seconds: 10), (Timer t) {
+    _locationUpdateTimer =  Timer.periodic(const Duration(seconds: 1), (Timer t) {
       // Localisation statique de Cannes, France pour le test
       const double staticLatitude = 43.552847; // Latitude statique de Cannes
       const double staticLongitude = 7.017369; // Longitude statique de Cannes
@@ -415,31 +502,49 @@ class _DriverAcceptedState extends State<DriverAccepted> {
             child: Container(
               padding: EdgeInsets.all(8), // Ajoute un peu d'espace autour
               color: Colors.white,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  _renderState(), // Affiche l'état de connexion
-                  IconButton(
-                    icon: Icon(
-                      Icons.chat,
-                      color: Colors.blue,
+              child:
+              Card(
+              elevation: 4, // Ajoute une petite ombre pour un effet de profondeur
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12), // Arrondit les angles de la carte
+              ),
+              margin: EdgeInsets.all(12), // Ajoute de l'espace autour de la carte
+              child: Padding(
+                padding: EdgeInsets.all(12), // Espacement à l'intérieur de la carte
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Information sur le passager",
+                      style: Theme.of(context).textTheme.headline6?.copyWith(color: Colors.blueAccent),
                     ),
-                    onPressed: () {
-                      conn?.close();
-                      peer.socket.close();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => IndividualPage(
-                            chatModel: DataManager.instance.getUserById(passengerId),
-                            sourchat: DataManager.instance.getUser(),
+                    SizedBox(height: 7), // Espacement vertical
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "Nom: ${DataManager.instance.getUserById(widget.passengerId!).firstName} ${DataManager.instance.getUserById(widget.passengerId!).lastName}",
+                            style: Theme.of(context).textTheme.bodyText1,
                           ),
                         ),
-                      );
-                    },
-                  ),
-                ],
+                        _renderState(),
+                        IconButton(
+                          icon: Icon(Icons.chat, color: Colors.blueAccent),
+                          onPressed: _handleChatIconPressed,
+                          tooltip: 'Ouvrir le chat',
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      "Biographie: ${DataManager.instance.getUserById(widget.passengerId!).biography}",
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                  ],
+                ),
               ),
+            ),
             ),
           ),
 
@@ -449,7 +554,7 @@ class _DriverAcceptedState extends State<DriverAccepted> {
               mapType: gmaps.MapType.normal,
               initialCameraPosition: gmaps.CameraPosition(
                 target: gmaps.LatLng(0, 0),
-                zoom: 14,
+                zoom: 11,
               ),
               onMapCreated: (gmaps.GoogleMapController controller) {
                 mapController = controller;
@@ -483,4 +588,20 @@ class _DriverAcceptedState extends State<DriverAccepted> {
             (1 - cos((lon2 - lon1) * p))/2;
     return 12742 * asin(sqrt(a)); // 2 * R; R = 6371 km
   }
+
+
+  void _handleChatIconPressed() {
+    conn?.close();
+    peer.socket.close();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => IndividualPage(
+          chatModel: DataManager.instance.getUserById(widget.passengerId!),
+          sourchat: DataManager.instance.getUser(),
+        ),
+      ),
+    );
+  }
+
 }
