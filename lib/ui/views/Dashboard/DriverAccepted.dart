@@ -38,6 +38,20 @@ class _DriverAcceptedState extends State<DriverAccepted> {
   PermissionStatus _permissionGranted = PermissionStatus.denied;
   LocationData? _currentLocation;
 
+
+   final double LatitudeAntibes = 43.580418;
+  final double  longitudeAntibes = 7.125102;
+
+  final double LatitudeCagnes = 43.6645;
+  final double  LongitudeCagnes = 7.1482;
+
+  // Coordonnées de départ : cannes (pour la première itération seulement)
+  final double LatitudeCannes  = 43.552847;
+  final double LongitudeCannes = 7.017369;
+
+
+
+
   late gmaps.BitmapDescriptor driverIcon, destinationIcon, passengerIcon;
 
   @override
@@ -91,81 +105,31 @@ class _DriverAcceptedState extends State<DriverAccepted> {
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
       Map<String, double> latLng = parseLatLng(data);
 
-      print("je suis dans DriverAccepted peer  distance =   ${calculateDistance(latLng['latitude']!, latLng['longitude']!, 43.5749038, 7.125102)}");
+      print("je suis dans DriverAccepted peer  distance =   ${calculateDistance(latLng['latitude']!, latLng['longitude']!, locationData["latitude"], locationData["longitude"])}");
 
-  /*
-   if ( calculateDistance(latLng['latitude']!, latLng['longitude']!, 43.5749038, 7.125102) <= 0.5) {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              // Variable pour stocker le commentaire saisi par l'utilisateur
-              String userComment = '';
-
-              // Variable pour stocker la note
-              double rating = 3.0;
+      // antibes
+     // final double destinationLatitude = 43.580418;
+     // final double destinationLongitude = 7.125102;
 
 
-              return AlertDialog(
-                title: const Text('Noter le conducteur'),
-                content: SingleChildScrollView(
-                  child: ListBody(
-                    children: <Widget>[
-                      Text('Donnez une note et un commentaire à ce conducteur.'),
-                      // Widget de notation
-                      RatingBar.builder(
-                        initialRating: 3,
-                        minRating: 1,
-                        direction: Axis.horizontal,
-                        allowHalfRating: true,
-                        itemCount: 5,
-                        itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                        itemBuilder: (context, _) => Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
-                        onRatingUpdate: (newRating) {
-                          print(newRating);
-                          rating = newRating; // Met à jour la note
-                        },
-                      ),
-                      SizedBox(height: 20), // Ajoute un espace entre les éléments
-                      // Champ de saisie pour le commentaire
-                      TextField(
-                        onChanged: (value) {
-                          userComment = value; // Met à jour le commentaire à chaque saisie
-                        },
-                        decoration: InputDecoration(
-                          hintText: "Entrez votre commentaire ici",
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    child: const Text('Annuler'),
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Ferme la popup
-                    },
-                  ),
-                  TextButton(
-                    child: const Text('Soumettre'),
-                    onPressed: () {
-                      // Ici, vous pouvez gérer la soumission de la note et du commentaire
-                      // Par exemple, en les envoyant à un serveur ou en les stockant localement
-                      DataLoader.instance.rateUser(passengerId, rating, userComment);
-                      Navigator.of(context).pop(); // Ferme la popup après la soumission
-                    },
-                  ),
-                ],
-              );
+   if ( calculateDistance(latLng['latitude']!, latLng['longitude']!, locationData["latitude"], locationData["longitude"]) <= 1.6) {
+          sendFakeLocationDestinationTest();
+   }
+   else {
+     setState(() {
+       _markers.add(
+         Marker(
+           markerId: MarkerId("currentLocation"),
+           //  position: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+           position: LatLng(locationData["latitude"], locationData["longitude"]),
+           icon: driverIcon,
 
-            }
+         ),
+       );
+     });
 
-        );
-      }
-*/
+   }
+
       if (!mounted) return;
       setState(()  {
 
@@ -196,20 +160,11 @@ class _DriverAcceptedState extends State<DriverAccepted> {
         _markers.add(
           gmaps.Marker(
             markerId: MarkerId("destination"),
-            position: LatLng(43.6645, 7.1482),
+            position: LatLng(LatitudeCagnes, LongitudeCagnes),
             icon: destinationIcon
           ),
         );
 
-        _markers.add(
-          Marker(
-            markerId: MarkerId("currentLocation"),
-            //  position: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-            position: LatLng(locationData["latitude"], locationData["longitude"]),
-            icon: driverIcon,
-
-          ),
-        );
 
 
         /*
@@ -235,8 +190,14 @@ class _DriverAcceptedState extends State<DriverAccepted> {
     });
   }
 
-
- late Map<String, dynamic> locationData;
+  late Map<String, dynamic> locationDataDest = {
+    "latitude": LatitudeAntibes,
+    "longitude": longitudeAntibes,
+  };
+ late Map<String, dynamic> locationData = {
+    "latitude": LatitudeCannes,
+    "longitude": LongitudeCannes,
+  };
 
   void sendFakeLocationUpdates() {
     _locationUpdateTimer?.cancel();
@@ -296,6 +257,80 @@ class _DriverAcceptedState extends State<DriverAccepted> {
 
     updateLocation(); // Appelons la fonction pour démarrer le processus
   }
+
+  void sendFakeLocationDestinationTest(){
+    _locationUpdateTimer?.cancel();
+
+    int iterationCount = 0; // Compteur pour suivre le nombre d'itérations
+    const int maxIterations = 7; // Le nombre maximum d'itérations
+
+    void updateLocationDest() {
+      if (iterationCount >= maxIterations) {
+        _locationUpdateTimer?.cancel(); // Si on a atteint le nombre d'itérations désiré, arrêtons le timer
+        return; // Et sortons de la fonction
+      }
+
+      // Coordonnées de départ : antibes (pour la première itération seulement)
+      double currentLatitude = 43.580418;
+      double currentLongitude = 7.125102;
+
+      // Coordonnées d'arrivée : cagnesSurMer
+
+      final double destinationLatitude = LatitudeCagnes;
+      final double destinationLongitude = LongitudeCagnes;
+
+      // Calculons les différences de coordonnées et divisons par 5 pour 5 itérations
+      final double latitudeIncrement = (destinationLatitude - currentLatitude) / 7;
+      final double longitudeIncrement = (destinationLongitude - currentLongitude) / 7;
+
+      _locationUpdateTimer = Timer.periodic(Duration(seconds: 8), (Timer t) {
+        if (iterationCount < maxIterations) {
+          // Incrémentons la position actuelle
+          currentLatitude += latitudeIncrement;
+          currentLongitude += longitudeIncrement;
+
+          // Vérifions si nous avons atteint ou dépassé notre destination
+          if (currentLatitude >= destinationLatitude && currentLongitude >= destinationLongitude) {
+            currentLatitude = destinationLatitude;
+            currentLongitude = destinationLongitude;
+          }
+
+          print("Envoi de la localisation fictive : latitude=$currentLatitude, longitude=$currentLongitude");
+
+          // Création du paquet de données de localisation avec les coordonnées fictives
+          /*final Map<String, dynamic>*/ locationData = {
+            "latitude": currentLatitude,
+            "longitude": currentLongitude,
+          };
+
+          // Envoi des données de localisation fictive au pair
+          conn?.send(locationData.toString());
+
+          setState(() {
+            _markers.add(
+              Marker(
+                markerId: MarkerId("currentLocation"),
+                //  position: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+                position: LatLng(locationData["latitude"], locationData["longitude"]),
+                icon: driverIcon,
+
+              ),
+            );
+          });
+
+          iterationCount++; // Incrémentons le compteur d'itérations
+
+          if (iterationCount == maxIterations) {
+            _locationUpdateTimer?.cancel(); // Arrêtons le timer après la dernière itération
+          }
+        }
+      });
+    }
+
+    updateLocationDest();
+  }
+
+
 
   late BitmapDescriptor customIcon;
 
@@ -500,7 +535,7 @@ class _DriverAcceptedState extends State<DriverAccepted> {
           Expanded(
             flex: 3,
             child: Container(
-              padding: EdgeInsets.all(8), // Ajoute un peu d'espace autour
+              // Ajoute un peu d'espace autour
               color: Colors.white,
               child:
               Card(
