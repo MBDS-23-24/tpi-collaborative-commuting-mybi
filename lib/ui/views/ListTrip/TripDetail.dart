@@ -150,7 +150,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                       onchangeEtat("ACCETPTE", widget.trip.voyageId, passenger.userID);
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      primary: Colors.green, // Définit la couleur de fond du bouton à vert
+                                      backgroundColor: Colors.green, // Définit la couleur de fond du bouton à vert
                                     ),
                                     child: Text('Accept'),
                                   ),
@@ -160,7 +160,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                       onchangeEtat("REFUSE", widget.trip.voyageId, passenger.userID);
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      primary: Colors.red, // Définit la couleur de fond du bouton à rouge
+                                      backgroundColor: Colors.red, // Définit la couleur de fond du bouton à rouge
                                     ),
                                     child: Text('Refuse'),
                                   ),
@@ -197,7 +197,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                         onPressed: () {
                         requestTrip(widget.trip.voyageId, currentUser?.userID);
                         },
-                        style: ElevatedButton.styleFrom(primary: Theme.of(context).canvasColor),
+                        style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).canvasColor),
                         child: Text("Request to Join Trip"),
                         )
                         else if (currentUser!.role == "PASSAGER" && widget.trip.placeDisponible <= 0)

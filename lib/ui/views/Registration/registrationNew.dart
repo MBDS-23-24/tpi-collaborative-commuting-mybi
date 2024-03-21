@@ -73,6 +73,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
       return;
     }
+
+    // Vérifier si un utilisateur avec cet email existe déjà
+    var loader = DataLoader.instance;
+    bool emailExists = await loader.checkIfEmailExists(emailController.text.trim());
+
+    if (emailExists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An account with this email already exists')),
+      );
+      return;
+    }
+
     String role;
     if (agreePassenger){
       role = "PASSAGER";
@@ -83,27 +95,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
     else {
       role = "BOTH";
     }
-
-
+    
     var manager = DataManager.instance;
 
-
-    //   UserModel user = UserModel(userID : 0,email: emailController.text.trim(), firstName: firstNameController.text.trim(), lastName: lastNameController.text.trim(), pathImage: pathImage, password: passwordController.text.trim(), role: role, biography: "test");
+    //UserModel user = UserModel(userID : 0,email: emailController.text.trim(), firstName: firstNameController.text.trim(), lastName: lastNameController.text.trim(), pathImage: pathImage, password: passwordController.text.trim(), role: role, biography: "test");
 
     UserModel user = UserModel(email: emailController.text.trim(), firstName: firstNameController.text.trim(), lastName: lastNameController.text.trim(), pathImage: pathImage, password: passwordController.text.trim(), role: role, biography: biographyController.text.trim());
 
+     // manager.setUser(user);
 
-    // manager.setUser(user);
+    //var loader = DataLoader.instance;
+    // Créer l'utilisateur seulement si l'email n'existe pas déjà
+    if (!emailExists) {
+      loader.createUser(user);
+      print("user created");
+    } else {
+      print("user non created because email exist");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An account with this email already exists')),
+      );
+    }
 
 
-    var loader = DataLoader.instance;
-    loader.createUser(user);
-
-
-
-
-    // UserModel userModel = UserModel.fromFirebaseUser(userCredential.user!);
-    /*
+     // UserModel userModel = UserModel.fromFirebaseUser(userCredential.user!);
+      /*
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -418,54 +433,54 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 25.0,
                       ),
                       Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'Role :',
-                              style: TextStyle(
-                                color: Colors.black45,
-                              ),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Role :',
+                            style: TextStyle(
+                              color: Colors.black45,
                             ),
-                            const Text(
-                              'Passenger ',
-                              style: TextStyle(
-                                color: Colors.black45,
-                              ),
+                          ),
+                          const Text(
+                            'Passenger ',
+                            style: TextStyle(
+                              color: Colors.black45,
                             ),
-                            Checkbox(
-                              value: agreePassenger,
-                              onChanged: (bool? value) {
-                                _handleCheckboxChange('Passenger', value);
-                              },
-                              activeColor: myPrimaryColor,
+                          ),
+                          Checkbox(
+                            value: agreePassenger,
+                            onChanged: (bool? value) {
+                              _handleCheckboxChange('Passenger', value);
+                            },
+                            activeColor: myPrimaryColor,
+                          ),
+                          const Text(
+                            'Driver ',
+                            style: TextStyle(
+                              color: Colors.black45,
                             ),
-                            const Text(
-                              'Driver ',
-                              style: TextStyle(
-                                color: Colors.black45,
-                              ),
+                          ),
+                          Checkbox(
+                            value: agreeDriver,
+                            onChanged: (bool? value) {
+                              _handleCheckboxChange('Driver', value);
+                            },
+                            activeColor: myPrimaryColor,
+                          ),
+                          const Text(
+                            'Both ',
+                            style: TextStyle(
+                              color: Colors.black45,
                             ),
-                            Checkbox(
-                              value: agreeDriver,
-                              onChanged: (bool? value) {
-                                _handleCheckboxChange('Driver', value);
-                              },
-                              activeColor: myPrimaryColor,
-                            ),
-                            const Text(
-                              'Both ',
-                              style: TextStyle(
-                                color: Colors.black45,
-                              ),
-                            ),
-                            Checkbox(
-                              value: agreeBoth,
-                              onChanged: (bool? value) {
-                                _handleCheckboxChange('Both', value);
-                              },
-                              activeColor: myPrimaryColor,
-                            )
-                          ]
+                          ),
+                          Checkbox(
+                            value: agreeBoth,
+                            onChanged: (bool? value) {
+                              _handleCheckboxChange('Both', value);
+                            },
+                            activeColor: myPrimaryColor,
+                          )
+                        ]
 
                       ),
 
@@ -508,7 +523,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: ElevatedButton(
                           onPressed: () async {
                             await registerUser();
-
+                            
                           },
                           child: const Text('Sign up'),
                         ),
@@ -592,7 +607,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 20.0,
                       ),
-
+                   
                     ],
 
                   ),

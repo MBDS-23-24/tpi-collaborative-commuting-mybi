@@ -132,6 +132,35 @@ class DataLoader {
     }
   }
 
+  Future<bool> checkIfEmailExists(String email) async {
+  var url = Uri.parse('${urlPathHosted}api/users/checkEmail');
+  //var url = Uri.parse('http://localhost:3000/api/users/checkEmail');
+
+  try {
+    var response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({'email': email}),
+    );
+
+    if (response.statusCode == 200) {
+      // Si la requête a réussi (statut 200), vous pouvez traiter les données de réponse ici
+      var jsonResponse = json.decode(response.body);
+      return jsonResponse['exists'] as bool;
+    } else {
+      // En cas d'échec de la requête, vous pouvez afficher un message d'erreur ou effectuer d'autres actions
+      print('Échec de la requête: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    // En cas d'erreur lors de la connexion à l'API, vous pouvez afficher un message d'erreur
+    print('Erreur de connexion: $e');
+    return false;
+  }
+}
+
   Future<void> login(LoginModel login) async {
     var manager = DataManager.instance;
 
