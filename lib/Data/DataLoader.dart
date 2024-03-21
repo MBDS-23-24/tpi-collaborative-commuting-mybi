@@ -378,7 +378,7 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
 
       Future<bool> createVoyage(VoyageModel trip) async {
         //var baseUrl = 'https://lalabi.azurewebsites.net/api/trip';
-        var baseUrl = 'http://localhost:3000/api/trip';
+        var baseUrl = 'https://lalabi.azurewebsites.net/api/trip';
         var path = Uri.parse('$baseUrl/createTrip');
 
         Map<String, dynamic> voyageData = trip.toJson(); // Convert the trip object to JSON
@@ -407,7 +407,7 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
 
   Future<List<VoyageModel>> getVoyages() async {
 //http://localhost:3000/api/trip/getTripDrvier/0
-    var baseUrl = 'http://localhost:3000/api/trip';
+    var baseUrl = 'https://lalabi.azurewebsites.net/api/trip';
     UserModel user = DataManager.instance.getUser();
     int? uid = user.userID;
     //var baseUrl = 'https://lalabi.azurewebsites.net/api/trip'; // Ajustez cette URL à votre API réelle
@@ -478,7 +478,7 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
     var manager = DataManager.instance;
     var token2 = DataManager.instance.token;
    // var baseUrl = 'http://localhost:3000/api/trip/getPassengersByTrip/$voyageId';
-      var url = Uri.parse('http://localhost:3000/api/trip/getPassengersByTrip/$voyageId');
+      var url = Uri.parse('https://lalabi.azurewebsites.net/api/trip/getPassengersByTrip/$voyageId');
     // var url = Uri.parse('http://localhost:3000/api/users');
     try {
       var headers = {
@@ -509,7 +509,7 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
   Future<List<VoyageModel>?> getTripsForPassenger(VoyageModel trip) async {
       var manager = DataManager.instance;
       var token = DataManager.instance.token;
-      var baseUrl = 'http://localhost:3000/api/trip/getTripByFilter';
+      var baseUrl = 'https://lalabi.azurewebsites.net/api/trip/getTripByFilter';
 
       // Préparez les paramètres de requête basés sur les propriétés du voyage fourni
       var queryParams = {
@@ -542,7 +542,7 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
   }
 
  Future<String> requestTrips(int? voyageId, int? userID) async {
-   var baseUrl = 'http://localhost:3000/api/trip';
+   var baseUrl = 'https://lalabi.azurewebsites.net/api/trip';
    var path = Uri.parse('$baseUrl/requestpassenger/$voyageId/$userID');
 
    try {
@@ -572,7 +572,7 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
  }
 
   Future<bool> changeEtatPassenger(String status, int? voyageId, int? userId) async {
-    var baseUrl = 'http://localhost:3000/api/trip';
+    var baseUrl = 'https://lalabi.azurewebsites.net/api/trip';
     var url = Uri.parse('$baseUrl/changeEtatPassenger/$voyageId/$userId');
 
     try {
@@ -603,7 +603,7 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
 Future<void> updateUser(UserModel user) async {
   var manager = DataManager.instance;
   //var url = Uri.parse('https://lalabi.azurewebsites.net/api/users/${user.userID}');
-  var url = Uri.parse('http://localhost:3000/api/users/${user.userID}');
+  var url = Uri.parse('https://lalabi.azurewebsites.net/api/users/${user.userID}');
   
 
   // Convertir l'objet UserModel en JSON
