@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<UserModel?>(
-      future: SaveDataManager().getUser(),
+      future: SaveDataManager().getUserLocal(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Si la future est en cours de chargement, affichez un indicateur de chargement

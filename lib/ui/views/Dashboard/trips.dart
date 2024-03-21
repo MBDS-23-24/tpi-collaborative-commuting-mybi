@@ -130,7 +130,9 @@ class _TripsScreenState extends State<TripsScreen> {
 
   void findRide() async {
     // Get current user details
+
     UserModel user = DataManager.instance.getUser();
+    print('userId = ${user.userID}');
 
     // Get departure and destination locations
     gmaps.LatLng departLocation = _markers
@@ -149,7 +151,7 @@ class _TripsScreenState extends State<TripsScreen> {
     // Create Request object
 
     Request userRequest = Request(
-      userId: user.userID!,
+      userId: user.userID,
       type: user.role.toString(),
       originLat: departLocation.latitude,
       originLong: departLocation.longitude,

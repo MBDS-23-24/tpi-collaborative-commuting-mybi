@@ -39,11 +39,12 @@ class SaveDataManager {
   }
 
   // Méthode pour récupérer l'utilisateur
-  Future<UserModel?> getUser() async {
+  Future<UserModel?> getUserLocal() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userJson = prefs.getString('user');
     if (userJson != null) {
       Map<String, dynamic> userMap = jsonDecode(userJson);
+      DataManager.instance.setUser(UserModel.fromJson(userMap));
       return UserModel.fromJson(userMap);
     }
     return null; // Retourne null si aucun utilisateur n'est trouvé dans les préférences

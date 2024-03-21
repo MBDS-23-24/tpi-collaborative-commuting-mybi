@@ -48,9 +48,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   //  FakeDataReceiver(), // Replace with your more options screen
   ];
 
-  initState() {
+  initState()  {
     super.initState();
     SaveDataManager().getToken();
+
     DataLoader dataLoader = DataLoader.instance;
     DataManager dataManager = DataManager.instance;
   //  dataLoader.getUsers(DataManager.instance.getToken());

@@ -69,6 +69,8 @@ class _DriverAcceptedState extends State<DriverAccepted> {
 
   }
 
+
+
   @override
   void initState() {
     super.initState();
@@ -80,6 +82,7 @@ class _DriverAcceptedState extends State<DriverAccepted> {
     peer = Peer(id: user.userID.toString()); // Initialize peer here
 
     peer.on("open", null, (ev, context) {
+      if (!mounted) return;
       setState(() {
         print("je suis dans DriverAccepted open peer =  ${peer.id}");
         peerId = peer.id;
@@ -116,6 +119,7 @@ class _DriverAcceptedState extends State<DriverAccepted> {
           sendFakeLocationDestinationTest();
    }
    else {
+     if (!mounted) return;
      setState(() {
        _markers.add(
          Marker(
@@ -433,6 +437,7 @@ class _DriverAcceptedState extends State<DriverAccepted> {
         //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data)));
         if (!mounted) return;
         Map<String, double> latLng = parseLatLng(data);
+        if (!mounted) return;
         setState(() {
 
           mapController!.animateCamera(
