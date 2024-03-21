@@ -315,7 +315,7 @@ Future<void> getMessages(int? sourceId, int? targetId) async {
   Future<void> rateUser(int? idUser, double rating, String? content) async {
     var manager = DataManager.instance;
     //var url = Uri.parse('https://lalabi.azurewebsites.net/api/avis/');
-     var url = Uri.parse('http://localhost:3000/api/avis/');
+     var url = Uri.parse('https://lalabi.azurewebsites.net/api/avis/');
 
     var rateSended = RatingModel(0,DataManager.instance.getUser().userID, idUser, content , rating.toInt());
     var rateJson = rateSended.toJson();
